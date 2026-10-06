@@ -14,8 +14,8 @@ export const config = Object.freeze({
     redirectUri: process.env.VK_REDIRECT_URI ?? "https://vk.liniyasporta.ru/oauth/callback",
     apiVersion: process.env.VK_API_VERSION ?? "5.199",
     groupId: positiveInt(process.env.VK_GROUP_ID),
-    userToken: process.env.VK_USER_TOKEN ?? "",
-    groupToken: process.env.VK_GROUP_TOKEN ?? ""
+    groupToken: process.env.VK_GROUP_TOKEN ?? "",
+    userToken: process.env.VK_USER_TOKEN ?? ""
   })
 });
 
@@ -29,19 +29,23 @@ export function requireVkGroupId() {
   if (!config.vk.groupId) throw new Error("VK_GROUP_ID is not configured");
 }
 
-export function requireVkUserToken() {
-  if (!config.vk.userToken) {
-    throw new Error(
-      "VK_USER_TOKEN is not configured. VK API 5.199 requires a user token for wall/photo/video publishing."
-    );
+export function requireVkWallToken() {
+  if (!config.vk.groupToken && !config.vk.userToken) {
+    throw new Error("VK_GROUP_TOKEN (preferred) or VK_USER_TOKEN is not configured");
   }
 }
 
-export function requireVkPublishingConfig() {
-  requireVkGroupId();
-  requireVkUserToken();
+export function getWallToken() {
+  requireVkWallToken();
+  return config.vk.groupToken || config.vk.userToken;
 }
 
 export function getReadToken() {
-  return config.vk.userToken || config.vk.groupToken;
+  return config.vk.groupToken || config.vk.userToken;
+}
+
+export function getMediaToken() {
+  if (config.vk.userToken) return config.vk.userToken;
+  if (config.vk.groupToken) return config.vk.groupToken;
+  throw new Error("No VK token is configured");
 }
