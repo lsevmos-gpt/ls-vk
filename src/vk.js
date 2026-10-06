@@ -5,11 +5,11 @@ import {
   getMediaToken,
   getReadToken,
   getWallToken,
-  requireVkGroupId,
   requireVkWallToken
 } from "./config.js";
 
 const VK_API_BASE = "https://api.vk.ru/method";
+let resolvedGroupId = config.vk.groupId || null;
 
 export class VkApiError extends Error {
   constructor(method, vkError) {
@@ -56,6 +56,40 @@ export async function vkCall(method, params = {}, token) {
   return payload.response;
 }
 
+export async function getGroupId() {
+  if (resolvedGroupId) return resolvedGroupId;
+
+  if (!config.vk.groupScreenName) {
+    throw new Error("VK_GROUP_ID or VK_GROUP_SCREEN_NAME is required");
+  }
+
+  const token = getReadToken();
+  if (!token) throw new Error("VK_GROUP_TOKEN or VK_USER_TOKEN is not configured");
+
+  const resolved = await vkCall(
+    "utils.resolveScreenName",
+    { screen_name: config.vk.groupScreenName },
+    token
+  );
+
+  const id = Number.parseInt(resolved?.object_id, 10);
+  if (!Number.isFinite(id) || id <= 0) {
+    throw new Error(
+      `Could not resolve VK community screen name: ${config.vk.groupScreenName}`
+    );
+  }
+
+  const allowedTypes = new Set(["group", "page", "event"]);
+  if (resolved?.type && !allowedTypes.has(resolved.type)) {
+    throw new Error(
+      `VK screen name ${config.vk.groupScreenName} resolves to ${resolved.type}, not a community`
+    );
+  }
+
+  resolvedGroupId = id;
+  return resolvedGroupId;
+}
+
 async function uploadMultipart(uploadUrl, fieldName, filePath, originalName, mimeType) {
   const form = new FormData();
   form.append(fieldName, fs.createReadStream(filePath), {
@@ -97,21 +131,21 @@ function toUnixTime(value) {
 }
 
 export async function checkVkConnection() {
-  requireVkGroupId();
+  requireVkWallToken();
   const token = getReadToken();
-  if (!token) throw new Error("VK_USER_TOKEN or VK_GROUP_TOKEN is not configured");
+  const groupId = await getGroupId();
 
   const group = await vkCall(
     "groups.getById",
-    { group_id: config.vk.groupId },
+    { group_id: groupId },
     token
   );
 
   let user = null;
   let appPermissions = null;
 
-  if (getWallToken()) {
-    user = await vkCall("users.get", {}, getWallToken());
+  if (config.vk.userToken) {
+    user = await vkCall("users.get", {}, config.vk.userToken);
     appPermissions = await vkCall(
       "account.getAppPermissions",
       {},
@@ -120,17 +154,19 @@ export async function checkVkConnection() {
   }
 
   return {
+    groupId,
+    groupScreenName: config.vk.groupScreenName,
     group,
     user,
     appPermissions,
-    publishingTokenConfigured: Boolean(getWallToken()),
-    groupTokenConfigured: Boolean(config.vk.groupToken)
+    groupTokenConfigured: Boolean(config.vk.groupToken),
+    userTokenConfigured: Boolean(config.vk.userToken)
   };
 }
 
 export async function publishWallPost({ text = "", attachments = [], publishAt } = {}) {
-  requireVkGroupId();
   requireVkWallToken();
+  const groupId = await getGroupId();
 
   if (!text && (!attachments || attachments.length === 0)) {
     throw new Error("A wall post needs text and/or attachments");
@@ -139,25 +175,35 @@ export async function publishWallPost({ text = "", attachments = [], publishAt }
   return vkCall(
     "wall.post",
     {
-      owner_id: -config.vk.groupId,
+      owner_id: -groupId,
       from_group: true,
       message: text,
       attachments,
       publish_date: toUnixTime(publishAt)
     },
-    config.vk.userToken
+    getWallToken()
   );
 }
 
 export async function uploadWallPhoto(file) {
-  requireVkGroupId();
-  requireVkWallToken();
+  const groupId = await getGroupId();
+  const token = getMediaToken();
 
-  const uploadServer = await vkCall(
-    "photos.getWallUploadServer",
-    { group_id: config.vk.groupId },
-    config.vk.userToken
-  );
+  let uploadServer;
+  try {
+    uploadServer = await vkCall(
+      "photos.getWallUploadServer",
+      { group_id: groupId },
+      token
+    );
+  } catch (error) {
+    if (error instanceof VkApiError && error.code === 27 && !config.vk.userToken) {
+      throw new Error(
+        "VK community token can publish wall posts, but VK rejected community authorization for wall photo upload (error 27). A compatible user API token is required for photo upload."
+      );
+    }
+    throw error;
+  }
 
   const uploaded = await uploadMultipart(
     uploadServer.upload_url,
@@ -170,12 +216,12 @@ export async function uploadWallPhoto(file) {
   const saved = await vkCall(
     "photos.saveWallPhoto",
     {
-      group_id: config.vk.groupId,
+      group_id: groupId,
       server: uploaded.server,
       photo: uploaded.photo,
       hash: uploaded.hash
     },
-    config.vk.userToken
+    token
   );
 
   const photo = Array.isArray(saved) ? saved[0] : saved;
@@ -188,18 +234,18 @@ export async function uploadWallPhoto(file) {
 }
 
 export async function uploadWallVideo(file, { name, description = "" } = {}) {
-  requireVkGroupId();
+  const groupId = await getGroupId();
 
   if (!config.vk.userToken) {
     throw new Error(
-      "VK video.save requires a compatible user API token. VK ID authentication tokens are not sufficient."
+      "VK video.save requires a compatible user API token. A community token is not sufficient."
     );
   }
 
   const prepared = await vkCall(
     "video.save",
     {
-      group_id: config.vk.groupId,
+      group_id: groupId,
       name: name || file.originalname || "Видео",
       description,
       wallpost: false
@@ -235,7 +281,7 @@ export async function uploadStory(file, {
   linkUrl,
   clickableStickers
 } = {}) {
-  requireVkGroupId();
+  const groupId = await getGroupId();
   requireVkWallToken();
 
   if (type !== "photo" && type !== "video") {
@@ -246,16 +292,17 @@ export async function uploadStory(file, {
     ? "stories.getPhotoUploadServer"
     : "stories.getVideoUploadServer";
 
+  const token = getWallToken();
   const uploadServer = await vkCall(
     method,
     {
       add_to_news: addToNews,
-      group_id: config.vk.groupId,
+      group_id: groupId,
       link_text: linkText,
       link_url: linkUrl,
       clickable_stickers: clickableStickers
     },
-    config.vk.userToken
+    token
   );
 
   if (!uploadServer?.upload_url) throw new Error("VK did not return a story upload URL");
@@ -283,6 +330,6 @@ export async function uploadStory(file, {
     {
       upload_results: Array.isArray(uploadResult) ? uploadResult : [uploadResult]
     },
-    config.vk.userToken
+    token
   );
 }
