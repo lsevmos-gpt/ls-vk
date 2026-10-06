@@ -1,6 +1,6 @@
 {
   "name": "ls-vk",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "type": "module",
   "description": "Private VK publishing gateway for Линия спорта",
@@ -9,7 +9,8 @@
   },
   "scripts": {
     "start": "node src/server.js",
-    "dev": "node --watch src/server.js"
+    "dev": "node --watch src/server.js",
+    "publish-job": "node scripts/publish-job.js"
   },
   "dependencies": {
     "dotenv": "^16.4.7",
