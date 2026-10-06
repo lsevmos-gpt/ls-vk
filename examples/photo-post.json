@@ -1,0 +1,9 @@
+{
+  "id": "example-photo-post",
+  "type": "photo",
+  "text": "Текст публикации",
+  "media": [
+    "media/photo-1.jpg",
+    "media/photo-2.jpg"
+  ]
+}
