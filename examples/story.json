@@ -1,0 +1,7 @@
+{
+  "id": "example-story",
+  "type": "story",
+  "media": "media/story.jpg",
+  "storyType": "photo",
+  "addToNews": true
+}
