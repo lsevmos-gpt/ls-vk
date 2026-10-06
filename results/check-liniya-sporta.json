@@ -1,0 +1,29 @@
+{
+  "ok": true,
+  "id": "check-liniya-sporta",
+  "type": "check",
+  "finishedAt": "2026-10-06T08:00:54.336Z",
+  "result": {
+    "groupId": 48198173,
+    "groupScreenName": "liniya__sporta",
+    "group": {
+      "groups": [
+        {
+          "id": 48198173,
+          "name": "Сеть спортзалов «Линия Спорта» Симферополь",
+          "screen_name": "liniya__sporta",
+          "is_closed": 0,
+          "type": "group",
+          "photo_50": "https://sun9-59.vkuserphoto.ru/s/v1/ig2/gGG7YrAYsqomFrHTKcZFGgERQvKVHupqJ1xUhieaPh6XA5K0-U8wvFLIhJgE47gyKy1iM61l2Q-t0w2pe6Srv2vA.jpg?quality=95&crop=204,370,686,686&as=32x32,48x48,72x72,108x108,160x160,240x240,360x360,480x480,540x540,640x640&ava=1&cs=50x50",
+          "photo_100": "https://sun9-59.vkuserphoto.ru/s/v1/ig2/gGG7YrAYsqomFrHTKcZFGgERQvKVHupqJ1xUhieaPh6XA5K0-U8wvFLIhJgE47gyKy1iM61l2Q-t0w2pe6Srv2vA.jpg?quality=95&crop=204,370,686,686&as=32x32,48x48,72x72,108x108,160x160,240x240,360x360,480x480,540x540,640x640&ava=1&cs=100x100",
+          "photo_200": "https://sun9-59.vkuserphoto.ru/s/v1/ig2/gGG7YrAYsqomFrHTKcZFGgERQvKVHupqJ1xUhieaPh6XA5K0-U8wvFLIhJgE47gyKy1iM61l2Q-t0w2pe6Srv2vA.jpg?quality=95&crop=204,370,686,686&as=32x32,48x48,72x72,108x108,160x160,240x240,360x360,480x480,540x540,640x640&ava=1&cs=200x200"
+        }
+      ],
+      "profiles": []
+    },
+    "user": null,
+    "appPermissions": null,
+    "groupTokenConfigured": true,
+    "userTokenConfigured": false
+  }
+}
