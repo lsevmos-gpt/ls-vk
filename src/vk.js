@@ -2,10 +2,11 @@ import fs from "node:fs";
 import FormData from "form-data";
 import {
   config,
+  getMediaToken,
   getReadToken,
+  getWallToken,
   requireVkGroupId,
-  requireVkPublishingConfig,
-  requireVkUserToken
+  requireVkWallToken
 } from "./config.js";
 
 const VK_API_BASE = "https://api.vk.ru/method";
@@ -109,8 +110,8 @@ export async function checkVkConnection() {
   let user = null;
   let appPermissions = null;
 
-  if (config.vk.userToken) {
-    user = await vkCall("users.get", {}, config.vk.userToken);
+  if (getWallToken()) {
+    user = await vkCall("users.get", {}, getWallToken());
     appPermissions = await vkCall(
       "account.getAppPermissions",
       {},
@@ -122,13 +123,14 @@ export async function checkVkConnection() {
     group,
     user,
     appPermissions,
-    publishingTokenConfigured: Boolean(config.vk.userToken),
+    publishingTokenConfigured: Boolean(getWallToken()),
     groupTokenConfigured: Boolean(config.vk.groupToken)
   };
 }
 
 export async function publishWallPost({ text = "", attachments = [], publishAt } = {}) {
-  requireVkPublishingConfig();
+  requireVkGroupId();
+  requireVkWallToken();
 
   if (!text && (!attachments || attachments.length === 0)) {
     throw new Error("A wall post needs text and/or attachments");
@@ -148,7 +150,8 @@ export async function publishWallPost({ text = "", attachments = [], publishAt }
 }
 
 export async function uploadWallPhoto(file) {
-  requireVkPublishingConfig();
+  requireVkGroupId();
+  requireVkWallToken();
 
   const uploadServer = await vkCall(
     "photos.getWallUploadServer",
@@ -185,7 +188,13 @@ export async function uploadWallPhoto(file) {
 }
 
 export async function uploadWallVideo(file, { name, description = "" } = {}) {
-  requireVkPublishingConfig();
+  requireVkGroupId();
+
+  if (!config.vk.userToken) {
+    throw new Error(
+      "VK video.save requires a compatible user API token. VK ID authentication tokens are not sufficient."
+    );
+  }
 
   const prepared = await vkCall(
     "video.save",
@@ -227,7 +236,7 @@ export async function uploadStory(file, {
   clickableStickers
 } = {}) {
   requireVkGroupId();
-  requireVkUserToken();
+  requireVkWallToken();
 
   if (type !== "photo" && type !== "video") {
     throw new Error('Story type must be "photo" or "video"');
