@@ -18,6 +18,7 @@ jobs:
     env:
       VK_API_VERSION: "5.199"
       VK_GROUP_ID: ${{ secrets.VK_GROUP_ID }}
+      VK_GROUP_SCREEN_NAME: "liniya__sporta"
       VK_USER_TOKEN: ${{ secrets.VK_USER_TOKEN }}
       VK_GROUP_TOKEN: ${{ secrets.VK_GROUP_TOKEN }}
 
