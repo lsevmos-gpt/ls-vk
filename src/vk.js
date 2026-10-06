@@ -309,7 +309,7 @@ export async function uploadStory(file, {
 
   const uploaded = await uploadMultipart(
     uploadServer.upload_url,
-    "file",
+    type === "video" ? "video_file" : "file",
     file.path,
     file.originalname,
     file.mimetype
