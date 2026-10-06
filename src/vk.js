@@ -1,6 +1,12 @@
 import fs from "node:fs";
 import FormData from "form-data";
-import { config, getMediaToken, requireVkConfig } from "./config.js";
+import {
+  config,
+  getReadToken,
+  requireVkGroupId,
+  requireVkPublishingConfig,
+  requireVkUserToken
+} from "./config.js";
 
 const VK_API_BASE = "https://api.vk.com/method";
 
@@ -21,15 +27,16 @@ function encodeValue(value) {
   return String(value);
 }
 
-export async function vkCall(method, params = {}, token = config.vk.groupToken) {
-  if (!token) throw new Error(`No token configured for VK method ${method}`);
+export async function vkCall(method, params = {}, token) {
+  const effectiveToken = token || getReadToken();
+  if (!effectiveToken) throw new Error(`No token configured for VK method ${method}`);
 
   const body = new URLSearchParams();
   for (const [key, value] of Object.entries(params)) {
     if (value === undefined || value === null || value === "") continue;
     body.set(key, encodeValue(value));
   }
-  body.set("access_token", token);
+  body.set("access_token", effectiveToken);
   body.set("v", config.vk.apiVersion);
 
   const response = await fetch(`${VK_API_BASE}/${method}`, {
@@ -89,45 +96,65 @@ function toUnixTime(value) {
 }
 
 export async function checkVkConnection() {
-  requireVkConfig();
-  return vkCall("groups.getById", { group_id: config.vk.groupId });
+  requireVkGroupId();
+  const token = getReadToken();
+  if (!token) throw new Error("VK_USER_TOKEN or VK_GROUP_TOKEN is not configured");
+
+  const group = await vkCall(
+    "groups.getById",
+    { group_id: config.vk.groupId },
+    token
+  );
+
+  let user = null;
+  let appPermissions = null;
+
+  if (config.vk.userToken) {
+    user = await vkCall("users.get", {}, config.vk.userToken);
+    appPermissions = await vkCall(
+      "account.getAppPermissions",
+      {},
+      config.vk.userToken
+    );
+  }
+
+  return {
+    group,
+    user,
+    appPermissions,
+    publishingTokenConfigured: Boolean(config.vk.userToken),
+    groupTokenConfigured: Boolean(config.vk.groupToken)
+  };
 }
 
 export async function publishWallPost({ text = "", attachments = [], publishAt } = {}) {
-  requireVkConfig();
+  requireVkPublishingConfig();
 
   if (!text && (!attachments || attachments.length === 0)) {
     throw new Error("A wall post needs text and/or attachments");
   }
 
-  return vkCall("wall.post", {
-    owner_id: -config.vk.groupId,
-    from_group: true,
-    message: text,
-    attachments,
-    publish_date: toUnixTime(publishAt)
-  });
+  return vkCall(
+    "wall.post",
+    {
+      owner_id: -config.vk.groupId,
+      from_group: true,
+      message: text,
+      attachments,
+      publish_date: toUnixTime(publishAt)
+    },
+    config.vk.userToken
+  );
 }
 
 export async function uploadWallPhoto(file) {
-  requireVkConfig({ media: true });
-  const token = getMediaToken();
+  requireVkPublishingConfig();
 
-  let uploadServer;
-  try {
-    uploadServer = await vkCall(
-      "photos.getWallUploadServer",
-      { group_id: config.vk.groupId },
-      token
-    );
-  } catch (error) {
-    if (error instanceof VkApiError && error.code === 27 && !config.vk.userToken) {
-      throw new Error(
-        "VK rejected community authorization for photo upload (error 27). Configure VK_USER_TOKEN."
-      );
-    }
-    throw error;
-  }
+  const uploadServer = await vkCall(
+    "photos.getWallUploadServer",
+    { group_id: config.vk.groupId },
+    config.vk.userToken
+  );
 
   const uploaded = await uploadMultipart(
     uploadServer.upload_url,
@@ -145,7 +172,7 @@ export async function uploadWallPhoto(file) {
       photo: uploaded.photo,
       hash: uploaded.hash
     },
-    token
+    config.vk.userToken
   );
 
   const photo = Array.isArray(saved) ? saved[0] : saved;
@@ -158,8 +185,7 @@ export async function uploadWallPhoto(file) {
 }
 
 export async function uploadWallVideo(file, { name, description = "" } = {}) {
-  requireVkConfig({ media: true });
-  const token = getMediaToken();
+  requireVkPublishingConfig();
 
   const prepared = await vkCall(
     "video.save",
@@ -169,7 +195,7 @@ export async function uploadWallVideo(file, { name, description = "" } = {}) {
       description,
       wallpost: false
     },
-    token
+    config.vk.userToken
   );
 
   if (!prepared?.upload_url) throw new Error("VK did not return a video upload URL");
@@ -200,7 +226,8 @@ export async function uploadStory(file, {
   linkUrl,
   clickableStickers
 } = {}) {
-  requireVkConfig();
+  requireVkGroupId();
+  requireVkUserToken();
 
   if (type !== "photo" && type !== "video") {
     throw new Error('Story type must be "photo" or "video"');
@@ -210,13 +237,17 @@ export async function uploadStory(file, {
     ? "stories.getPhotoUploadServer"
     : "stories.getVideoUploadServer";
 
-  const uploadServer = await vkCall(method, {
-    add_to_news: addToNews,
-    group_id: config.vk.groupId,
-    link_text: linkText,
-    link_url: linkUrl,
-    clickable_stickers: clickableStickers
-  });
+  const uploadServer = await vkCall(
+    method,
+    {
+      add_to_news: addToNews,
+      group_id: config.vk.groupId,
+      link_text: linkText,
+      link_url: linkUrl,
+      clickable_stickers: clickableStickers
+    },
+    config.vk.userToken
+  );
 
   if (!uploadServer?.upload_url) throw new Error("VK did not return a story upload URL");
 
@@ -238,7 +269,11 @@ export async function uploadStory(file, {
     throw new Error("VK story upload did not return upload_result");
   }
 
-  return vkCall("stories.save", {
-    upload_results: Array.isArray(uploadResult) ? uploadResult : [uploadResult]
-  });
+  return vkCall(
+    "stories.save",
+    {
+      upload_results: Array.isArray(uploadResult) ? uploadResult : [uploadResult]
+    },
+    config.vk.userToken
+  );
 }
