@@ -333,3 +333,34 @@ export async function uploadStory(file, {
     token
   );
 }
+
+
+export async function checkStoryAccess() {
+  const groupId = await getGroupId();
+  requireVkWallToken();
+  const token = getWallToken();
+
+  const photo = await vkCall(
+    "stories.getPhotoUploadServer",
+    {
+      add_to_news: false,
+      group_id: groupId
+    },
+    token
+  );
+
+  const video = await vkCall(
+    "stories.getVideoUploadServer",
+    {
+      add_to_news: false,
+      group_id: groupId
+    },
+    token
+  );
+
+  return {
+    groupId,
+    photoStoryUploadAvailable: Boolean(photo?.upload_url),
+    videoStoryUploadAvailable: Boolean(video?.upload_url)
+  };
+}
