@@ -386,3 +386,24 @@ export async function checkStoryAccess() {
     videoStoryUploadAvailable: Boolean(video?.upload_url)
   };
 }
+
+
+export async function deleteStory(storyId, ownerId) {
+  requireVkWallToken();
+  const groupId = await getGroupId();
+  const resolvedOwnerId = ownerId ?? -groupId;
+
+  const id = Number.parseInt(storyId, 10);
+  if (!Number.isFinite(id) || id <= 0) {
+    throw new Error("storyId must be a positive integer");
+  }
+
+  return vkCall(
+    "stories.delete",
+    {
+      owner_id: resolvedOwnerId,
+      story_id: id
+    },
+    getWallToken()
+  );
+}
