@@ -1,4 +1,8 @@
 import fs from "node:fs";
+import { execFile } from "node:child_process";
+import { promisify } from "node:util";
+
+const execFileAsync = promisify(execFile);
 import FormData from "form-data";
 import {
   config,
@@ -91,37 +95,50 @@ export async function getGroupId() {
 }
 
 async function uploadMultipart(uploadUrl, fieldName, filePath, originalName, mimeType) {
-  const form = new FormData();
-  const bytes = fs.readFileSync(filePath);
-  form.append(fieldName, bytes, {
-    filename: originalName || "upload.bin",
-    contentType: mimeType || "application/octet-stream",
-    knownLength: bytes.length
-  });
+  const formArg =
+    `${fieldName}=@${filePath};filename=${originalName || "upload.bin"};type=${mimeType || "application/octet-stream"}`;
 
-  const headers = form.getHeaders();
-  headers["content-length"] = String(form.getLengthSync());
+  let stdout;
+  try {
+    const result = await execFileAsync(
+      "curl",
+      [
+        "--silent",
+        "--show-error",
+        "--fail-with-body",
+        "--max-time",
+        "120",
+        "--request",
+        "POST",
+        "--form",
+        formArg,
+        uploadUrl
+      ],
+      { maxBuffer: 10 * 1024 * 1024 }
+    );
+    stdout = result.stdout;
+  } catch (error) {
+    const detail =
+      error?.stdout ||
+      error?.stderr ||
+      error?.message ||
+      "unknown curl upload error";
+    throw new Error(`VK upload transport error: ${String(detail).slice(0, 1000)}`);
+  }
 
-  const response = await fetch(uploadUrl, {
-    method: "POST",
-    headers,
-    body: form,
-    duplex: "half"
-  });
-
-  const text = await response.text();
   let payload;
   try {
-    payload = JSON.parse(text);
+    payload = JSON.parse(stdout);
   } catch {
-    throw new Error(`VK upload returned non-JSON response (HTTP ${response.status}): ${text.slice(0, 500)}`);
+    throw new Error(
+      `VK upload returned non-JSON response: ${String(stdout).slice(0, 1000)}`
+    );
   }
 
-  if (!response.ok) {
-    throw new Error(`VK upload failed with HTTP ${response.status}`);
-  }
   if (payload?.error) {
-    throw new Error(`VK upload error: ${payload.error.error_msg ?? payload.error.type ?? "unknown"}`);
+    throw new Error(
+      `VK upload error: ${payload.error.error_msg ?? payload.error.type ?? "unknown"}`
+    );
   }
 
   return payload;
