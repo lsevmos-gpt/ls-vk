@@ -109,7 +109,7 @@ async function uploadMultipart(uploadUrl, fieldName, filePath, originalName, mim
   try {
     payload = JSON.parse(text);
   } catch {
-    throw new Error(`VK upload returned non-JSON response (HTTP ${response.status})`);
+    throw new Error(`VK upload returned non-JSON response (HTTP ${response.status}): ${text.slice(0, 500)}`);
   }
 
   if (!response.ok) {
