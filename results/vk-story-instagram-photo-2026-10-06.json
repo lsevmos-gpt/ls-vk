@@ -1,0 +1,77 @@
+{
+  "ok": true,
+  "id": "vk-story-instagram-photo-2026-10-06",
+  "type": "story",
+  "finishedAt": "2026-10-06T08:30:42.996Z",
+  "result": {
+    "count": 1,
+    "groups": [],
+    "items": [
+      {
+        "access_key": "story",
+        "answers_count": 0,
+        "can_ask": 0,
+        "can_ask_anonymous": 0,
+        "can_comment": 1,
+        "can_hide": 1,
+        "can_like": true,
+        "can_reply": 1,
+        "can_see": 1,
+        "can_share": 1,
+        "can_use_in_narrative": true,
+        "date": 1791275442,
+        "expires_at": 1791361842,
+        "id": 456240643,
+        "is_ads": false,
+        "likes_count": 0,
+        "narratives_count": 0,
+        "no_sound": false,
+        "owner_id": -48198173,
+        "photo": {
+          "album_id": -81,
+          "date": 0,
+          "has_tags": false,
+          "id": 457245040,
+          "owner_id": -48198173,
+          "sizes": [
+            {
+              "height": 453,
+              "type": "x",
+              "url": "https://sun9-60.vkuserphoto.ru/s/v1/ig2/qqnPK9rgG86pJqDvSdw57qPu9EQbYaPWYfnS6wBMKr80rt82OGf2e2PXViavT7V_fZ_g2vvKcc_fhb-YisZ5QYFC.jpg?quality=95&size=604x453",
+              "width": 604
+            },
+            {
+              "height": 605,
+              "type": "y",
+              "url": "https://sun9-60.vkuserphoto.ru/s/v1/ig2/7xIP_nI07RDOLEIjd63jXoxABNTnTwSr5ihMLuDGXqkWOthtu2RmwgWbxSvL3YTuFcf-n367N3pVbl72eAjwTc3L.jpg?quality=95&size=807x605",
+              "width": 807
+            },
+            {
+              "height": 960,
+              "type": "z",
+              "url": "https://sun9-60.vkuserphoto.ru/s/v1/ig2/64km0gJbcGOIo6ejK1zt1rL5Z1PRXjLkzuyqPKlEHUcmnkr-5gEX_Sp4Wjpl_FVJIzE5fCv61pglKIHw4uEpOM5Q.jpg?quality=95&size=1280x960",
+              "width": 1280
+            },
+            {
+              "height": 1086,
+              "type": "w",
+              "url": "https://sun9-60.vkuserphoto.ru/s/v1/ig2/PacrJacd3ZcoyC2kJYtNXxzn1gSim8teuA7_YCfpyq-YAOHL0S3k8kwGo5HMVw0ROu6X160zvvwDE-vgllloirG0.jpg?quality=95&size=1448x1086",
+              "width": 1448
+            }
+          ],
+          "text": ""
+        },
+        "preloading_enabled": true,
+        "reaction_set_id": "story_reactions",
+        "replies": {
+          "count": 0,
+          "new": 0
+        },
+        "track_code": "story_json/eyJvd25lcl9pZCI6LTQ4MTk4MTczLCJzdG9yeV9pZCI6NDU2MjQwNjQzLCJ2aWV3ZXJfaWQiOjM3NTk1NjJ9",
+        "type": "photo",
+        "views": 0
+      }
+    ],
+    "profiles": []
+  }
+}
