@@ -92,14 +92,19 @@ export async function getGroupId() {
 
 async function uploadMultipart(uploadUrl, fieldName, filePath, originalName, mimeType) {
   const form = new FormData();
-  form.append(fieldName, fs.createReadStream(filePath), {
+  const bytes = fs.readFileSync(filePath);
+  form.append(fieldName, bytes, {
     filename: originalName || "upload.bin",
-    contentType: mimeType || "application/octet-stream"
+    contentType: mimeType || "application/octet-stream",
+    knownLength: bytes.length
   });
+
+  const headers = form.getHeaders();
+  headers["content-length"] = String(form.getLengthSync());
 
   const response = await fetch(uploadUrl, {
     method: "POST",
-    headers: form.getHeaders(),
+    headers,
     body: form,
     duplex: "half"
   });
