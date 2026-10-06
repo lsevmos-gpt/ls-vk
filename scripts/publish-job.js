@@ -3,6 +3,7 @@ import path from "node:path";
 import {
   checkStoryAccess,
   checkVkConnection,
+  deleteStory,
   publishWallPost,
   uploadStory,
   uploadWallPhoto,
@@ -90,6 +91,9 @@ async function publish(job) {
     case "check-story":
       return checkStoryAccess();
 
+    case "delete-story":
+      return deleteStory(job.storyId, job.ownerId);
+
     case "post":
       return publishWallPost({
         text: job.text || "",
@@ -152,7 +156,7 @@ async function publish(job) {
 
     default:
       throw new Error(
-        'Unknown job type. Use "check", "check-story", "post", "photo", "video" or "story".'
+        'Unknown job type. Use "check", "check-story", "delete-story", "post", "photo", "video" or "story".'
       );
   }
 }
