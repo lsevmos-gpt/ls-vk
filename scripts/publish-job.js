@@ -154,9 +154,46 @@ async function publish(job) {
       });
     }
 
+    case "story-batch": {
+      if (!Array.isArray(job.stories) || job.stories.length === 0) {
+        throw new Error("story-batch requires a non-empty stories array");
+      }
+
+      const results = [];
+      for (let i = 0; i < job.stories.length; i++) {
+        const story = job.stories[i];
+        const file = await mediaFile(
+          story,
+          story.storyType === "video" ? `story-${i + 1}.mp4` : `story-${i + 1}.png`
+        );
+        const storyType =
+          story.storyType ||
+          (file.mimetype.startsWith("video/") ? "video" : "photo");
+
+        const result = await uploadStory(file, {
+          type: storyType,
+          addToNews: story.addToNews !== false,
+          linkText: story.linkText,
+          linkUrl: story.linkUrl
+        });
+
+        results.push({
+          index: i + 1,
+          storyType,
+          result
+        });
+
+        if (i < job.stories.length - 1) {
+          await new Promise((resolve) => setTimeout(resolve, 1500));
+        }
+      }
+
+      return results;
+    }
+
     default:
       throw new Error(
-        'Unknown job type. Use "check", "check-story", "delete-story", "post", "photo", "video" or "story".'
+        'Unknown job type. Use "check", "check-story", "delete-story", "post", "photo", "video", "story" or "story-batch".'
       );
   }
 }
