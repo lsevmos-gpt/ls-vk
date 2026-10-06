@@ -56,6 +56,32 @@ async function asUploadFile(filePath) {
   };
 }
 
+async function downloadToTemp(url, filename) {
+  const response = await fetch(url);
+  if (!response.ok) {
+    throw new Error(`Media download failed with HTTP ${response.status}`);
+  }
+  const buffer = Buffer.from(await response.arrayBuffer());
+  const dir = path.join(root, ".tmp-media");
+  await fs.mkdir(dir, { recursive: true });
+  const safeName = String(filename || "media.bin").replace(/[^a-zA-Z0-9._-]/g, "_");
+  const absolute = path.join(dir, safeName);
+  await fs.writeFile(absolute, buffer);
+  return {
+    path: absolute,
+    originalname: safeName,
+    mimetype: response.headers.get("content-type") || mimeFromPath(safeName)
+  };
+}
+
+async function mediaFile(job, fallbackName) {
+  if (job.mediaUrl) {
+    return downloadToTemp(job.mediaUrl, job.fileName || fallbackName);
+  }
+  if (!job.media) throw new Error("Job requires media or mediaUrl");
+  return asUploadFile(job.media);
+}
+
 async function publish(job) {
   switch (job.type) {
     case "check":
@@ -90,9 +116,8 @@ async function publish(job) {
     }
 
     case "video": {
-      if (!job.media) throw new Error("video job requires media");
       const uploaded = await uploadWallVideo(
-        await asUploadFile(job.media),
+        await mediaFile(job, "video.mp4"),
         {
           name: job.name,
           description: job.description || ""
@@ -109,8 +134,10 @@ async function publish(job) {
     }
 
     case "story": {
-      if (!job.media) throw new Error("story job requires media");
-      const file = await asUploadFile(job.media);
+      const file = await mediaFile(
+        job,
+        job.storyType === "video" ? "story.mp4" : "story.png"
+      );
       const storyType =
         job.storyType ||
         (file.mimetype.startsWith("video/") ? "video" : "photo");
