@@ -153,3 +153,40 @@ curl -X POST http://localhost:3000/api/vk/story \
 6. сделать тестовый пост;
 7. проверить фото и видео;
 8. отдельно проверить доступность Stories.
+
+
+## Публикация из ChatGPT через GitHub Actions
+
+Репозиторий содержит workflow `.github/workflows/vk-publish.yml`.
+
+Схема:
+
+```text
+ChatGPT -> queue/<job>.json -> GitHub Actions -> VK API -> results/<job>.json
+```
+
+Для работы workflow в **Settings -> Secrets and variables -> Actions** нужно создать:
+
+- `VK_GROUP_ID` — числовой ID сообщества без минуса;
+- `VK_USER_TOKEN` — user access token администратора;
+- `VK_GROUP_TOKEN` — необязательно.
+
+После этого для текстового поста достаточно добавить файл:
+
+```json
+{
+  "id": "2026-10-06-test",
+  "type": "post",
+  "text": "Текст публикации"
+}
+```
+
+в каталог `queue/`. Коммит автоматически запускает публикацию.
+
+Для фото сначала файл помещается в `media/`, затем job с `type: "photo"`.
+Поддерживается несколько фотографий.
+
+Результат каждого запуска записывается в `results/<id>.json`. Это позволяет
+проверить из ChatGPT, был ли пост действительно создан и какой ID вернул VK.
+
+Готовые примеры находятся в каталоге `examples/`.
