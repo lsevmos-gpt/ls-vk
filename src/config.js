@@ -12,8 +12,8 @@ export const config = Object.freeze({
   vk: Object.freeze({
     apiVersion: process.env.VK_API_VERSION ?? "5.199",
     groupId: positiveInt(process.env.VK_GROUP_ID),
-    groupToken: process.env.VK_GROUP_TOKEN ?? "",
-    userToken: process.env.VK_USER_TOKEN ?? ""
+    userToken: process.env.VK_USER_TOKEN ?? "",
+    groupToken: process.env.VK_GROUP_TOKEN ?? ""
   })
 });
 
@@ -23,16 +23,23 @@ export function requireGatewayAuthConfig() {
   }
 }
 
-export function requireVkConfig({ media = false } = {}) {
+export function requireVkGroupId() {
   if (!config.vk.groupId) throw new Error("VK_GROUP_ID is not configured");
-  if (!config.vk.groupToken) throw new Error("VK_GROUP_TOKEN is not configured");
+}
 
-  if (media && !config.vk.userToken && !config.vk.groupToken) {
-    throw new Error("No VK token is configured for media upload");
+export function requireVkUserToken() {
+  if (!config.vk.userToken) {
+    throw new Error(
+      "VK_USER_TOKEN is not configured. VK API 5.199 requires a user token for wall/photo/video publishing."
+    );
   }
 }
 
-export function getMediaToken() {
-  requireVkConfig({ media: true });
+export function requireVkPublishingConfig() {
+  requireVkGroupId();
+  requireVkUserToken();
+}
+
+export function getReadToken() {
   return config.vk.userToken || config.vk.groupToken;
 }
