@@ -14,6 +14,7 @@ export const config = Object.freeze({
     redirectUri: process.env.VK_REDIRECT_URI ?? "https://vk.liniyasporta.ru/oauth/callback",
     apiVersion: process.env.VK_API_VERSION ?? "5.199",
     groupId: positiveInt(process.env.VK_GROUP_ID),
+    groupScreenName: process.env.VK_GROUP_SCREEN_NAME ?? "liniya__sporta",
     groupToken: process.env.VK_GROUP_TOKEN ?? "",
     userToken: process.env.VK_USER_TOKEN ?? ""
   })
@@ -23,10 +24,6 @@ export function requireGatewayAuthConfig() {
   if (!config.internalApiKey || config.internalApiKey === "change-me") {
     throw new Error("INTERNAL_API_KEY is not configured");
   }
-}
-
-export function requireVkGroupId() {
-  if (!config.vk.groupId) throw new Error("VK_GROUP_ID is not configured");
 }
 
 export function requireVkWallToken() {
