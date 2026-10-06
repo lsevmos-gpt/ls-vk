@@ -1,0 +1,24 @@
+{
+  "id": "stories-trainers-2026-10-06",
+  "type": "story-batch",
+  "stories": [
+    {
+      "mediaUrl": "https://at.adobe.com/hVBbJkCGuQ0GEtcb",
+      "fileName": "info.mp4",
+      "storyType": "video",
+      "addToNews": true
+    },
+    {
+      "mediaUrl": "https://at.adobe.com/JAr8wCdNNz4xwAnL",
+      "fileName": "duty-trainer.png",
+      "storyType": "photo",
+      "addToNews": true
+    },
+    {
+      "mediaUrl": "https://at.adobe.com/aQ08hPQACF81cPy4",
+      "fileName": "personal-trainer.png",
+      "storyType": "photo",
+      "addToNews": true
+    }
+  ]
+}
