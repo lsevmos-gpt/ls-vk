@@ -1,6 +1,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import {
+  checkStoryAccess,
   checkVkConnection,
   publishWallPost,
   uploadStory,
@@ -59,6 +60,9 @@ async function publish(job) {
   switch (job.type) {
     case "check":
       return checkVkConnection();
+
+    case "check-story":
+      return checkStoryAccess();
 
     case "post":
       return publishWallPost({
@@ -121,7 +125,7 @@ async function publish(job) {
 
     default:
       throw new Error(
-        'Unknown job type. Use "check", "post", "photo", "video" or "story".'
+        'Unknown job type. Use "check", "check-story", "post", "photo", "video" or "story".'
       );
   }
 }
