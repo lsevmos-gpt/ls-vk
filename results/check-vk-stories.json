@@ -1,0 +1,11 @@
+{
+  "ok": true,
+  "id": "check-vk-stories",
+  "type": "check-story",
+  "finishedAt": "2026-10-06T08:09:23.123Z",
+  "result": {
+    "groupId": 48198173,
+    "photoStoryUploadAvailable": true,
+    "videoStoryUploadAvailable": true
+  }
+}
