@@ -8,7 +8,7 @@ import {
   requireVkUserToken
 } from "./config.js";
 
-const VK_API_BASE = "https://api.vk.com/method";
+const VK_API_BASE = "https://api.vk.ru/method";
 
 export class VkApiError extends Error {
   constructor(method, vkError) {
