@@ -1,0 +1,8 @@
+{
+  "id": "example-video-post",
+  "type": "video",
+  "text": "Текст публикации",
+  "name": "Название видео",
+  "description": "",
+  "media": "media/video.mp4"
+}
