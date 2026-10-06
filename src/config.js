@@ -10,6 +10,8 @@ export const config = Object.freeze({
   nodeEnv: process.env.NODE_ENV ?? "development",
   internalApiKey: process.env.INTERNAL_API_KEY ?? "",
   vk: Object.freeze({
+    appId: positiveInt(process.env.VK_APP_ID),
+    redirectUri: process.env.VK_REDIRECT_URI ?? "https://vk.liniyasporta.ru/oauth/callback",
     apiVersion: process.env.VK_API_VERSION ?? "5.199",
     groupId: positiveInt(process.env.VK_GROUP_ID),
     userToken: process.env.VK_USER_TOKEN ?? "",
