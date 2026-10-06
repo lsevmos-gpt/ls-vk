@@ -1,0 +1,110 @@
+{
+  "ok": true,
+  "id": "vk-story-republish-video-20261006-1",
+  "type": "story",
+  "finishedAt": "2026-10-06T08:49:19.855Z",
+  "result": {
+    "count": 1,
+    "groups": [],
+    "items": [
+      {
+        "access_key": "story",
+        "answers_count": 0,
+        "can_ask": 0,
+        "can_ask_anonymous": 0,
+        "can_comment": 1,
+        "can_hide": 1,
+        "can_like": true,
+        "can_reply": 1,
+        "can_see": 1,
+        "can_share": 1,
+        "can_use_in_narrative": true,
+        "date": 1791276559,
+        "expires_at": 1791362959,
+        "id": 456240645,
+        "is_ads": false,
+        "likes_count": 0,
+        "narratives_count": 0,
+        "no_sound": false,
+        "owner_id": -48198173,
+        "preloading_enabled": true,
+        "reaction_set_id": "story_reactions",
+        "replies": {
+          "count": 0,
+          "new": 0
+        },
+        "track_code": "story_json/eyJvd25lcl9pZCI6LTQ4MTk4MTczLCJzdG9yeV9pZCI6NDU2MjQwNjQ1LCJ2aWV3ZXJfaWQiOjM3NTk1NjJ9",
+        "type": "video",
+        "video": {
+          "access_key": "",
+          "can_add": 0,
+          "can_dislike": 0,
+          "can_download": 0,
+          "can_play_in_background": 1,
+          "date": 1791276557,
+          "description": "",
+          "download": {
+            "can_download_for_offline_view": false,
+            "can_download_to_device": false,
+            "unavailable_for_offline_view": "download_restricted_by_place"
+          },
+          "duration": 4,
+          "first_frame": [
+            {
+              "height": 720,
+              "url": "https://iv.okcdn.ru/getVideoPreview?id=20455367641603&idx=0&type=39&tkn=tbwT8X3L9dNtywG86u72861UFrg&fn=vid_w&c_uniq_tag=6-w859vZuuI35uF4NqqBRUAEmwLC03sy81ERwXJnP-0",
+              "width": 405
+            },
+            {
+              "height": 569,
+              "url": "https://iv.okcdn.ru/getVideoPreview?id=20455367641603&idx=0&type=39&tkn=tbwT8X3L9dNtywG86u72861UFrg&fn=vid_t&c_uniq_tag=XIvNy3p3uXS7y-aKZq6ZEEB5m7Y8b9TbrFGSV9OvgNk",
+              "width": 320
+            },
+            {
+              "height": 1280,
+              "url": "https://iv.okcdn.ru/getVideoPreview?id=20455367641603&idx=0&type=39&tkn=tbwT8X3L9dNtywG86u72861UFrg&fn=vid_u&c_uniq_tag=b6YyMr4C30LeLzyyfNJ2ZI5HxusGZmA0TpVHSJAkL2E",
+              "width": 720
+            }
+          ],
+          "height": 1280,
+          "id": 456240797,
+          "image": [
+            {
+              "height": 720,
+              "url": "https://iv.okcdn.ru/getVideoPreview?id=20455367641603&idx=0&type=39&tkn=tbwT8X3L9dNtywG86u72861UFrg&fn=vid_w&c_uniq_tag=6-w859vZuuI35uF4NqqBRUAEmwLC03sy81ERwXJnP-0",
+              "width": 405
+            },
+            {
+              "height": 569,
+              "url": "https://iv.okcdn.ru/getVideoPreview?id=20455367641603&idx=0&type=39&tkn=tbwT8X3L9dNtywG86u72861UFrg&fn=vid_t&c_uniq_tag=XIvNy3p3uXS7y-aKZq6ZEEB5m7Y8b9TbrFGSV9OvgNk",
+              "width": 320
+            },
+            {
+              "height": 1280,
+              "url": "https://iv.okcdn.ru/getVideoPreview?id=20455367641603&idx=0&type=39&tkn=tbwT8X3L9dNtywG86u72861UFrg&fn=vid_u&c_uniq_tag=b6YyMr4C30LeLzyyfNJ2ZI5HxusGZmA0TpVHSJAkL2E",
+              "width": 720
+            }
+          ],
+          "is_from_message": 1,
+          "ov_id": "16893023629315",
+          "owner_id": -48198173,
+          "response_type": "full",
+          "title": "",
+          "type": "story",
+          "views": 0,
+          "width": 720,
+          "direct_url": "",
+          "files": {
+            "failover_host": "vkvd440.okcdn.ru",
+            "mp4_144": "https://vkvd750.okcdn.ru/?expires=1791535759759&srcIp=52.240.168.194&pr=48&srcAg=UNKNOWN&ms=95.163.35.155&type=4&sig=_CFJPhmWZsg&ct=27&urls=178.237.23.170&clientType=13&appId=512000384397&zs=43&id=20455367641603",
+            "src": "https://vkvd750.okcdn.ru/?expires=1791535759759&srcIp=52.240.168.194&pr=48&srcAg=UNKNOWN&ms=95.163.35.155&type=4&sig=_CFJPhmWZsg&ct=27&urls=178.237.23.170&clientType=13&appId=512000384397&zs=43&id=20455367641603"
+          },
+          "need_mediascope_stat": false,
+          "share_url": ""
+        },
+        "views": 0
+      }
+    ],
+    "profiles": []
+  }
+}
