@@ -1,0 +1,18 @@
+{
+  "id": "2026-10-07-0930-graphite-last-day",
+  "type": "story-batch",
+  "stories": [
+    {
+      "mediaUrl": "https://static.metricool.com/planner/202610/7014498-file-6368325274305495307.mp4",
+      "fileName": "akciya.mp4",
+      "storyType": "video",
+      "addToNews": true
+    },
+    {
+      "mediaUrl": "https://static.metricool.com/planner/202610/7014498-file-14046727025315839247.png",
+      "fileName": "last-day.png",
+      "storyType": "photo",
+      "addToNews": true
+    }
+  ]
+}
