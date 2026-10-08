@@ -1,0 +1,18 @@
+{
+  "id": "2026-10-08-1508-admin-kuibysheva-stories",
+  "type": "story-batch",
+  "stories": [
+    {
+      "mediaUrl": "https://static.metricool.com/planner/202610/7014498-file-3247111637224482768.mp4",
+      "fileName": "info.mp4",
+      "storyType": "video",
+      "addToNews": true
+    },
+    {
+      "mediaUrl": "https://static.metricool.com/planner/202610/7014498-file-5949286748350270948.png",
+      "fileName": "administrator-kuibysheva.png",
+      "storyType": "photo",
+      "addToNews": true
+    }
+  ]
+}
