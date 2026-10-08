@@ -1,0 +1,8 @@
+{
+  "ok": false,
+  "id": "2026-10-09-1830-fitness-reel-vk",
+  "type": "video",
+  "finishedAt": "2026-10-08T14:50:40.340Z",
+  "error": "VK video.save requires a compatible user API token. A community token is not sufficient.",
+  "code": null
+}
