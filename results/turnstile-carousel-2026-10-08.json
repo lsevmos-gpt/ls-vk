@@ -1,0 +1,8 @@
+{
+  "ok": false,
+  "id": "turnstile-carousel-2026-10-08",
+  "type": "photo",
+  "finishedAt": "2026-10-08T08:05:34.725Z",
+  "error": "VK community token can publish wall posts, but VK rejected community authorization for wall photo upload (error 27). A compatible user API token is required for photo upload.",
+  "code": null
+}
