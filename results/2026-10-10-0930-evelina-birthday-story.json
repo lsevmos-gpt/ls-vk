@@ -1,8 +1,77 @@
 {
-  "ok": false,
+  "ok": true,
   "id": "2026-10-10-0930-evelina-birthday-story",
   "type": "story",
-  "finishedAt": "2026-10-10T06:35:35.605Z",
-  "error": "VK upload transport error: <!DOCTYPE HTML PUBLIC \"-//IETF//DTD HTML 2.0//EN\">\n<html>\n<head>\n  <title>The page is temporarily unavailable</title>\n  <style>\n    body {\n      font-family: -apple-system, BlinkMacSystemFont, 'Roboto', 'Open Sans', 'Helvetica Neue', sans-serif, Geneva, arial, Tahoma, verdana;\n    }\n  </style>\n</head>\n<body bgcolor=\"white\" text=\"black\">\n<table width=\"100%\" height=\"100%\">\n  <tr>\n    <td align=\"center\" valign=\"middle\">\n      The page you are looking for is temporarily unavailable.<br/>\n      Please try again later.\n    </td>\n  </tr>\n</table>\n</body>\n</html>\n",
-  "code": null
+  "finishedAt": "2026-10-10T07:09:59.703Z",
+  "result": {
+    "count": 1,
+    "groups": [],
+    "items": [
+      {
+        "access_key": "story",
+        "answers_count": 0,
+        "can_ask": 0,
+        "can_ask_anonymous": 0,
+        "can_comment": 1,
+        "can_hide": 1,
+        "can_like": true,
+        "can_reply": 1,
+        "can_see": 1,
+        "can_share": 1,
+        "can_use_in_narrative": true,
+        "date": 1791616199,
+        "expires_at": 1791702599,
+        "id": 456240655,
+        "is_ads": false,
+        "likes_count": 0,
+        "narratives_count": 0,
+        "no_sound": false,
+        "owner_id": -48198173,
+        "photo": {
+          "album_id": -81,
+          "date": 0,
+          "has_tags": false,
+          "id": 457245047,
+          "owner_id": -48198173,
+          "sizes": [
+            {
+              "height": 604,
+              "type": "x",
+              "url": "https://sun9-77.vkuserphoto.ru/s/v1/ig2/xzttQ-rayskde_aQVmASyMHZCxhLqXPeRlZFNZGywO_W_yBSBr7B1CtP4PIJFAzc8q1OXWZcub79aGbCiOTFolDTMCwOxw.jpg?quality=95&size=340x604",
+              "width": 340
+            },
+            {
+              "height": 807,
+              "type": "y",
+              "url": "https://sun9-77.vkuserphoto.ru/s/v1/ig2/PHWigYAUclT3mdXAi6tM_Oe1Vw25uwHGEHyT1G3yNT4VtCYVk5kwmliIhU-mYhBALiM27K5f63AFwDeyM72rBB3IPqVUAQ.jpg?quality=95&size=454x807",
+              "width": 454
+            },
+            {
+              "height": 1080,
+              "type": "z",
+              "url": "https://sun9-77.vkuserphoto.ru/s/v1/ig2/1pgUAi7g9WlyI5vL4yI7_xJBS3qmSShtw28ZhyUBpKPj3q7wwGVq9K10gp6-L8gFlVpWcSOF2BizXx_UZhaXAviR8Nt5gQ.jpg?quality=95&size=608x1080",
+              "width": 608
+            },
+            {
+              "height": 1672,
+              "type": "w",
+              "url": "https://sun9-77.vkuserphoto.ru/s/v1/ig2/y6wffQjh_dpaqBHgutgcFVb-1SIwj0810AKvYr65Tbl3O9t5LegrirrqEEtZC_aNPoFpJDFS-X1dRLAIn1AwOb2C9Oz8xg.jpg?quality=95&size=941x1672",
+              "width": 941
+            }
+          ],
+          "text": ""
+        },
+        "preloading_enabled": true,
+        "reaction_set_id": "story_reactions",
+        "replies": {
+          "count": 0,
+          "new": 0
+        },
+        "track_code": "story_json/eyJvd25lcl9pZCI6LTQ4MTk4MTczLCJzdG9yeV9pZCI6NDU2MjQwNjU1LCJ2aWV3ZXJfaWQiOjM3NTk1NjJ9",
+        "type": "photo",
+        "views": 0
+      }
+    ],
+    "profiles": []
+  }
 }
