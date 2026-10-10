@@ -1,0 +1,77 @@
+{
+  "ok": true,
+  "id": "2026-10-10-1804-bracelets-story-retry3",
+  "type": "story",
+  "finishedAt": "2026-10-10T15:04:47.555Z",
+  "result": {
+    "count": 1,
+    "groups": [],
+    "items": [
+      {
+        "access_key": "story",
+        "answers_count": 0,
+        "can_ask": 0,
+        "can_ask_anonymous": 0,
+        "can_comment": 1,
+        "can_hide": 1,
+        "can_like": true,
+        "can_reply": 1,
+        "can_see": 1,
+        "can_share": 1,
+        "can_use_in_narrative": true,
+        "date": 1791644687,
+        "expires_at": 1791731087,
+        "id": 456240656,
+        "is_ads": false,
+        "likes_count": 0,
+        "narratives_count": 0,
+        "no_sound": false,
+        "owner_id": -48198173,
+        "photo": {
+          "album_id": -81,
+          "date": 0,
+          "has_tags": false,
+          "id": 457245048,
+          "owner_id": -48198173,
+          "sizes": [
+            {
+              "height": 604,
+              "type": "x",
+              "url": "https://sun9-2.vkuserphoto.ru/s/v1/ig2/nXJxJiR19XPl9Wu_kEaXiT9U40WneTC4J54EXm-ORH-pBO9wQYkn_JYdOCErmaGAngO6YF1jW200Y0plD2OPkJar.jpg?quality=95&size=340x604",
+              "width": 340
+            },
+            {
+              "height": 807,
+              "type": "y",
+              "url": "https://sun9-2.vkuserphoto.ru/s/v1/ig2/dLIGa0K39C3pPOYrLwr2wf9BNr_yoMzky_-Kf7ctoaCnpx2bjGgrqN3SPrW-2nHwFYX_SlMskQAx4OWjC8GqalhP.jpg?quality=95&size=454x807",
+              "width": 454
+            },
+            {
+              "height": 1080,
+              "type": "z",
+              "url": "https://sun9-2.vkuserphoto.ru/s/v1/ig2/DknJ3xDZvgCIgZrmH3Xc0_Uxnu5TN2l0kSenwxS4Cs1ovReOdBohmWwYI2AA_VtJV4CiHiw8-Wxt595R4cfSovKO.jpg?quality=95&size=607x1080",
+              "width": 607
+            },
+            {
+              "height": 1536,
+              "type": "w",
+              "url": "https://sun9-2.vkuserphoto.ru/s/v1/ig2/UVlDj4NjbC0n9rfs0ZVMWSb2ga6FhUlq1H_55UF6cZbuRhqvnz1l6-V2oix7t6eoE0jhndluJAtu36iUbN3d6uuP.jpg?quality=95&size=864x1536",
+              "width": 864
+            }
+          ],
+          "text": ""
+        },
+        "preloading_enabled": true,
+        "reaction_set_id": "story_reactions",
+        "replies": {
+          "count": 0,
+          "new": 0
+        },
+        "track_code": "story_json/eyJvd25lcl9pZCI6LTQ4MTk4MTczLCJzdG9yeV9pZCI6NDU2MjQwNjU2LCJ2aWV3ZXJfaWQiOjM3NTk1NjJ9",
+        "type": "photo",
+        "views": 0
+      }
+    ],
+    "profiles": []
+  }
+}
