@@ -119,6 +119,29 @@ async function publish(job) {
       return { uploads, post };
     }
 
+    case "clip": {
+      const uploaded = await uploadWallVideo(
+        await mediaFile(job, "clip.mp4"),
+        {
+          name: job.name || "VK Клип",
+          description: job.description || job.text || ""
+        }
+      );
+
+      // VK classifies vertical/square short videos as Clips on its side.
+      // Optionally duplicate the clip to the community wall.
+      let post = null;
+      if (job.postToWall !== false) {
+        post = await publishWallPost({
+          text: job.wallText || "",
+          attachments: [uploaded.attachment],
+          publishAt: job.publishAt
+        });
+      }
+
+      return { uploaded, post, clip: true };
+    }
+
     case "video": {
       const uploaded = await uploadWallVideo(
         await mediaFile(job, "video.mp4"),
@@ -193,7 +216,7 @@ async function publish(job) {
 
     default:
       throw new Error(
-        'Unknown job type. Use "check", "check-story", "delete-story", "post", "photo", "video", "story" or "story-batch".'
+        'Unknown job type. Use "check", "check-story", "delete-story", "post", "photo", "video", "clip", "story" or "story-batch".'
       );
   }
 }
