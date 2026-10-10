@@ -1,0 +1,11 @@
+{
+  "ok": true,
+  "id": "2026-10-10-vk-story-capability-check",
+  "type": "check-story",
+  "finishedAt": "2026-10-10T05:26:08.398Z",
+  "result": {
+    "groupId": 48198173,
+    "photoStoryUploadAvailable": true,
+    "videoStoryUploadAvailable": true
+  }
+}
