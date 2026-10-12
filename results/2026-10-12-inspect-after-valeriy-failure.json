@@ -1,0 +1,19 @@
+{
+  "ok": true,
+  "id": "2026-10-12-inspect-after-valeriy-failure",
+  "type": "inspect-stories",
+  "finishedAt": "2026-10-12T07:12:00.540Z",
+  "result": {
+    "groupId": 48198173,
+    "responseCount": 1,
+    "stories": [
+      {
+        "id": 456240657,
+        "owner_id": -48198173,
+        "date": 1791788563,
+        "type": "photo",
+        "photoUrl": "https://sun9-61.vkuserphoto.ru/s/v1/ig2/_Onh54b6eePzuR7Xin4XJ4GfMHPQi2deirgDDYJUvIMqzORuKyoi3-QuuIBCuLYD32wOGO1Xpyaq4fMEhEwZYQsmISS1mw.jpg?quality=95&size=941x1672"
+      }
+    ]
+  }
+}
