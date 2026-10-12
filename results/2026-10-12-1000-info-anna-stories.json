@@ -1,0 +1,201 @@
+{
+  "ok": true,
+  "id": "2026-10-12-1000-info-anna-stories",
+  "type": "story-batch",
+  "finishedAt": "2026-10-12T07:28:45.755Z",
+  "result": [
+    {
+      "index": 1,
+      "storyType": "video",
+      "result": {
+        "count": 1,
+        "groups": [],
+        "items": [
+          {
+            "access_key": "story",
+            "answers_count": 0,
+            "can_ask": 0,
+            "can_ask_anonymous": 0,
+            "can_comment": 1,
+            "can_hide": 1,
+            "can_like": true,
+            "can_reply": 1,
+            "can_see": 1,
+            "can_share": 1,
+            "can_use_in_narrative": true,
+            "date": 1791790099,
+            "expires_at": 1791876499,
+            "id": 456240659,
+            "is_ads": false,
+            "likes_count": 0,
+            "narratives_count": 0,
+            "no_sound": false,
+            "owner_id": -48198173,
+            "preloading_enabled": true,
+            "reaction_set_id": "story_reactions",
+            "replies": {
+              "count": 0,
+              "new": 0
+            },
+            "track_code": "story_json/eyJvd25lcl9pZCI6LTQ4MTk4MTczLCJzdG9yeV9pZCI6NDU2MjQwNjU5LCJ2aWV3ZXJfaWQiOjM3NTk1NjJ9",
+            "type": "video",
+            "video": {
+              "access_key": "",
+              "can_add": 0,
+              "can_dislike": 0,
+              "can_download": 0,
+              "can_play_in_background": 1,
+              "date": 1791790097,
+              "description": "",
+              "download": {
+                "can_download_for_offline_view": false,
+                "can_download_to_device": false,
+                "unavailable_for_offline_view": "download_restricted_by_place"
+              },
+              "duration": 4,
+              "first_frame": [
+                {
+                  "height": 720,
+                  "url": "https://iv.okcdn.ru/getVideoPreview?id=18352410004083&idx=0&type=39&tkn=hbOpu65vVCo00uIGm0lE8Q-XkdY&fn=vid_w&c_uniq_tag=IFmOQNb1plnA6MupH1Mwh8DRo0npSmHtuLdHp59e9zk",
+                  "width": 405
+                },
+                {
+                  "height": 569,
+                  "url": "https://iv.okcdn.ru/getVideoPreview?id=18352410004083&idx=0&type=39&tkn=hbOpu65vVCo00uIGm0lE8Q-XkdY&fn=vid_t&c_uniq_tag=cadn8t38K-pTk8v8aFx8W7zfmVXk0hGuBkcaEr5XIFY",
+                  "width": 320
+                },
+                {
+                  "height": 1280,
+                  "url": "https://iv.okcdn.ru/getVideoPreview?id=18352410004083&idx=0&type=39&tkn=hbOpu65vVCo00uIGm0lE8Q-XkdY&fn=vid_u&c_uniq_tag=W0SkEWh4JUbOj7zxFNFdfttdVlSXee7GAyBNBwAw8JA",
+                  "width": 720
+                }
+              ],
+              "height": 1280,
+              "id": 456240803,
+              "image": [
+                {
+                  "height": 720,
+                  "url": "https://iv.okcdn.ru/getVideoPreview?id=18352410004083&idx=0&type=39&tkn=hbOpu65vVCo00uIGm0lE8Q-XkdY&fn=vid_w&c_uniq_tag=IFmOQNb1plnA6MupH1Mwh8DRo0npSmHtuLdHp59e9zk",
+                  "width": 405
+                },
+                {
+                  "height": 569,
+                  "url": "https://iv.okcdn.ru/getVideoPreview?id=18352410004083&idx=0&type=39&tkn=hbOpu65vVCo00uIGm0lE8Q-XkdY&fn=vid_t&c_uniq_tag=cadn8t38K-pTk8v8aFx8W7zfmVXk0hGuBkcaEr5XIFY",
+                  "width": 320
+                },
+                {
+                  "height": 1280,
+                  "url": "https://iv.okcdn.ru/getVideoPreview?id=18352410004083&idx=0&type=39&tkn=hbOpu65vVCo00uIGm0lE8Q-XkdY&fn=vid_u&c_uniq_tag=W0SkEWh4JUbOj7zxFNFdfttdVlSXee7GAyBNBwAw8JA",
+                  "width": 720
+                }
+              ],
+              "is_from_message": 1,
+              "ov_id": "16071585837171",
+              "owner_id": -48198173,
+              "response_type": "full",
+              "title": "",
+              "type": "story",
+              "views": 0,
+              "width": 720,
+              "direct_url": "",
+              "files": {
+                "failover_host": "vkvd553.okcdn.ru",
+                "mp4_144": "https://vkvd314.okcdn.ru/?expires=1792049299817&srcIp=57.151.129.51&pr=48&srcAg=UNKNOWN&ms=185.180.203.195&type=4&sig=3p2Nk-lg6hY&ct=27&urls=185.226.55.191&clientType=13&appId=512000384397&zs=43&id=18352410004083",
+                "src": "https://vkvd314.okcdn.ru/?expires=1792049299817&srcIp=57.151.129.51&pr=48&srcAg=UNKNOWN&ms=185.180.203.195&type=4&sig=3p2Nk-lg6hY&ct=27&urls=185.226.55.191&clientType=13&appId=512000384397&zs=43&id=18352410004083"
+              },
+              "need_mediascope_stat": false,
+              "share_url": ""
+            },
+            "views": 0
+          }
+        ],
+        "profiles": []
+      }
+    },
+    {
+      "index": 2,
+      "storyType": "photo",
+      "result": {
+        "count": 0,
+        "groups": [],
+        "items": [],
+        "profiles": []
+      }
+    },
+    {
+      "index": 3,
+      "storyType": "photo",
+      "result": {
+        "count": 1,
+        "groups": [],
+        "items": [
+          {
+            "access_key": "story",
+            "answers_count": 0,
+            "can_ask": 0,
+            "can_ask_anonymous": 0,
+            "can_comment": 1,
+            "can_hide": 1,
+            "can_like": true,
+            "can_reply": 1,
+            "can_see": 1,
+            "can_share": 1,
+            "can_use_in_narrative": true,
+            "date": 1791790125,
+            "expires_at": 1791876525,
+            "id": 456240660,
+            "is_ads": false,
+            "likes_count": 0,
+            "narratives_count": 0,
+            "no_sound": false,
+            "owner_id": -48198173,
+            "photo": {
+              "album_id": -81,
+              "date": 0,
+              "has_tags": false,
+              "id": 457245051,
+              "owner_id": -48198173,
+              "sizes": [
+                {
+                  "height": 604,
+                  "type": "x",
+                  "url": "https://sun9-82.vkuserphoto.ru/s/v1/ig2/g21TQTT4P-b3cbnEKgf1HQVECJ0Z0B6i647WwWooaPivgPn6gHq2FqJq0ZnUnBnaCJm59TniRt2h_MX8SwBSjxCUpbWFZA.jpg?quality=95&size=340x604",
+                  "width": 340
+                },
+                {
+                  "height": 807,
+                  "type": "y",
+                  "url": "https://sun9-82.vkuserphoto.ru/s/v1/ig2/3PtxrQp40fkZa4lxSutOEdwf_HzGoHYnTX-lqI0H5Bs7SSg5-Bf4Xsxhc42NXKD3wVVogVJhxP_YFtXJUyXN-jlXNsPOaQ.jpg?quality=95&size=454x807",
+                  "width": 454
+                },
+                {
+                  "height": 1080,
+                  "type": "z",
+                  "url": "https://sun9-82.vkuserphoto.ru/s/v1/ig2/VzPpRH35Q_aQ0_8SeOVxBOR2Tthj7JeQrG4jEPAK2chvBADgvNZ8IVePvJRKix0oh6p9yfpmk2y2AzjHs9L9lZ5A5l5yAw.jpg?quality=95&size=608x1080",
+                  "width": 608
+                },
+                {
+                  "height": 1672,
+                  "type": "w",
+                  "url": "https://sun9-82.vkuserphoto.ru/s/v1/ig2/wBZE_v_R8Ky9tmN00ving_7g8ddnOOfpi844Ai8xFeFUnn-4HAtm7izppzP1RWu7yCXyCkVGgs_FQjADHLAm8BbwbZLmRw.jpg?quality=95&size=941x1672",
+                  "width": 941
+                }
+              ],
+              "text": ""
+            },
+            "preloading_enabled": true,
+            "reaction_set_id": "story_reactions",
+            "replies": {
+              "count": 0,
+              "new": 0
+            },
+            "track_code": "story_json/eyJvd25lcl9pZCI6LTQ4MTk4MTczLCJzdG9yeV9pZCI6NDU2MjQwNjYwLCJ2aWV3ZXJfaWQiOjM3NTk1NjJ9",
+            "type": "photo",
+            "views": 0
+          }
+        ],
+        "profiles": []
+      }
+    }
+  ]
+}
