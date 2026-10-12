@@ -1,0 +1,8 @@
+{
+  "ok": false,
+  "id": "2026-10-12-anna-price-republish",
+  "type": "story",
+  "finishedAt": "2026-10-12T07:33:56.707Z",
+  "error": "VK story upload attempt 4/4 failed: VK upload transport error: <!DOCTYPE HTML PUBLIC \"-//IETF//DTD HTML 2.0//EN\">\n<html>\n<head>\n  <title>The page is temporarily unavailable</title>\n  <style>\n    body {\n      font-family: -apple-system, BlinkMacSystemFont, 'Roboto', 'Open Sans', 'Helvetica Neue', sans-serif, Geneva, arial, Tahoma, verdana;\n    }\n  </style>\n</head>\n<body bgcolor=\"white\" text=\"black\">\n<table width=\"100%\" height=\"100%\">\n  <tr>\n    <td align=\"center\" valign=\"middle\">\n      The page you are looking for is temporarily unavailable.<br/>\n      Please try again later.\n    </td>\n  </tr>\n</table>\n</body>\n</html>\n",
+  "code": null
+}
