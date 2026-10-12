@@ -315,27 +315,47 @@ export async function uploadStory(file, {
     : "stories.getVideoUploadServer";
 
   const token = getWallToken();
-  const uploadServer = await vkCall(
-    method,
-    {
-      add_to_news: addToNews,
-      group_id: groupId,
-      link_text: linkText,
-      link_url: linkUrl,
-      clickable_stickers: clickableStickers
-    },
-    token
-  );
 
-  if (!uploadServer?.upload_url) throw new Error("VK did not return a story upload URL");
+  // Retry only the temporary upload stage, NOT stories.save. An uploaded file
+  // is not a published Story; one successful upload leads to one save call.
+  let uploaded;
+  const maxUploadAttempts = 4;
+  for (let attempt = 1; attempt <= maxUploadAttempts; attempt++) {
+    const uploadServer = await vkCall(
+      method,
+      {
+        add_to_news: addToNews,
+        group_id: groupId,
+        link_text: linkText,
+        link_url: linkUrl,
+        clickable_stickers: clickableStickers
+      },
+      token
+    );
 
-  const uploaded = await uploadMultipart(
-    uploadServer.upload_url,
-    type === "video" ? "video_file" : "file",
-    file.path,
-    file.originalname,
-    file.mimetype
-  );
+    if (!uploadServer?.upload_url) {
+      throw new Error("VK did not return a story upload URL");
+    }
+
+    try {
+      uploaded = await uploadMultipart(
+        uploadServer.upload_url,
+        type === "video" ? "video_file" : "file",
+        file.path,
+        file.originalname,
+        file.mimetype
+      );
+      break;
+    } catch (error) {
+      const message = error?.message ?? String(error);
+      const temporaryUploadError = /go upload error|temporarily unavailable|VK upload transport error/i.test(message);
+      if (!temporaryUploadError || attempt === maxUploadAttempts) {
+        throw new Error(`VK story upload attempt ${attempt}/${maxUploadAttempts} failed: ${message}`);
+      }
+      console.warn(`VK temporary story upload failure (${attempt}/${maxUploadAttempts}); retrying upload only`);
+      await new Promise((resolve) => setTimeout(resolve, attempt * 5000));
+    }
+  }
 
   const uploadResult =
     uploaded?.response?.upload_result ??
