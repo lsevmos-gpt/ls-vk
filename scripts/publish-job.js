@@ -101,6 +101,24 @@ async function publish(job) {
     case "check":
       return checkVkConnection();
 
+    case "inspect-media": {
+      // Read-only media diagnostics; does not transform or publish content.
+      const res = await fetch(job.mediaUrl);
+      const bytes = Buffer.from(await res.arrayBuffer());
+      const isJpeg = bytes.length >= 3 &&
+        bytes[0] === 0xff && bytes[1] === 0xd8 && bytes[2] === 0xff;
+      const isPng = bytes.length >= 8 &&
+        bytes.subarray(0, 8).equals(Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]));
+      return {
+        status: res.status,
+        contentType: res.headers.get("content-type"),
+        contentLength: bytes.length,
+        signature: bytes.subarray(0, 12).toString("hex"),
+        detectedType: isJpeg ? "image/jpeg" : isPng ? "image/png" : "unknown"
+      };
+    }
+
+
     case "check-story":
       return checkStoryAccess();
 
