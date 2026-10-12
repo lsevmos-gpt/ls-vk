@@ -79,8 +79,8 @@ async function downloadToTemp(url, filename) {
   const isPng = buffer.length >= 8 &&
     buffer.subarray(0, 8).equals(Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]));
   const actualMime = isJpeg ? "image/jpeg" : isPng ? "image/png" : null;
-  const uploadName = isJpeg && /\\.png$/i.test(safeName)
-    ? safeName.replace(/\\.png$/i, ".jpg") : safeName;
+  const uploadName = isJpeg && /\.png$/i.test(safeName)
+    ? safeName.replace(/\.png$/i, ".jpg") : safeName;
   return {
     path: absolute,
     originalname: uploadName,
