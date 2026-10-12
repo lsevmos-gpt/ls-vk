@@ -1,0 +1,24 @@
+{
+  "id": "2026-10-12-1000-info-anna-stories",
+  "type": "story-batch",
+  "stories": [
+    {
+      "mediaUrl": "https://static.metricool.com/planner/202610/7014498-file-11652018439691906715.mp4",
+      "fileName": "info.mp4",
+      "storyType": "video",
+      "addToNews": true
+    },
+    {
+      "mediaUrl": "https://static.metricool.com/planner/202610/7014498-file-7033501757081039063.png",
+      "fileName": "anna-massage-intro.png",
+      "storyType": "photo",
+      "addToNews": true
+    },
+    {
+      "mediaUrl": "https://static.metricool.com/planner/202610/7014498-file-10371825090640742793.png",
+      "fileName": "anna-massage-prices.png",
+      "storyType": "photo",
+      "addToNews": true
+    }
+  ]
+}
