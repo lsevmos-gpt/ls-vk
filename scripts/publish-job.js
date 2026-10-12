@@ -70,10 +70,21 @@ async function downloadToTemp(url, filename) {
   const safeName = String(filename || "media.bin").replace(/[^a-zA-Z0-9._-]/g, "_");
   const absolute = path.join(dir, safeName);
   await fs.writeFile(absolute, buffer);
+
+  // Some upstream media links have a .png filename but contain JPEG bytes.
+  // Use actual file signatures for VK multipart metadata. The image bytes
+  // themselves are uploaded unchanged.
+  const isJpeg = buffer.length >= 3 &&
+    buffer[0] === 0xff && buffer[1] === 0xd8 && buffer[2] === 0xff;
+  const isPng = buffer.length >= 8 &&
+    buffer.subarray(0, 8).equals(Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]));
+  const actualMime = isJpeg ? "image/jpeg" : isPng ? "image/png" : null;
+  const uploadName = isJpeg && /\\.png$/i.test(safeName)
+    ? safeName.replace(/\\.png$/i, ".jpg") : safeName;
   return {
     path: absolute,
-    originalname: safeName,
-    mimetype: response.headers.get("content-type") || mimeFromPath(safeName)
+    originalname: uploadName,
+    mimetype: actualMime || response.headers.get("content-type") || mimeFromPath(uploadName)
   };
 }
 
