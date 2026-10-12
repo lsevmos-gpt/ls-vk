@@ -2,6 +2,8 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import {
   checkStoryAccess,
+  getGroupId,
+  vkCall,
   checkVkConnection,
   deleteStory,
   publishWallPost,
@@ -90,6 +92,30 @@ async function publish(job) {
 
     case "check-story":
       return checkStoryAccess();
+
+    case "inspect-stories": {
+      // Read-only diagnostic: inspect existing community stories before any retry.
+      const groupId = await getGroupId();
+      const response = await vkCall("stories.get", { owner_id: -groupId });
+      const items = Array.isArray(response?.items)
+        ? response.items : Array.isArray(response) ? response : [];
+      const flat = items.flatMap((item) =>
+        Array.isArray(item?.stories) ? item.stories :
+        Array.isArray(item) ? item : [item]
+      );
+      return {
+        groupId,
+        responseCount: items.length,
+        stories: flat.map((story) => ({
+          id: story?.id ?? null,
+          owner_id: story?.owner_id ?? null,
+          date: story?.date ?? null,
+          type: story?.type ?? null,
+          photoUrl: story?.photo?.sizes?.at(-1)?.url ?? null
+        }))
+      };
+    }
+
 
     case "delete-story":
       return deleteStory(job.storyId, job.ownerId);
