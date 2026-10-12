@@ -1,0 +1,13 @@
+{
+  "ok": true,
+  "id": "2026-10-12-valeriy-media-diagnostics",
+  "type": "inspect-media",
+  "finishedAt": "2026-10-12T07:16:19.878Z",
+  "result": {
+    "status": 200,
+    "contentType": "image/png",
+    "contentLength": 230911,
+    "signature": "ffd8ffe000104a4649460001",
+    "detectedType": "image/jpeg"
+  }
+}
