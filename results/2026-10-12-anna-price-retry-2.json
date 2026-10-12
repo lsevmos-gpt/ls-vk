@@ -1,0 +1,77 @@
+{
+  "ok": true,
+  "id": "2026-10-12-anna-price-retry-2",
+  "type": "story",
+  "finishedAt": "2026-10-12T08:13:17.190Z",
+  "result": {
+    "count": 1,
+    "groups": [],
+    "items": [
+      {
+        "access_key": "story",
+        "answers_count": 0,
+        "can_ask": 0,
+        "can_ask_anonymous": 0,
+        "can_comment": 1,
+        "can_hide": 1,
+        "can_like": true,
+        "can_reply": 1,
+        "can_see": 1,
+        "can_share": 1,
+        "can_use_in_narrative": true,
+        "date": 1791792797,
+        "expires_at": 1791879197,
+        "id": 456240662,
+        "is_ads": false,
+        "likes_count": 0,
+        "narratives_count": 0,
+        "no_sound": false,
+        "owner_id": -48198173,
+        "photo": {
+          "album_id": -81,
+          "date": 0,
+          "has_tags": false,
+          "id": 457245053,
+          "owner_id": -48198173,
+          "sizes": [
+            {
+              "height": 604,
+              "type": "x",
+              "url": "https://sun9-82.vkuserphoto.ru/s/v1/ig2/ToUXiPZ4LhL_vDSc8lJ4LJggVB285uj92AH1ZaOi9LShSGoIAotAU3QSFHjDI2iT-42wl5nmBcl2eqMZsRYxe9LMdKvl7g.jpg?quality=95&size=340x604",
+              "width": 340
+            },
+            {
+              "height": 807,
+              "type": "y",
+              "url": "https://sun9-82.vkuserphoto.ru/s/v1/ig2/Dx_8AYImHAV_jKXuaj1_KBuuY7eh-6qLMAfEnGtXvAaAFoARENNF0QXqWYTVMb3x4ctLKx7I44WLYpJ9PsfoxLeMk3GLpQ.jpg?quality=95&size=454x807",
+              "width": 454
+            },
+            {
+              "height": 1080,
+              "type": "z",
+              "url": "https://sun9-82.vkuserphoto.ru/s/v1/ig2/wF2htWXI21DkBnpql3mAVeq3cx5cZB8Ca2TNqzkfR6MaOYvZ1hdiD5s1x1dH4xksSot3dDO7RKyLQPXc4dBVm1QAyCMETw.jpg?quality=95&size=608x1080",
+              "width": 608
+            },
+            {
+              "height": 1672,
+              "type": "w",
+              "url": "https://sun9-82.vkuserphoto.ru/s/v1/ig2/3MlKpWbHzfAYRHeSF4TZg8TQkXF6yE8bYsXqKlo8ZRrQr5Bv-NRtLUJYeU_yUyYskHdUZjAlv0o_edyEZhcFFJvZ-ZdWGw.jpg?quality=95&size=941x1672",
+              "width": 941
+            }
+          ],
+          "text": ""
+        },
+        "preloading_enabled": true,
+        "reaction_set_id": "story_reactions",
+        "replies": {
+          "count": 0,
+          "new": 0
+        },
+        "track_code": "story_json/eyJvd25lcl9pZCI6LTQ4MTk4MTczLCJzdG9yeV9pZCI6NDU2MjQwNjYyLCJ2aWV3ZXJfaWQiOjM3NTk1NjJ9",
+        "type": "photo",
+        "views": 0
+      }
+    ],
+    "profiles": []
+  }
+}
