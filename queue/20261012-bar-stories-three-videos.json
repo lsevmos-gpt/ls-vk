@@ -1,0 +1,24 @@
+{
+  "id": "20261012-bar-stories-three-videos",
+  "type": "story-batch",
+  "stories": [
+    {
+      "mediaUrl": "https://static.metricool.com/planner/202610/7014498-file-13021383936968604671.mp4",
+      "fileName": "bar.mp4",
+      "storyType": "video",
+      "addToNews": true
+    },
+    {
+      "mediaUrl": "https://static.metricool.com/planner/202610/7014498-file-4130263878159840496.mp4",
+      "fileName": "isotonic_corrected.mp4",
+      "storyType": "video",
+      "addToNews": true
+    },
+    {
+      "mediaUrl": "https://static.metricool.com/planner/202610/7014498-file-9533735352169107864.mp4",
+      "fileName": "mojito.mp4",
+      "storyType": "video",
+      "addToNews": true
+    }
+  ]
+}
