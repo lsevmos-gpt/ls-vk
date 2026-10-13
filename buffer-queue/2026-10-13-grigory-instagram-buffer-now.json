@@ -1,0 +1,31 @@
+{
+  "id": "2026-10-13-grigory-instagram-buffer-now",
+  "type": "instagram-batch",
+  "channelId": "6acde74d778b240e2ff489a7",
+  "posts": [
+    {
+      "postType": "story",
+      "publishNow": true,
+      "text": "",
+      "isAiGenerated": true,
+      "media": [
+        {
+          "type": "image",
+          "url": "https://static.metricool.com/planner/202610/7014498-file-16641685066154881032.png"
+        }
+      ]
+    },
+    {
+      "postType": "story",
+      "publishNow": true,
+      "text": "",
+      "isAiGenerated": true,
+      "media": [
+        {
+          "type": "image",
+          "url": "https://static.metricool.com/planner/202610/7014498-file-8409730634365072079.png"
+        }
+      ]
+    }
+  ]
+}
