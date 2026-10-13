@@ -258,3 +258,30 @@ export async function createInstagramPost({
 
   return result.post;
 }
+
+
+export async function deleteBufferPost(postId) {
+  if (!postId) throw new Error("postId is required");
+
+  const data = await graphql(
+    `
+      mutation DeletePost($input: DeletePostInput!) {
+        deletePost(input: $input) {
+          ... on DeletePostSuccess {
+            id
+          }
+          ... on VoidMutationError {
+            message
+          }
+        }
+      }
+    `,
+    { input: { id: postId } }
+  );
+
+  const result = data.deletePost;
+  if (!result) throw new Error("Buffer returned no deletePost result");
+  if (result.message && !result.id) throw new Error(`Buffer rejected deletePost: ${result.message}`);
+  if (!result.id) throw new Error(`Unexpected Buffer deletePost result: ${JSON.stringify(result)}`);
+  return result;
+}
