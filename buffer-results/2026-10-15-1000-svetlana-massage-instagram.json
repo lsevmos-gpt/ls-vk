@@ -1,0 +1,32 @@
+{
+  "ok": true,
+  "id": "2026-10-15-1000-svetlana-massage-instagram",
+  "type": "instagram",
+  "finishedAt": "2026-10-13T23:30:04.678Z",
+  "result": {
+    "channel": {
+      "id": "6acde74d778b240e2ff489a7"
+    },
+    "organization": null,
+    "post": {
+      "id": "6acebefc1f3f10bcb7a42b57",
+      "text": "",
+      "dueAt": "2026-10-15T07:00:00.000Z",
+      "status": "scheduled",
+      "channelId": "6acde74d778b240e2ff489a7",
+      "assets": [
+        {
+          "id": null,
+          "mimeType": "image/png",
+          "source": "https://static.metricool.com/planner/202610/7014498-file-2693516418073770823.png",
+          "thumbnail": "https://static.metricool.com/planner/202610/7014498-file-2693516418073770823.png"
+        }
+      ],
+      "metadata": {
+        "type": "story",
+        "shouldShareToFeed": false,
+        "isAiGenerated": true
+      }
+    }
+  }
+}
