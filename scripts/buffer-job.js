@@ -54,8 +54,48 @@ async function publish(job) {
       };
     }
 
+    case "instagram-batch": {
+      if (!Array.isArray(job.posts) || job.posts.length === 0) {
+        throw new Error("instagram-batch requires a non-empty posts array");
+      }
+
+      const resolved =
+        job.channelId
+          ? { channel: { id: job.channelId } }
+          : await discoverChannel({
+              service: "instagram",
+              handle: job.handle || "liniya__sporta",
+              organizationId: job.organizationId
+            });
+
+      const results = [];
+      for (let i = 0; i < job.posts.length; i++) {
+        const item = job.posts[i];
+        const post = await createInstagramPost({
+          channelId: resolved.channel.id,
+          text: item.text || "",
+          postType: item.postType || "story",
+          media: item.media || [],
+          dueAt: item.dueAt,
+          publishNow: item.publishNow !== false,
+          shouldShareToFeed: item.shouldShareToFeed,
+          isAiGenerated: item.isAiGenerated === true
+        });
+        results.push({ index: i + 1, post });
+        if (i < job.posts.length - 1) {
+          await new Promise((resolve) => setTimeout(resolve, 2500));
+        }
+      }
+
+      return {
+        channel: resolved.channel,
+        organization: resolved.organization || null,
+        posts: results
+      };
+    }
+
     default:
-      throw new Error('Unknown Buffer job type. Use "check-buffer" or "instagram".');
+      throw new Error('Unknown Buffer job type. Use "check-buffer", "instagram", or "instagram-batch".');
   }
 }
 
