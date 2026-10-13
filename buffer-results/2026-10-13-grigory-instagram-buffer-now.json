@@ -1,0 +1,60 @@
+{
+  "ok": true,
+  "id": "2026-10-13-grigory-instagram-buffer-now",
+  "type": "instagram-batch",
+  "finishedAt": "2026-10-13T08:16:11.188Z",
+  "result": {
+    "channel": {
+      "id": "6acde74d778b240e2ff489a7"
+    },
+    "organization": null,
+    "posts": [
+      {
+        "index": 1,
+        "post": {
+          "id": "6acde8b6b5135c09183166c7",
+          "text": "",
+          "dueAt": "2026-10-13T08:15:50.740Z",
+          "status": "sent",
+          "channelId": "6acde74d778b240e2ff489a7",
+          "assets": [
+            {
+              "id": null,
+              "mimeType": "image/png",
+              "source": "https://static.metricool.com/planner/202610/7014498-file-16641685066154881032.png",
+              "thumbnail": "https://static.metricool.com/planner/202610/7014498-file-16641685066154881032.png"
+            }
+          ],
+          "metadata": {
+            "type": "story",
+            "shouldShareToFeed": false,
+            "isAiGenerated": true
+          }
+        }
+      },
+      {
+        "index": 2,
+        "post": {
+          "id": "6acde8c209249fcd4f6a4702",
+          "text": "",
+          "dueAt": "2026-10-13T08:16:02.917Z",
+          "status": "sent",
+          "channelId": "6acde74d778b240e2ff489a7",
+          "assets": [
+            {
+              "id": null,
+              "mimeType": "image/png",
+              "source": "https://static.metricool.com/planner/202610/7014498-file-8409730634365072079.png",
+              "thumbnail": "https://static.metricool.com/planner/202610/7014498-file-8409730634365072079.png"
+            }
+          ],
+          "metadata": {
+            "type": "story",
+            "shouldShareToFeed": false,
+            "isAiGenerated": true
+          }
+        }
+      }
+    ]
+  }
+}
