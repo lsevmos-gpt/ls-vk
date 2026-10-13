@@ -1,0 +1,18 @@
+{
+  "id": "2026-10-13-1006-grigory-massage-stories",
+  "type": "story-batch",
+  "stories": [
+    {
+      "mediaUrl": "https://static.metricool.com/planner/202610/7014498-file-16641685066154881032.png",
+      "fileName": "grigory-massage-01.png",
+      "storyType": "photo",
+      "addToNews": true
+    },
+    {
+      "mediaUrl": "https://static.metricool.com/planner/202610/7014498-file-8409730634365072079.png",
+      "fileName": "grigory-massage-02-price.png",
+      "storyType": "photo",
+      "addToNews": true
+    }
+  ]
+}
