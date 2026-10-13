@@ -1,0 +1,158 @@
+{
+  "ok": true,
+  "id": "2026-10-13-1006-grigory-massage-stories",
+  "type": "story-batch",
+  "finishedAt": "2026-10-13T07:06:17.174Z",
+  "result": [
+    {
+      "index": 1,
+      "storyType": "photo",
+      "result": {
+        "count": 1,
+        "groups": [],
+        "items": [
+          {
+            "access_key": "story",
+            "answers_count": 0,
+            "can_ask": 0,
+            "can_ask_anonymous": 0,
+            "can_comment": 1,
+            "can_hide": 1,
+            "can_like": true,
+            "can_reply": 1,
+            "can_see": 1,
+            "can_share": 1,
+            "can_use_in_narrative": true,
+            "date": 1791875171,
+            "expires_at": 1791961571,
+            "id": 456240666,
+            "is_ads": false,
+            "likes_count": 0,
+            "narratives_count": 0,
+            "no_sound": false,
+            "owner_id": -48198173,
+            "photo": {
+              "album_id": -81,
+              "date": 0,
+              "has_tags": false,
+              "id": 457245054,
+              "owner_id": -48198173,
+              "sizes": [
+                {
+                  "height": 604,
+                  "type": "x",
+                  "url": "https://sun9-80.vkuserphoto.ru/s/v1/ig2/GVI9knKKJZm4JA4u23B2r4Kqrw8eOvleilAzde4lEEmEfTWV-sUkGngrparhl25dmod16hqTp55Ik79XkUD5H1hYw4t9og.jpg?quality=95&size=340x604",
+                  "width": 340
+                },
+                {
+                  "height": 807,
+                  "type": "y",
+                  "url": "https://sun9-80.vkuserphoto.ru/s/v1/ig2/Ap49iRdZjYMKXdtQ6Dwy1bGwHhXj5fQSOJTEvj6WdFL1xHNeUst7caHqKXVLUhvAhUZdRH4tngTqdMbOd4TcPqS_IBetlw.jpg?quality=95&size=454x807",
+                  "width": 454
+                },
+                {
+                  "height": 1080,
+                  "type": "z",
+                  "url": "https://sun9-80.vkuserphoto.ru/s/v1/ig2/cYf2Z2rDX7ihK10ATCE-qhtJkQ9FeHBxKQ_vLiuBGk-HHnnf_PxwU4mJcJxaHdXoC5-3EfYwMwYiODMZpW0K8YpTGmmL0A.jpg?quality=95&size=608x1080",
+                  "width": 608
+                },
+                {
+                  "height": 1672,
+                  "type": "w",
+                  "url": "https://sun9-80.vkuserphoto.ru/s/v1/ig2/V8reT5t7CkiJsI0-nh3JL8Aufu7xl3lmKszllyn9U0eUGfcIhP-GaUa9mdAgDJCTgQtwTGhOikuezNA2O1GMpcPDuLC7Lw.jpg?quality=95&size=941x1672",
+                  "width": 941
+                }
+              ],
+              "text": ""
+            },
+            "preloading_enabled": true,
+            "reaction_set_id": "story_reactions",
+            "replies": {
+              "count": 0,
+              "new": 0
+            },
+            "track_code": "story_json/eyJvd25lcl9pZCI6LTQ4MTk4MTczLCJzdG9yeV9pZCI6NDU2MjQwNjY2LCJ2aWV3ZXJfaWQiOjM3NTk1NjJ9",
+            "type": "photo",
+            "views": 0
+          }
+        ],
+        "profiles": []
+      }
+    },
+    {
+      "index": 2,
+      "storyType": "photo",
+      "result": {
+        "count": 1,
+        "groups": [],
+        "items": [
+          {
+            "access_key": "story",
+            "answers_count": 0,
+            "can_ask": 0,
+            "can_ask_anonymous": 0,
+            "can_comment": 1,
+            "can_hide": 1,
+            "can_like": true,
+            "can_reply": 1,
+            "can_see": 1,
+            "can_share": 1,
+            "can_use_in_narrative": true,
+            "date": 1791875177,
+            "expires_at": 1791961577,
+            "id": 456240667,
+            "is_ads": false,
+            "likes_count": 0,
+            "narratives_count": 0,
+            "no_sound": false,
+            "owner_id": -48198173,
+            "photo": {
+              "album_id": -81,
+              "date": 0,
+              "has_tags": false,
+              "id": 457245055,
+              "owner_id": -48198173,
+              "sizes": [
+                {
+                  "height": 604,
+                  "type": "x",
+                  "url": "https://sun9-50.vkuserphoto.ru/s/v1/ig2/fcj8g0cZETMW9Uc2Tj9C3TudLarAhTYQT3ID81k9w8s563s125qKTOfuI5a4j3kz5qPv69OLDnu11paxOxN5KNJy.jpg?quality=95&size=340x604",
+                  "width": 340
+                },
+                {
+                  "height": 807,
+                  "type": "y",
+                  "url": "https://sun9-50.vkuserphoto.ru/s/v1/ig2/EllkB59QP3n00EIj9ddYWv2sEHJyMWX7fnXyrs1ZVIMRNSdBd4-uUuP1Hp5S1KR4d-SMKItqxLfX_fynk3-oDM_y.jpg?quality=95&size=454x807",
+                  "width": 454
+                },
+                {
+                  "height": 1080,
+                  "type": "z",
+                  "url": "https://sun9-50.vkuserphoto.ru/s/v1/ig2/9fPadzKHdyTuCEh3miz8OhmT2-5kI6W1zNC1ecfyCr0fL0fDQaQ6WUil5GHeGTJYGynXsfmKp7j4PgpDXXW1Neg0.jpg?quality=95&size=608x1080",
+                  "width": 608
+                },
+                {
+                  "height": 1672,
+                  "type": "w",
+                  "url": "https://sun9-50.vkuserphoto.ru/s/v1/ig2/uIhx8qR4IFST7pWbZliR_PfdOXnfIfCL543oUShbhD5a7NOnp-Ckw1s0NCObbafEwnxfP-ENjGL6g2ZMEeXHX-cP.jpg?quality=95&size=941x1672",
+                  "width": 941
+                }
+              ],
+              "text": ""
+            },
+            "preloading_enabled": true,
+            "reaction_set_id": "story_reactions",
+            "replies": {
+              "count": 0,
+              "new": 0
+            },
+            "track_code": "story_json/eyJvd25lcl9pZCI6LTQ4MTk4MTczLCJzdG9yeV9pZCI6NDU2MjQwNjY3LCJ2aWV3ZXJfaWQiOjM3NTk1NjJ9",
+            "type": "photo",
+            "views": 0
+          }
+        ],
+        "profiles": []
+      }
+    }
+  ]
+}
