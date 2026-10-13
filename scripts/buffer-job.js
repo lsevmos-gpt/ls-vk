@@ -3,6 +3,7 @@ import path from "node:path";
 import {
   checkBufferConnection,
   createInstagramPost,
+  deleteBufferPost,
   discoverChannel
 } from "../src/buffer.js";
 
@@ -25,6 +26,9 @@ async function publish(job) {
   switch (job.type) {
     case "check-buffer":
       return checkBufferConnection();
+
+    case "delete-buffer-post":
+      return deleteBufferPost(job.postId);
 
     case "instagram": {
       const resolved =
@@ -95,7 +99,7 @@ async function publish(job) {
     }
 
     default:
-      throw new Error('Unknown Buffer job type. Use "check-buffer", "instagram", or "instagram-batch".');
+      throw new Error('Unknown Buffer job type. Use "check-buffer", "delete-buffer-post", "instagram", or "instagram-batch".');
   }
 }
 
