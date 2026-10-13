@@ -1,0 +1,15 @@
+{
+  "id": "example-instagram-story",
+  "type": "instagram",
+  "handle": "liniya__sporta",
+  "postType": "story",
+  "publishNow": true,
+  "text": "",
+  "isAiGenerated": false,
+  "media": [
+    {
+      "type": "image",
+      "url": "https://example.com/story.png"
+    }
+  ]
+}
