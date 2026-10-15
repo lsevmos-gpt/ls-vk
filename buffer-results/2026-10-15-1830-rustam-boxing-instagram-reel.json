@@ -1,0 +1,42 @@
+{
+  "ok": true,
+  "id": "2026-10-15-1830-rustam-boxing-instagram-reel",
+  "type": "instagram",
+  "finishedAt": "2026-10-15T15:04:24.538Z",
+  "result": {
+    "channel": {
+      "id": "6acde74d778b240e2ff489a7",
+      "name": "liniya__sporta",
+      "displayName": "liniya__sporta",
+      "service": "instagram",
+      "avatar": "https://buffer-channel-avatars-bucket.s3.amazonaws.com/6acde74d778b240e2ff489a7_1791878989700",
+      "isQueuePaused": false
+    },
+    "organization": {
+      "id": "6acde6b61c988298343cfdb9",
+      "name": "My organization",
+      "ownerEmail": "mosin.e.a@gmail.com",
+      "channelCount": 1
+    },
+    "post": {
+      "id": "6ad0eb784fc2f6b7dbe359a5",
+      "text": "Меньше слов — больше дела 🥊\nПока другие рассказывают, Рустам уже работает!\n\nРабота на мешке.\nРабота на лапах.\nСкорость. Сила. Техника.\n\nЗдесь учат бить правильно, двигаться уверенно и выкладываться на все 100%.\n\nПробная тренировка ждёт🧨",
+      "dueAt": "2026-10-15T15:30:00.000Z",
+      "status": "scheduled",
+      "channelId": "6acde74d778b240e2ff489a7",
+      "assets": [
+        {
+          "id": null,
+          "mimeType": "video/mp4",
+          "source": "https://raw.githubusercontent.com/lsevmos-gpt/ls-vk/main/media/2026-10-15-rustam-boxing-reel-cover.mp4",
+          "thumbnail": "https://images.buffer.com/thumbnail/NBKE_R1HHsgKqtF9u4wZBzK6lujlY6Z6rEDlsaFSZZ0?url=https%3A%2F%2Fraw.githubusercontent.com%2Flsevmos-gpt%2Fls-vk%2Fmain%2Fmedia%2F2026-10-15-rustam-boxing-reel-cover.mp4"
+        }
+      ],
+      "metadata": {
+        "type": "reel",
+        "shouldShareToFeed": true,
+        "isAiGenerated": false
+      }
+    }
+  }
+}
