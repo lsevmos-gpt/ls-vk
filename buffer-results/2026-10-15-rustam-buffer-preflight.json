@@ -1,0 +1,32 @@
+{
+  "ok": true,
+  "id": "2026-10-15-rustam-buffer-preflight",
+  "type": "check-buffer",
+  "finishedAt": "2026-10-15T15:01:40.451Z",
+  "result": {
+    "account": {
+      "id": "6acde6b61c988298343cfdb7",
+      "email": "mosin.e.a@gmail.com",
+      "name": "mosin.e.a",
+      "timezone": "Europe/Berlin"
+    },
+    "organizations": [
+      {
+        "id": "6acde6b61c988298343cfdb9",
+        "name": "My organization",
+        "ownerEmail": "mosin.e.a@gmail.com",
+        "channelCount": 1,
+        "channels": [
+          {
+            "id": "6acde74d778b240e2ff489a7",
+            "name": "liniya__sporta",
+            "displayName": "liniya__sporta",
+            "service": "instagram",
+            "avatar": "https://buffer-channel-avatars-bucket.s3.amazonaws.com/6acde74d778b240e2ff489a7_1791878989700",
+            "isQueuePaused": false
+          }
+        ]
+      }
+    ]
+  }
+}
