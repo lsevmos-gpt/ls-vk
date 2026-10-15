@@ -1,0 +1,13 @@
+{
+  "ok": true,
+  "id": "2026-10-15-1804-rustam-final-video-probe",
+  "type": "inspect-media",
+  "finishedAt": "2026-10-15T15:03:42.554Z",
+  "result": {
+    "status": 200,
+    "contentType": "application/octet-stream",
+    "contentLength": 63124948,
+    "signature": "000000206674797069736f6d",
+    "detectedType": "unknown"
+  }
+}
