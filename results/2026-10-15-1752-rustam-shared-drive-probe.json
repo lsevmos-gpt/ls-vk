@@ -1,0 +1,13 @@
+{
+  "ok": true,
+  "id": "2026-10-15-1752-rustam-shared-drive-probe",
+  "type": "inspect-media",
+  "finishedAt": "2026-10-15T14:52:35.241Z",
+  "result": {
+    "status": 200,
+    "contentType": "video/mp4",
+    "contentLength": 30006418,
+    "signature": "000000206674797069736f6d",
+    "detectedType": "unknown"
+  }
+}
