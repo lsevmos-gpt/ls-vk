@@ -1,0 +1,13 @@
+{
+  "ok": true,
+  "id": "2026-10-15-boxing-drive-download-check",
+  "type": "inspect-media",
+  "finishedAt": "2026-10-15T13:39:18.748Z",
+  "result": {
+    "status": 200,
+    "contentType": "text/html; charset=utf-8",
+    "contentLength": 2460,
+    "signature": "3c21444f4354595045206874",
+    "detectedType": "unknown"
+  }
+}
