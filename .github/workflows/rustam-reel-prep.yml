@@ -1,0 +1,66 @@
+name: Prepare Rustam Reel in Highest Instagram-Compatible Quality
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "reel-prep/2026-10-15-rustam-boxing.json"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: rustam-reel-prep
+  cancel-in-progress: false
+
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      - name: Install FFmpeg
+        shell: bash
+        run: |
+          if ! command -v ffmpeg >/dev/null; then
+            sudo apt-get update -qq
+            sudo apt-get install -y ffmpeg
+          fi
+      - name: Encode with custom Reel cover from original
+        shell: bash
+        run: |
+          set -euo pipefail
+          input="reel-prep/2026-10-15-rustam-boxing.json"
+          url=$(jq -r '.sourceUrl' "$input")
+          cover=$(jq -r '.coverUrl' "$input")
+          output=$(jq -r '.output' "$input")
+          test "$output" = "media/2026-10-15-rustam-boxing-reel-cover.mp4"
+          mkdir -p media .video-prep
+          curl --location --fail --retry 3 --connect-timeout 30 --max-time 900 "$url" -o .video-prep/source.mp4
+          curl --location --fail --retry 3 --connect-timeout 30 --max-time 120 "$cover" -o .video-prep/cover.jpg
+          ffprobe -v error -show_entries format=duration,size:stream=codec_type,codec_name,width,height,r_frame_rate -of json .video-prep/source.mp4
+          ffmpeg -hide_banner -loglevel warning -stats -y \
+            -loop 1 -framerate 25 -t 0.40 -i .video-prep/cover.jpg \
+            -i .video-prep/source.mp4 \
+            -itsoffset 0.40 -i .video-prep/source.mp4 \
+            -filter_complex "[0:v]scale=1080:1920:flags=lanczos,setsar=1,fps=25,format=yuv420p,setpts=PTS-STARTPTS[c];[1:v]scale=1080:1920:flags=lanczos,fps=25,setsar=1,format=yuv420p,setpts=PTS-STARTPTS[v];[c][v]concat=n=2:v=1:a=0[outv]" \
+            -map "[outv]" -map "2:a:0?" \
+            -c:v libx264 -preset medium -crf 14 -maxrate 20M -bufsize 40M -pix_fmt yuv420p -r 25 \
+            -c:a aac -b:a 192k -ar 48000 \
+            -movflags +faststart -max_muxing_queue_size 2048 "$output"
+          ffprobe -v error -show_entries format=duration,size:stream=codec_name,codec_type,width,height,avg_frame_rate -of json "$output"
+          bytes=$(stat -c%s "$output")
+          test "$bytes" -gt 1000000
+          test "$bytes" -lt 99000000
+      - name: Commit prepared public media
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "ls-reel-prep-bot"
+          git config user.email "ls-reel-prep-bot@users.noreply.github.com"
+          git add media/2026-10-15-rustam-boxing-reel-cover.mp4
+          git commit -m "Prepare Rustam boxing Reel 1080p cover first frame [skip ci]"
+          git pull --rebase origin main
+          git push
