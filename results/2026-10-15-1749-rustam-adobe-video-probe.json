@@ -1,0 +1,13 @@
+{
+  "ok": true,
+  "id": "2026-10-15-1749-rustam-adobe-video-probe",
+  "type": "inspect-media",
+  "finishedAt": "2026-10-15T14:49:24.972Z",
+  "result": {
+    "status": 200,
+    "contentType": "video/mp4",
+    "contentLength": 30006418,
+    "signature": "000000206674797069736f6d",
+    "detectedType": "unknown"
+  }
+}
