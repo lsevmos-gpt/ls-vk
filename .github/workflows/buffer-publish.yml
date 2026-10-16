@@ -1,85 +1,11 @@
-name: Publish to Buffer
-
+name: Legacy Buffer automatic queue (DISABLED)
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - "buffer-queue/*.json"
-
+  workflow_dispatch:
 permissions:
-  contents: write
-
-concurrency:
-  group: buffer-publisher
-  cancel-in-progress: false
-
+  contents: read
 jobs:
-  publish:
+  disabled:
+    if: ${{ false }}
     runs-on: ubuntu-latest
-    env:
-      BUFFER_API_KEY: ${{ secrets.BUFFER_API_KEY }}
-
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 2
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: "20"
-
-      - name: Detect queued Buffer jobs
-        id: jobs
-        shell: bash
-        run: |
-          if git rev-parse HEAD^ >/dev/null 2>&1; then
-            git diff --diff-filter=AM --name-only HEAD^ HEAD -- 'buffer-queue/*.json' > /tmp/buffer-jobs.txt
-          else
-            find buffer-queue -maxdepth 1 -type f -name '*.json' -print > /tmp/buffer-jobs.txt
-          fi
-
-          echo "Queued Buffer jobs:"
-          cat /tmp/buffer-jobs.txt || true
-
-          if [ ! -s /tmp/buffer-jobs.txt ]; then
-            echo "has_jobs=false" >> "$GITHUB_OUTPUT"
-          else
-            echo "has_jobs=true" >> "$GITHUB_OUTPUT"
-          fi
-
-      - name: Run Buffer jobs
-        id: publish
-        if: steps.jobs.outputs.has_jobs == 'true'
-        shell: bash
-        run: |
-          set +e
-          status=0
-          while IFS= read -r job; do
-            echo "Publishing $job"
-            node scripts/buffer-job.js "$job" || status=1
-          done < /tmp/buffer-jobs.txt
-
-          echo "status=$status" >> "$GITHUB_OUTPUT"
-          exit 0
-
-      - name: Save Buffer results
-        if: always() && steps.jobs.outputs.has_jobs == 'true'
-        shell: bash
-        run: |
-          if [ -n "$(git status --porcelain -- buffer-results/)" ]; then
-            git config user.name "ls-buffer-bot"
-            git config user.email "ls-buffer-bot@users.noreply.github.com"
-            git add buffer-results/
-            git commit -m "Save Buffer publication result [skip ci]"
-            git pull --rebase origin main
-            git push
-          else
-            echo "No Buffer result changes to commit"
-          fi
-
-      - name: Fail workflow when Buffer publication failed
-        if: always() && steps.publish.outputs.status == '1'
-        run: exit 1
+      - run: echo 'Legacy push-to-publish disabled. Use manually approved requests/buffer with private repository.'

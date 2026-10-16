@@ -1,0 +1,27 @@
+name: New social requests validation (no publication)
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'requests/vk/*.json'
+      - 'requests/buffer/*.json'
+      - 'scripts/validate_social.py'
+      - 'scripts/manual_social.py'
+      - 'tests/**'
+      - '.github/workflows/social-ci.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Run safety tests offline
+        run: python -m unittest discover -s tests -v
+      - name: Validate new requests only (no API calls)
+        run: python -m scripts.validate_social

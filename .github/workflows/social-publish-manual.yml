@@ -1,0 +1,110 @@
+name: Publish approved social request (PRIVATE + MANUAL ONLY)
+on:
+  workflow_dispatch:
+    inputs:
+      platform:
+        description: 'Network'
+        required: true
+        type: choice
+        options: [vk, buffer]
+      job_id:
+        description: 'Exact new request ID; never use old queue files'
+        required: true
+        type: string
+      confirmation:
+        description: 'Type PUBLISH_APPROVED_CONTENT'
+        required: true
+        type: string
+permissions:
+  contents: write
+concurrency:
+  group: ls-social-single-approved-provider-submission
+  cancel-in-progress: false
+jobs:
+  publish:
+    if: github.repository == 'lsevmos-gpt/ls-vk' && github.actor == 'lsevmos-gpt' && github.ref == 'refs/heads/main' && github.event.repository.private == true
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      SOCIAL_PLATFORM: ${{ inputs.platform }}
+      SOCIAL_JOB_ID: ${{ inputs.job_id }}
+      SOCIAL_CONFIRMATION: ${{ inputs.confirmation }}
+      SOCIAL_REPO_PRIVATE: ${{ github.event.repository.private }}
+      VK_API_VERSION: '5.199'
+      VK_GROUP_ID: '48198173'
+      VK_GROUP_SCREEN_NAME: 'liniya__sporta'
+      VK_GROUP_TOKEN: ${{ secrets.VK_GROUP_TOKEN }}
+      VK_USER_TOKEN: ${{ secrets.VK_USER_TOKEN }}
+      BUFFER_API_KEY: ${{ secrets.BUFFER_API_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Validate request and tests (no external side effect)
+        shell: bash
+        run: |
+          set -euo pipefail
+          git pull --ff-only origin main
+          python -m unittest discover -s tests -v
+          python -m scripts.validate_social
+          if [ "$SOCIAL_PLATFORM" = 'vk' ]; then
+            test -n "$VK_GROUP_TOKEN" || { echo '::error::VK_GROUP_TOKEN missing'; exit 1; }
+          elif [ "$SOCIAL_PLATFORM" = 'buffer' ]; then
+            test -n "$BUFFER_API_KEY" || { echo '::error::BUFFER_API_KEY missing'; exit 1; }
+          else
+            echo '::error::Unsupported network'; exit 1
+          fi
+      - name: Install dependencies without lifecycle hooks
+        run: npm install --omit=dev --ignore-scripts --no-package-lock --no-audit --no-fund
+      - name: Verify exact target (read-only)
+        run: node scripts/check_social_targets.mjs
+      - name: Save unique attempt marker BEFORE provider call
+        id: reserve
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m scripts.manual_social reserve
+          git config user.name 'ls-social-bot'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -- "results/manual/$SOCIAL_PLATFORM/$SOCIAL_JOB_ID.json"
+          git commit -m 'Reserve one approved social submission [skip ci]'
+          git push origin HEAD:main
+          echo 'done=true' >> "$GITHUB_OUTPUT"
+      - name: Submit to exactly one provider
+        id: send
+        if: steps.reserve.outputs.done == 'true'
+        shell: bash
+        run: |
+          set +e
+          if [ "$SOCIAL_PLATFORM" = 'vk' ]; then
+            node scripts/publish-job.js "requests/vk/$SOCIAL_JOB_ID.json" > /tmp/social.log 2>&1
+          else
+            node scripts/buffer-job.js "requests/buffer/$SOCIAL_JOB_ID.json" > /tmp/social.log 2>&1
+          fi
+          code=$?
+          echo "exit_code=$code" >> "$GITHUB_OUTPUT"
+          echo 'Submission attempt finished. Do not retry automatically.'
+          exit 0
+      - name: Final receipt (no secret/provider payload)
+        if: always() && steps.reserve.outputs.done == 'true'
+        shell: bash
+        env:
+          PUBLISH_EXIT_CODE: ${{ steps.send.outputs.exit_code }}
+        run: |
+          set -euo pipefail
+          python -m scripts.manual_social finalize
+          git add -- "results/manual/$SOCIAL_PLATFORM/$SOCIAL_JOB_ID.json"
+          git commit -m 'Save social submission status [skip ci]'
+          git pull --rebase origin main
+          git push origin HEAD:main
+      - name: Flag uncertain or partial failures
+        if: always() && steps.reserve.outputs.done == 'true' && steps.send.outputs.exit_code != '0'
+        run: |
+          echo '::error::Submission failed or partial; check provider before any new attempt.'
+          exit 1

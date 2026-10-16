@@ -1,0 +1,26 @@
+name: Visual QA technical check (no publication)
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'visual-qa/submissions/**'
+      - 'scripts/visual_quality_gate.py'
+      - 'visual_qa_tests/**'
+      - '.github/workflows/visual-quality-gate.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install --disable-pip-version-check 'Pillow>=11,<13'
+      - name: Adversarial tests
+        run: python -m unittest discover -s visual_qa_tests -v
+      - name: Check packages without artistic approval or posting
+        run: python -m scripts.visual_quality_gate scan
