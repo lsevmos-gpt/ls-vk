@@ -1,0 +1,9 @@
+{
+  "id": "anna-nechaeva-birthday-20261017-1000-ig",
+  "platform": "buffer",
+  "status": "reserved_before_provider_call",
+  "publishAtUTC": "2026-10-17T07:00:00Z",
+  "reservedAtUTC": "2026-10-17T00:15:02.582058+00:00",
+  "runId": "38985466453",
+  "note": "One durable attempt marker; never retry without manual reconciliation"
+}
