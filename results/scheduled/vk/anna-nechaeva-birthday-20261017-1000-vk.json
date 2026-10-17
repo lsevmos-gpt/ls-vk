@@ -1,9 +1,15 @@
 {
   "id": "anna-nechaeva-birthday-20261017-1000-vk",
   "platform": "vk",
-  "status": "reserved_before_provider_call",
+  "status": "submitted_to_vk",
   "publishAtUTC": "2026-10-17T07:00:00Z",
   "reservedAtUTC": "2026-10-17T06:10:11.552265+00:00",
   "runId": "39008890182",
-  "note": "One durable attempt marker; never retry without manual reconciliation"
+  "note": "One durable attempt marker; never retry without manual reconciliation",
+  "finishedAtUTC": "2026-10-17T07:00:03.229645+00:00",
+  "provider": {
+    "returned_story_ids": [],
+    "reported_count": 1
+  },
+  "error": null
 }
