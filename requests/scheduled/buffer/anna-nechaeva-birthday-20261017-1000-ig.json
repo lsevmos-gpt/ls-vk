@@ -1,0 +1,19 @@
+{
+  "id": "anna-nechaeva-birthday-20261017-1000-ig",
+  "type": "instagram",
+  "approved": true,
+  "publicContent": true,
+  "handle": "liniya__sporta",
+  "postType": "story",
+  "publishNow": false,
+  "publishAt": "2026-10-17T10:00:00+03:00",
+  "dueAt": "2026-10-17T07:00:00Z",
+  "media": [
+    {
+      "type": "image",
+      "url": "https://raw.githubusercontent.com/lsevmos-gpt/ls-vk/main/media/2026-10-17-anna-nechaeva-user-approved-1080x1920.png"
+    }
+  ],
+  "text": "",
+  "isAiGenerated": true
+}

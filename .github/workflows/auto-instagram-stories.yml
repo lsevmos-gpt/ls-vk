@@ -38,7 +38,15 @@ jobs:
         run: |
           python -m unittest discover -s auto_social_tests -v
           python -m scripts.auto_social buffer validate
+      - name: Detect approved unscheduled Instagram Stories
+        id: pending
+        run: python -m scripts.auto_social buffer probe
+      - name: Require Buffer key for approved pending Stories
+        if: steps.pending.outputs.has_jobs == 'true'
+        run: |
+          test -n "$BUFFER_API_KEY" || { echo '::error::BUFFER_API_KEY is not configured'; exit 1; }
       - name: Install dependencies without lifecycle hooks
+        if: steps.pending.outputs.has_jobs == 'true'
         run: npm install --omit=dev --ignore-scripts --no-package-lock --no-audit --no-fund
       - name: Check exact connected Instagram handle read-only
         if: steps.pending.outputs.has_jobs == 'true'
