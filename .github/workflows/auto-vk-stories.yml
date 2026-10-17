@@ -1,0 +1,60 @@
+name: Auto publish approved VK Stories at requested wall-clock time
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'requests/scheduled/vk/*.json'
+      - 'scripts/auto_social.py'
+      - '.github/workflows/auto-vk-stories.yml'
+  schedule:
+    - cron: '4,19,34,49 * * * *'
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: ls-automatic-vk-stories
+  cancel-in-progress: false
+jobs:
+  publish:
+    if: github.repository == 'lsevmos-gpt/ls-vk' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 85
+    env:
+      GITHUB_ACTIONS: 'true'
+      VK_API_VERSION: '5.199'
+      VK_GROUP_ID: '48198173'
+      VK_GROUP_SCREEN_NAME: 'liniya__sporta'
+      VK_GROUP_TOKEN: ${{ secrets.VK_GROUP_TOKEN }}
+      VK_USER_TOKEN: ${{ secrets.VK_USER_TOKEN }}
+      SOCIAL_PLATFORM: vk
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Test scheduler and validate approved public manifests
+        run: |
+          python -m unittest discover -s auto_social_tests -v
+          python -m scripts.auto_social vk validate
+      - name: Identify due approved VK jobs
+        id: pending
+        run: python -m scripts.auto_social vk probe
+      - name: Require the configured provider token for due work
+        if: steps.pending.outputs.has_jobs == 'true'
+        run: |
+          test -n "$VK_GROUP_TOKEN" || { echo '::error::VK_GROUP_TOKEN missing'; exit 1; }
+      - name: Install provider dependencies without lifecycle hooks
+        if: steps.pending.outputs.has_jobs == 'true'
+        run: npm install --omit=dev --ignore-scripts --no-package-lock --no-audit --no-fund
+      - name: Check VK target read-only; never post to another community
+        if: steps.pending.outputs.has_jobs == 'true'
+        run: node scripts/check_social_targets.mjs
+      - name: Process due VK stories; no late posting and no retries
+        if: steps.pending.outputs.has_jobs == 'true'
+        run: python -m scripts.auto_social vk process

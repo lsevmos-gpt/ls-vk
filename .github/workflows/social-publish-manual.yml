@@ -1,4 +1,4 @@
-name: Publish approved social request (PRIVATE + MANUAL ONLY)
+name: Publish approved public social request (MANUAL FALLBACK)
 on:
   workflow_dispatch:
     inputs:
@@ -22,7 +22,7 @@ concurrency:
   cancel-in-progress: false
 jobs:
   publish:
-    if: github.repository == 'lsevmos-gpt/ls-vk' && github.actor == 'lsevmos-gpt' && github.ref == 'refs/heads/main' && github.event.repository.private == true
+    if: github.repository == 'lsevmos-gpt/ls-vk' && github.actor == 'lsevmos-gpt' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     timeout-minutes: 30
     env:

@@ -1,0 +1,48 @@
+name: Auto schedule approved Instagram Stories at exact dueAt in Buffer
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'requests/scheduled/buffer/*.json'
+      - 'scripts/auto_social.py'
+      - '.github/workflows/auto-instagram-stories.yml'
+  schedule:
+    - cron: '17,47 * * * *'
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: ls-automatic-buffer-scheduler
+  cancel-in-progress: false
+jobs:
+  schedule:
+    if: github.repository == 'lsevmos-gpt/ls-vk' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      GITHUB_ACTIONS: 'true'
+      BUFFER_API_KEY: ${{ secrets.BUFFER_API_KEY }}
+      SOCIAL_PLATFORM: buffer
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Test scheduling and validate explicit dates
+        run: |
+          python -m unittest discover -s auto_social_tests -v
+          python -m scripts.auto_social buffer validate
+      - name: Install dependencies without lifecycle hooks
+        run: npm install --omit=dev --ignore-scripts --no-package-lock --no-audit --no-fund
+      - name: Check exact connected Instagram handle read-only
+        if: steps.pending.outputs.has_jobs == 'true'
+        run: node scripts/check_social_targets.mjs
+      - name: Schedule provider-native dueAt for approved stories
+        if: steps.pending.outputs.has_jobs == 'true'
+        run: python -m scripts.auto_social buffer process

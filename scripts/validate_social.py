@@ -18,7 +18,7 @@ PUBLISH = {'vk': {'post', 'photo', 'video', 'clip', 'story', 'story-batch'},
            'buffer': {'instagram', 'instagram-batch'}}
 JOB_ID = re.compile(r'^[a-zA-Z0-9][a-zA-Z0-9._-]{7,127}$')
 MAX_BYTES = 128_000
-BLOCKED_HOSTS = {'github.com', 'api.github.com', 'raw.githubusercontent.com',
+BLOCKED_HOSTS = {'github.com', 'api.github.com',
                  'private-user-images.githubusercontent.com', 'drive.google.com',
                  'docs.google.com', 'localhost'}
 
@@ -31,7 +31,9 @@ def safe_public_media_url(url: object) -> bool:
     except ValueError:
         return False
     host = (parsed.hostname or '').lower()
-    if (not host or host in BLOCKED_HOSTS or host.endswith('.githubusercontent.com')
+    if (not host or host in BLOCKED_HOSTS or
+            (host == 'raw.githubusercontent.com' and not parsed.path.startswith('/lsevmos-gpt/ls-vk/main/media/')) or
+            (host.endswith('.githubusercontent.com') and host != 'raw.githubusercontent.com')
             or host.endswith('.internal') or host.endswith('.localhost')
             or parsed.username or parsed.password or parsed.fragment
             or parsed.port not in (None, 443)):
@@ -59,7 +61,9 @@ def validate_job(platform: str, filename: str, body: object) -> list[str]:
     if kind not in READONLY[platform] | PUBLISH[platform]:
         return errors + ['Unsupported or destructive job type']
     if kind in PUBLISH[platform] and body.get('approved') is not True:
-        errors.append('Manual publication requires approved=true')
+        errors.append('Publication requires approved=true')
+    if kind in PUBLISH[platform] and body.get('publicContent') is not True:
+        errors.append('Only publicContent=true may be sent from public repository')
     if platform == 'buffer':
         if body.get('channelId'):
             errors.append('Direct channelId bypass is forbidden: resolve unique Instagram handle instead')

@@ -1,0 +1,40 @@
+name: Verify VK and Buffer connections (READ-ONLY)
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/social-readiness.yml'
+      - 'scripts/check_social_targets.mjs'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    env:
+      VK_API_VERSION: '5.199'
+      VK_GROUP_ID: '48198173'
+      VK_GROUP_SCREEN_NAME: 'liniya__sporta'
+      VK_GROUP_TOKEN: ${{ secrets.VK_GROUP_TOKEN }}
+      VK_USER_TOKEN: ${{ secrets.VK_USER_TOKEN }}
+      BUFFER_API_KEY: ${{ secrets.BUFFER_API_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install provider libraries without lifecycle scripts
+        run: npm install --omit=dev --ignore-scripts --no-package-lock --no-audit --no-fund
+      - name: Check VK target and permissions (read-only)
+        if: env.VK_GROUP_TOKEN != ''
+        run: SOCIAL_PLATFORM=vk node scripts/check_social_targets.mjs
+      - name: Report missing VK secret
+        if: env.VK_GROUP_TOKEN == ''
+        run: echo '::warning::VK_GROUP_TOKEN not configured; VK posting not ready'
+      - name: Check Buffer Instagram handle (read-only)
+        if: env.BUFFER_API_KEY != ''
+        run: SOCIAL_PLATFORM=buffer node scripts/check_social_targets.mjs
+      - name: Report missing Buffer secret
+        if: env.BUFFER_API_KEY == ''
+        run: echo '::warning::BUFFER_API_KEY not configured; Instagram posting not ready'

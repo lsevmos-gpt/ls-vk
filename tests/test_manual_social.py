@@ -9,7 +9,7 @@ class ManualSocialTests(unittest.TestCase):
         tmp=tempfile.TemporaryDirectory();self.addCleanup(tmp.cleanup)
         self.root=Path(tmp.name);p=self.root/'requests'/'vk';p.mkdir(parents=True)
         self.job='manualvk0001'
-        (p/(self.job+'.json')).write_text(json.dumps({'id':self.job,'approved':True,'type':'story',
+        (p/(self.job+'.json')).write_text(json.dumps({'id':self.job,'approved':True,'publicContent':True,'type':'story',
             'storyType':'photo','mediaUrl':'https://cdn.example.org/x.png'}),encoding='utf-8')
 
     def run_reserve(self,**kwargs):
@@ -17,8 +17,13 @@ class ManualSocialTests(unittest.TestCase):
         args.update(kwargs)
         return reserve(self.root,'vk',self.job,APPROVAL_PHRASE,**args)
 
-    def test_public_repository_cannot_publish(self):
-        with self.assertRaisesRegex(ValueError,'Private'):
+    def test_public_repo_approved_content_allowed(self):
+        self.assertTrue(self.run_reserve(private=False).exists())
+
+    def test_nonpublic_content_blocked(self):
+        path=self.root/'requests'/'vk'/(self.job+'.json')
+        data=json.loads(path.read_text());data['publicContent']=False;path.write_text(json.dumps(data))
+        with self.assertRaisesRegex(ValueError,'publicContent'):
             self.run_reserve(private=False)
 
     def test_only_owner_main_manual(self):

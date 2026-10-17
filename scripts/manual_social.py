@@ -1,7 +1,7 @@
 """Fail-closed guard for explicit manual VK and Buffer submissions.
 
 Creates durable attempt markers; prevents replay of historical and new jobs.
-Never calls providers itself. Protects public GitHub repositories.
+Never calls providers itself. Accepts exclusively user-approved public content.
 """
 from __future__ import annotations
 
@@ -29,8 +29,7 @@ def paths(root: Path, platform: str, job_id: str) -> tuple[Path, Path, Path]:
 def reserve(root: Path, platform: str, job_id: str, confirmation: str,
             *, actor: str, event: str, branch: str, run_id: str,
             private: bool) -> Path:
-    if not private:
-        raise ValueError('Repository must be Private before social publishing')
+    # Public repos are allowed: only explicitly approved public assets can be dispatched.
     if (actor, event, branch) != ('lsevmos-gpt', 'workflow_dispatch', 'refs/heads/main'):
         raise ValueError('Only lsevmos-gpt may manually publish from main')
     if confirmation != APPROVAL_PHRASE:
@@ -42,6 +41,8 @@ def reserve(root: Path, platform: str, job_id: str, confirmation: str,
     failures = validate_job(platform, source.name, body)
     if failures:
         raise ValueError('; '.join(failures))
+    if body.get('publicContent') is not True:
+        raise ValueError('Only explicitly approved publicContent=true may be published')
     if body['type'] not in PUBLISH[platform]:
         raise ValueError('Read-only and delete operations cannot be published')
     if legacy.exists() or target.exists():
