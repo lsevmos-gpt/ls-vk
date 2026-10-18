@@ -1,10 +1,15 @@
 {
   "id": "first-visit-20261018-1130-ig",
   "provider": "buffer",
-  "status": "reserved_before_provider_call",
+  "status": "scheduled_in_buffer",
   "scheduledAt": "2026-10-18T11:30:00+03:00",
   "originalVideoSha256": "cda8649d129f60150d051c3e12fa07a210305966316cb45cb3c3d2cb6f3ca307",
   "reservedAt": "2026-10-18T08:18:39.676Z",
   "runId": "39110933484",
-  "note": "Do not blindly retry any uncertain provider result."
+  "note": "Do not blindly retry any uncertain provider result.",
+  "finishedAt": "2026-10-18T08:18:42.901Z",
+  "postId": "6ad480e2ae173d6e00f15bd0",
+  "providerStatus": "scheduled",
+  "dueAt": "2026-10-18T08:30:00.000Z",
+  "channelId": "6acde74d778b240e2ff489a7"
 }
