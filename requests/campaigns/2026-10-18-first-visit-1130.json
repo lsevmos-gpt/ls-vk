@@ -22,7 +22,9 @@
     "url": "https://d2ol7oe51mr4n9.cloudfront.net/user_3DGFj8YOvQgbPvppr50r6fgfGAi/262bb053-2bc0-4cdb-ad78-f8028b67e0e8.mp4",
     "filename": "first-visit.mp4",
     "lengthSeconds": 82.539,
-    "originalName": "Liniya_Sporta_Full_Timing_No_Markers(3).mp4"
+    "originalName": "Liniya_Sporta_Full_Timing_No_Markers(4).mp4",
+    "sha256": "cda8649d129f60150d051c3e12fa07a210305966316cb45cb3c3d2cb6f3ca307",
+    "originalAndPriorFileIdentical": true
   },
   "covers": {
     "reel_9_16": "https://d2ol7oe51mr4n9.cloudfront.net/user_3DGFj8YOvQgbPvppr50r6fgfGAi/e14d9e31-fbe1-4d6d-9799-2ac9c481abf9.png",
@@ -32,8 +34,11 @@
   "notes": [
     "User requested publication 2026-10-18 at 11:30 UTC+03:00 through connected existing GitHub repository.",
     "Media hosted as public HTTPS URLs. No secrets in repository.",
-    "Original MP4 has inconsistent scene order; retained original, not automatically edited.",
+    "Verified correct scene order via storyboard (opening, QR entry, locker, exit, ending). Previous critique was incorrect.",
     "Existing Buffer API accepts reel but supports thumbnailOffset rather than a distinct uploaded cover. VK video.save needs VK_USER_TOKEN.",
-    "Do not duplicate provider submissions; reserve unique attempt receipts before API call."
+    "Do not duplicate provider submissions; reserve unique attempt receipts before API call.",
+    "Instagram Reel confirmed scheduled in Buffer for 11:30 MSK with original media; post ID 6ad480e2ae173d6e00f15bd0.",
+    "VK Clip blocked because VK_USER_TOKEN was absent in the 18 October Actions run.",
+    "Maximum-quality policy: SOCIAL_MEDIA_QUALITY_POLICY.md. Custom PNG covers cannot be applied using Buffer's Reel API."
   ]
 }
