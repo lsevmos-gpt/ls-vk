@@ -1,0 +1,38 @@
+name: First visit Reel and VK Clip - 18 Oct 11:30 MSK
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/first-visit-release.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: first-visit-20261018-1130-approved-release
+  cancel-in-progress: false
+jobs:
+  release:
+    if: github.repository == 'lsevmos-gpt/ls-vk' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 22
+    env:
+      BUFFER_API_KEY: ${{ secrets.BUFFER_API_KEY }}
+      VK_GROUP_TOKEN: ${{ secrets.VK_GROUP_TOKEN }}
+      VK_USER_TOKEN: ${{ secrets.VK_USER_TOKEN }}
+      VK_GROUP_ID: '48198173'
+      VK_GROUP_SCREEN_NAME: 'liniya__sporta'
+      VK_API_VERSION: '5.199'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install provider libraries
+        run: npm install --omit=dev --ignore-scripts --no-package-lock --no-audit --no-fund
+      - name: Validate approved public requests without publishing
+        run: node --check scripts/first_visit_release.mjs && python -m scripts.validate_social
+      - name: Submit Reels through Buffer and scheduled VK Clip if video token is available
+        run: node scripts/first_visit_release.mjs
