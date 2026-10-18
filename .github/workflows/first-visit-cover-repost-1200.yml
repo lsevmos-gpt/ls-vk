@@ -38,6 +38,13 @@ jobs:
           curl -fsSL --retry 3 --connect-timeout 15 --max-time 210 'https://d2ol7oe51mr4n9.cloudfront.net/user_3DGFj8YOvQgbPvppr50r6fgfGAi/262bb053-2bc0-4cdb-ad78-f8028b67e0e8.mp4' -o .video-prep/original.mp4
           echo 'cda8649d129f60150d051c3e12fa07a210305966316cb45cb3c3d2cb6f3ca307  .video-prep/original.mp4' | sha256sum -c -
           curl -fsSL --retry 3 --connect-timeout 15 --max-time 90 'https://d2ol7oe51mr4n9.cloudfront.net/user_3DGFj8YOvQgbPvppr50r6fgfGAi/e14d9e31-fbe1-4d6d-9799-2ac9c481abf9.png' -o .video-prep/cover.png
+      - name: Install FFmpeg if runner image does not include it
+        run: |
+          set -euo pipefail
+          if ! command -v ffmpeg >/dev/null || ! command -v ffprobe >/dev/null; then
+            sudo apt-get update -qq
+            sudo apt-get install -y ffmpeg
+          fi
       - name: Embed 0.4-second approved cover, stream-copy source video without re-encoding
         run: |
           set -euo pipefail
