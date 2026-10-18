@@ -1,0 +1,39 @@
+{
+  "id": "first-visit-20261018-1130",
+  "approved": true,
+  "publicContent": true,
+  "postTitle": "Первый визит в Линию спорта — вход, шкафчик, выход",
+  "caption": "ПЕРВЫЙ РАЗ В «ЛИНИИ СПОРТА»? 💚\n\nПоказываем, как всё устроено, чтобы уже с первого визита вы чувствовали себя уверенно!\n\n📲 ВХОД\nОткройте мобильное приложение, найдите свой QR-код и поднесите его к считывателю турникета. У вас будет 10 секунд для прохода.\n\n🔐 ШКАФЧИК\nВыберите свободный шкафчик — у него выступает ручка. Закройте дверцу и приложите браслет к замку.\n\nЗабыли номер шкафчика? Просто приложите браслет к электронной панели, и номер появится на экране.\n\n🚪 ВЫХОД\nПосле тренировки заберите вещи, освободите шкафчик и приложите браслет к считывателю на выходе.\n\nВот и всё! Теперь вы знаете, как всё работает.\n\nСохраните это видео, чтобы инструкция всегда была под рукой, и отправьте тому, кто собирается к нам впервые.\n\nДо встречи на тренировке! 💚\n\n#ЛинияСпорта #ПервыйВизит #ТренажерныйЗал #ФитнесКлуб",
+  "publishAt": "2026-10-18T11:30:00+03:00",
+  "dueAtUTC": "2026-10-18T08:30:00Z",
+  "instagram": {
+    "handle": "liniya__sporta",
+    "postType": "reel",
+    "shouldShareToFeed": true,
+    "isAiGenerated": false
+  },
+  "vk": {
+    "groupId": 48198173,
+    "screenName": "liniya__sporta",
+    "type": "clip",
+    "postToWall": true
+  },
+  "video": {
+    "url": "https://d2ol7oe51mr4n9.cloudfront.net/user_3DGFj8YOvQgbPvppr50r6fgfGAi/262bb053-2bc0-4cdb-ad78-f8028b67e0e8.mp4",
+    "filename": "first-visit.mp4",
+    "lengthSeconds": 82.539,
+    "originalName": "Liniya_Sporta_Full_Timing_No_Markers(3).mp4"
+  },
+  "covers": {
+    "reel_9_16": "https://d2ol7oe51mr4n9.cloudfront.net/user_3DGFj8YOvQgbPvppr50r6fgfGAi/e14d9e31-fbe1-4d6d-9799-2ac9c481abf9.png",
+    "feed_4_5": "https://d2ol7oe51mr4n9.cloudfront.net/user_3DGFj8YOvQgbPvppr50r6fgfGAi/9588ac74-cb2a-4a20-a58c-c34a1e3489a2.png",
+    "square_1_1": "https://d2ol7oe51mr4n9.cloudfront.net/user_3DGFj8YOvQgbPvppr50r6fgfGAi/9905c060-a335-46d8-9d3f-031ab1ac398a.png"
+  },
+  "notes": [
+    "User requested publication 2026-10-18 at 11:30 UTC+03:00 through connected existing GitHub repository.",
+    "Media hosted as public HTTPS URLs. No secrets in repository.",
+    "Original MP4 has inconsistent scene order; retained original, not automatically edited.",
+    "Existing Buffer API accepts reel but supports thumbnailOffset rather than a distinct uploaded cover. VK video.save needs VK_USER_TOKEN.",
+    "Do not duplicate provider submissions; reserve unique attempt receipts before API call."
+  ]
+}
