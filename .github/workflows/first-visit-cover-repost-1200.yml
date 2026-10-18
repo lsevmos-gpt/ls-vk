@@ -1,0 +1,122 @@
+name: One-time First Visit Reel - cover plus full source quality 12:00
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/first-visit-cover-repost-1200.yml']
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: one-time-first-visit-1200
+  cancel-in-progress: false
+jobs:
+  release:
+    if: github.repository == 'lsevmos-gpt/ls-vk' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      SOCIAL_PLATFORM: buffer
+      BUFFER_API_KEY: ${{ secrets.BUFFER_API_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Check prerequisites
+        run: |
+          set -euo pipefail
+          test -n "$BUFFER_API_KEY"
+          python -m scripts.validate_social
+          if test -f results/first-visit-20261018/repost-1200-buffer.json; then echo "::error::Previous attempt exists, do not duplicate"; exit 1; fi
+      - name: Download original full-quality source and approved vertical cover
+        run: |
+          set -euo pipefail
+          mkdir -p .video-prep media
+          curl -fsSL --retry 3 --connect-timeout 15 --max-time 210 'https://d2ol7oe51mr4n9.cloudfront.net/user_3DGFj8YOvQgbPvppr50r6fgfGAi/262bb053-2bc0-4cdb-ad78-f8028b67e0e8.mp4' -o .video-prep/original.mp4
+          echo 'cda8649d129f60150d051c3e12fa07a210305966316cb45cb3c3d2cb6f3ca307  .video-prep/original.mp4' | sha256sum -c -
+          curl -fsSL --retry 3 --connect-timeout 15 --max-time 90 'https://d2ol7oe51mr4n9.cloudfront.net/user_3DGFj8YOvQgbPvppr50r6fgfGAi/e14d9e31-fbe1-4d6d-9799-2ac9c481abf9.png' -o .video-prep/cover.png
+      - name: Embed 0.4-second approved cover, stream-copy source video without re-encoding
+        run: |
+          set -euo pipefail
+          ffmpeg -hide_banner -loglevel error -y -loop 1 -framerate 30 -t 0.4 -i .video-prep/cover.png -f lavfi -t 0.4 -i anullsrc=channel_layout=stereo:sample_rate=48000 -vf 'scale=1080:1920:flags=lanczos,setsar=1,format=yuv420p' -c:v libx264 -preset veryfast -crf 15 -profile:v high -level 5.0 -r 30 -video_track_timescale 90000 -c:a aac -b:a 256k -ar 48000 -movflags +faststart .video-prep/intro.mp4
+          printf "file '%s/.video-prep/intro.mp4'\nfile '%s/.video-prep/original.mp4'\n" "$PWD" "$PWD" > .video-prep/concat.txt
+          ffmpeg -hide_banner -loglevel warning -y -f concat -safe 0 -i .video-prep/concat.txt -c copy -movflags +faststart media/2026-10-18-first-visit-cover-12h00.mp4
+          size=$(stat -c %s media/2026-10-18-first-visit-cover-12h00.mp4)
+          test "$size" -gt 88000000 && test "$size" -lt 99000000
+          ffprobe -v error -show_entries format=duration,size:stream=codec_type,codec_name,width,height,r_frame_rate -of json media/2026-10-18-first-visit-cover-12h00.mp4
+          ffmpeg -hide_banner -loglevel error -i media/2026-10-18-first-visit-cover-12h00.mp4 -f null -
+      - name: Commit original-quality finished Reel as public GitHub media
+        run: |
+          set -euo pipefail
+          git config user.name ls-reels-bot
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add media/2026-10-18-first-visit-cover-12h00.mp4
+          git commit -m 'Final approved 12:00 first-visit Reel: 0.4-second cover and source bitstream [skip ci]'
+          git pull --rebase origin main
+          git push origin HEAD:main
+      - name: Check connected Buffer identity and newly committed public media
+        run: |
+          set -euo pipefail
+          npm install --omit=dev --ignore-scripts --no-package-lock --no-audit --no-fund
+          node scripts/check_social_targets.mjs
+          curl -fIL --retry 5 --retry-delay 3 --max-time 90 https://raw.githubusercontent.com/lsevmos-gpt/ls-vk/main/media/2026-10-18-first-visit-cover-12h00.mp4 >/dev/null
+      - name: Reserve unique provider attempt in GitHub before sending
+        id: reserve
+        run: |
+          set -euo pipefail
+          git pull --ff-only origin main
+          mkdir -p results/first-visit-20261018
+          p=results/first-visit-20261018/repost-1200-buffer.json
+          test ! -e "$p" || { echo '::error::Already attempted'; exit 1; }
+          now=$(date -u +%s)
+          due=$(date -u -d '2026-10-18T09:00:00Z' +%s)
+          if test "$now" -ge "$((due-25))"; then echo "::warning::Too late to schedule 12:00 without risk; stopping"; echo 'allowed=false' >> "$GITHUB_OUTPUT"; exit 0; fi
+          python - <<'PY'
+          import json,datetime
+          from pathlib import Path
+          p=Path('results/first-visit-20261018/repost-1200-buffer.json')
+          data={'id':'first-visit-20261018-1200-cover-repost','status':'reserved_before_provider_call','publishAt':'2026-10-18T09:00:00Z','video':'media/2026-10-18-first-visit-cover-12h00.mp4','quality':'source stream copied, only first 0.4 seconds encoded','reservedAt':datetime.datetime.now(datetime.timezone.utc).isoformat()}
+          p.write_text(json.dumps(data,indent=2,ensure_ascii=False)+'\n')
+          PY
+          git add "$p"
+          git commit -m 'Reserve once: new approved 12:00 Buffer Reel [skip ci]'
+          git pull --rebase origin main
+          git push origin HEAD:main
+          echo 'allowed=true' >> "$GITHUB_OUTPUT"
+      - name: Send one scheduled Buffer Reel, never automatically retry
+        id: publish
+        if: steps.reserve.outputs.allowed == 'true'
+        run: |
+          set +e
+          node scripts/buffer-job.js requests/buffer/first-visit-20261018-1200-cover-repost.json
+          echo "exit_code=$?" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Finalize immutable provider receipt and verify dueAt
+        if: always() && steps.reserve.outputs.allowed == 'true'
+        env:
+          EXIT_CODE: ${{ steps.publish.outputs.exit_code }}
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json,os,datetime
+          from pathlib import Path
+          p=Path('results/first-visit-20261018/repost-1200-buffer.json')
+          old=json.loads(p.read_text())
+          source=Path('buffer-results/first-visit-20261018-1200-cover-repost.json')
+          d=json.loads(source.read_text()) if source.exists() else {}
+          post=(d.get('result') or {}).get('post') or {}
+          good=os.environ.get('EXIT_CODE')=='0' and d.get('ok') is True and d.get('id')==old['id'] and post.get('id') and post.get('dueAt','').startswith('2026-10-18T09:00:00')
+          old.update({'status':'scheduled_in_buffer' if good else 'manual_review_required','bufferPostId':post.get('id') if good else None,'bufferStatus':post.get('status') if good else None,'bufferDueAt':post.get('dueAt') if good else None,'finishedAt':datetime.datetime.now(datetime.timezone.utc).isoformat()})
+          p.write_text(json.dumps(old,indent=2,ensure_ascii=False)+'\n')
+          print('PROVIDER_STATUS='+old['status'])
+          PY
+          git add results/first-visit-20261018/repost-1200-buffer.json
+          git commit -m 'Save result of one-time Buffer Reel for 12:00 [skip ci]'
+          git pull --rebase origin main
+          git push origin HEAD:main
+      - name: Fail job when Buffer did not schedule
+        if: steps.reserve.outputs.allowed == 'true' && steps.publish.outputs.exit_code != '0'
+        run: exit 1
