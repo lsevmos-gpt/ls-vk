@@ -1,8 +1,12 @@
 {
   "id": "first-visit-20261018-1200-cover-repost",
-  "status": "reserved_before_provider_call",
+  "status": "scheduled_in_buffer",
   "publishAt": "2026-10-18T09:00:00Z",
   "video": "media/2026-10-18-first-visit-cover-12h00.mp4",
   "quality": "source stream copied, only first 0.4 seconds encoded",
-  "reservedAt": "2026-10-18T08:56:33.669758+00:00"
+  "reservedAt": "2026-10-18T08:56:33.669758+00:00",
+  "bufferPostId": "6ad489c30b0d72757a147e73",
+  "bufferStatus": "scheduled",
+  "bufferDueAt": "2026-10-18T09:00:00.000Z",
+  "finishedAt": "2026-10-18T08:56:35.868304+00:00"
 }
