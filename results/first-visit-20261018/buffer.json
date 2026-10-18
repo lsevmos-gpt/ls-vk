@@ -1,0 +1,10 @@
+{
+  "id": "first-visit-20261018-1130-ig",
+  "provider": "buffer",
+  "status": "reserved_before_provider_call",
+  "scheduledAt": "2026-10-18T11:30:00+03:00",
+  "originalVideoSha256": "cda8649d129f60150d051c3e12fa07a210305966316cb45cb3c3d2cb6f3ca307",
+  "reservedAt": "2026-10-18T08:18:39.676Z",
+  "runId": "39110933484",
+  "note": "Do not blindly retry any uncertain provider result."
+}
