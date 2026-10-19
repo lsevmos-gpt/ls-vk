@@ -1,0 +1,19 @@
+{
+  "id": "info-vacancy-20261019-1500-vk-batch",
+  "type": "story-batch",
+  "approved": true,
+  "publicContent": true,
+  "publishAt": "2026-10-19T15:00:00+03:00",
+  "stories": [
+    {
+      "storyType": "video",
+      "media": "media/2026-10-19-info-intro-original.mp4",
+      "addToNews": true
+    },
+    {
+      "storyType": "photo",
+      "media": "media/2026-10-19-vacancy-assistant-final-original.png",
+      "addToNews": true
+    }
+  ]
+}
