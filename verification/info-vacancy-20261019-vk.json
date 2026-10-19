@@ -1,0 +1,10 @@
+{
+  "id": "info-vacancy-20261019-vk-readback",
+  "type": "read-only-verification",
+  "approved": true,
+  "publicContent": true,
+  "notBeforeUTC": "2026-10-19T12:02:15Z",
+  "ownerId": -48198173,
+  "windowStartUTC": "2026-10-19T12:00:00Z",
+  "note": "Read-only stories.get; no publishing, no retries."
+}
