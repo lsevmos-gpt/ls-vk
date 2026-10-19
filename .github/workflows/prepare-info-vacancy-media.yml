@@ -1,0 +1,54 @@
+name: Stage approved Info and vacancy Stories originals
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'media-prep/2026-10-19-info-vacancy.json'
+permissions:
+  contents: write
+concurrency:
+  group: ls-info-vacancy-stage-original-media
+  cancel-in-progress: false
+jobs:
+  prepare:
+    if: github.repository == 'lsevmos-gpt/ls-vk' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - name: Download exact original bytes and validate SHA-256
+        shell: bash
+        run: |
+          set -euo pipefail
+          manifest=media-prep/2026-10-19-info-vacancy.json
+          video=$(jq -r '.introUrl' "$manifest")
+          photo=$(jq -r '.vacancyUrl' "$manifest")
+          test "$video" != null && test "$photo" != null
+          mkdir -p media
+          curl --fail --show-error --location --retry 3 --connect-timeout 20 --max-time 240 "$video" -o media/2026-10-19-info-intro-original.mp4
+          curl --fail --show-error --location --retry 3 --connect-timeout 20 --max-time 240 "$photo" -o media/2026-10-19-vacancy-assistant-final-original.png
+          printf '%s  %s\n' '1d724948f0aa3b434819daeafc3ec8f1aa3f7756833ff9c99c01a00939e880e8' 'media/2026-10-19-info-intro-original.mp4' 'e50854b8d439f779c007d9f3346bba480ea4ebad10c13ab0efdf6e3fe105dfdd' 'media/2026-10-19-vacancy-assistant-final-original.png' | sha256sum --check --
+          python - <<'PY'
+          import pathlib, struct
+          v=pathlib.Path("media/2026-10-19-info-intro-original.mp4")
+          i=pathlib.Path("media/2026-10-19-vacancy-assistant-final-original.png")
+          assert v.stat().st_size == 2173794 and v.read_bytes()[4:8] == b"ftyp"
+          with i.open('rb') as f: head=f.read(24)
+          assert i.stat().st_size == 2526443 and head[:8] == b"\x89PNG\r\n\x1a\n"
+          assert struct.unpack(">II",head[16:24]) == (941,1672)
+          print("EXACT_ORIGINAL_SHA256=PASS; NO_TRANSCODING")
+          PY
+      - name: Commit original assets once
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'ls-social-media-bot'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add media/2026-10-19-info-intro-original.mp4 media/2026-10-19-vacancy-assistant-final-original.png
+          git diff --cached --quiet && { echo 'Originals already present'; exit 0; }
+          git commit -m 'Store exact originals for approved Info and vacancy Stories [skip ci]'
+          git pull --rebase origin main
+          git push origin HEAD:main
