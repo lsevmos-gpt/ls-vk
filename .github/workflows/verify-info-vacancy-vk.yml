@@ -1,0 +1,84 @@
+name: Verify Info and vacancy VK Stories (read-only)
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'verification/info-vacancy-20261019-vk.json'
+permissions:
+  contents: write
+concurrency:
+  group: verify-info-vacancy-vk-once
+  cancel-in-progress: false
+jobs:
+  verify:
+    if: github.repository == 'lsevmos-gpt/ls-vk' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      VK_API_VERSION: '5.199'
+      VK_GROUP_ID: '48198173'
+      VK_GROUP_SCREEN_NAME: 'liniya__sporta'
+      VK_GROUP_TOKEN: ${{ secrets.VK_GROUP_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install VK dependencies without hooks
+        run: npm install --omit=dev --ignore-scripts --no-package-lock --no-audit --no-fund
+      - name: Read live community story IDs without publishing
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$VK_GROUP_TOKEN"
+          mkdir -p results/verification
+          cat > .tmp-verify-vk.mjs <<'JS'
+          import fs from 'node:fs';
+          import {vkCall} from './src/vk.js';
+          const sleep=ms=>new Promise(done=>setTimeout(done,ms));
+          const cut=Math.floor(Date.parse('2026-10-19T12:00:00Z')/1000);
+          const start=Date.parse('2026-10-19T12:02:15Z');
+          while(Date.now()<start) await sleep(Math.min(15000,start-Date.now()));
+          let stories=[],error=null;
+          for(let attempt=0;attempt<10;attempt++){
+            try {
+              const response=await vkCall('stories.get',{owner_id:-48198173},process.env.VK_GROUP_TOKEN);
+              const items=Array.isArray(response?.items)?response.items:Array.isArray(response)?response:[];
+              const flat=items.flatMap(item=>Array.isArray(item?.stories)?item.stories:Array.isArray(item)?item:[item]);
+              stories=flat.filter(s=>Number(s?.owner_id)===-48198173 && Number(s?.date)>=cut && Number.isInteger(s?.id))
+                .map(s=>({id:s.id,owner_id:s.owner_id,type:s.type,date:s.date}));
+              error=null;
+            } catch(e){error=String(e.message).slice(0,200);}
+            if(stories.some(s=>s.type==='video') && stories.some(s=>s.type==='photo')) break;
+            if(attempt<9) await sleep(10000);
+          }
+          const result={
+            checkedAt:new Date().toISOString(),
+            observedInfoVideo:stories.some(s=>s.type==='video'),
+            observedVacancyPhoto:stories.some(s=>s.type==='photo'),
+            matchingStories:stories,
+            error,
+            note:'Read-only community inspection after scheduled batch, no publishing or retry; identified by posting window and types'
+          };
+          result.ok=result.observedInfoVideo&&result.observedVacancyPhoto;
+          fs.writeFileSync('results/verification/info-vacancy-20261019-vk.json',JSON.stringify(result,null,2)+'\n');
+          console.log('VK_STORY_VERIFICATION='+JSON.stringify({ok:result.ok,matchingStories:stories,error}));
+          JS
+          node .tmp-verify-vk.mjs
+          rm .tmp-verify-vk.mjs
+      - name: Save nonsecret verification report
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f results/verification/info-vacancy-20261019-vk.json || exit 0
+          git config user.name 'ls-vk-verifier-bot'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add results/verification/info-vacancy-20261019-vk.json
+          git diff --cached --quiet && exit 0
+          git commit -m 'Save read-only verification of Info and vacancy VK Stories [skip ci]'
+          git pull --rebase origin main
+          git push origin HEAD:main
