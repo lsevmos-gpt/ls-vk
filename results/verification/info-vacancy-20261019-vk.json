@@ -1,0 +1,22 @@
+{
+  "checkedAt": "2026-10-19T12:02:15.579Z",
+  "observedInfoVideo": true,
+  "observedVacancyPhoto": true,
+  "matchingStories": [
+    {
+      "id": 456240672,
+      "owner_id": -48198173,
+      "type": "video",
+      "date": 1792411202
+    },
+    {
+      "id": 456240673,
+      "owner_id": -48198173,
+      "type": "photo",
+      "date": 1792411297
+    }
+  ],
+  "error": null,
+  "note": "Read-only community inspection after scheduled batch, no publishing or retry; identified by posting window and types",
+  "ok": true
+}
