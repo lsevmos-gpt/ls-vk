@@ -1,0 +1,20 @@
+{
+  "checkedAt": "2026-10-19T12:04:15.699Z",
+  "ok": false,
+  "statuses": {
+    "video": {
+      "id": "6ad604e0be29a9b16b36ad3a",
+      "status": "sent",
+      "sentAt": "2026-10-19T12:00:36.946Z",
+      "dueAt": "2026-10-19T12:00:00.000Z"
+    },
+    "photo": {
+      "id": "6ad604e3e0cb711786f59149",
+      "status": "sending",
+      "sentAt": null,
+      "dueAt": "2026-10-19T12:01:00.000Z"
+    }
+  },
+  "error": null,
+  "note": "Read-only provider verification of exact post IDs; no new social content was sent"
+}
