@@ -1,0 +1,19 @@
+{
+  "id": "info-vacancy-20261019-1500-ig-video",
+  "type": "instagram",
+  "approved": true,
+  "publicContent": true,
+  "handle": "liniya__sporta",
+  "postType": "story",
+  "publishNow": false,
+  "publishAt": "2026-10-19T15:00:00+03:00",
+  "dueAt": "2026-10-19T12:00:00Z",
+  "media": [
+    {
+      "type": "video",
+      "url": "https://raw.githubusercontent.com/lsevmos-gpt/ls-vk/main/media/2026-10-19-info-intro-original.mp4"
+    }
+  ],
+  "text": "",
+  "isAiGenerated": false
+}
