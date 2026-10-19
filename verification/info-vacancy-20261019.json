@@ -1,0 +1,12 @@
+{
+  "id": "info-vacancy-20261019-buffer-status-check",
+  "type": "read-only-verification",
+  "approved": true,
+  "publicContent": true,
+  "bufferPostIds": [
+    "6ad604e0be29a9b16b36ad3a",
+    "6ad604e3e0cb711786f59149"
+  ],
+  "notBeforeUTC": "2026-10-19T12:02:00Z",
+  "note": "Read-only; never create/update/delete a Buffer post."
+}
