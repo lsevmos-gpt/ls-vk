@@ -1,0 +1,85 @@
+name: Verify Instagram vacancy Stories after Buffer dueAt (read only)
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'verification/info-vacancy-20261019.json'
+permissions:
+  contents: write
+concurrency:
+  group: verify-info-vacancy-buffer-once
+  cancel-in-progress: false
+jobs:
+  verify:
+    if: github.repository == 'lsevmos-gpt/ls-vk' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      BUFFER_API_KEY: ${{ secrets.BUFFER_API_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Read back two exact Buffer post IDs without publishing
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$BUFFER_API_KEY"
+          mkdir -p results/verification
+          cat > /tmp/check-buffer-story-status.mjs <<'JS'
+          import fs from 'node:fs';
+          const ids = {
+            video:'6ad604e0be29a9b16b36ad3a',
+            photo:'6ad604e3e0cb711786f59149'
+          };
+          const wait = ms => new Promise(done=>setTimeout(done,ms));
+          const notBefore = Date.parse('2026-10-19T12:02:00Z');
+          while(Date.now() < notBefore) await wait(Math.min(15000, notBefore-Date.now()));
+          const query = `query FetchBufferPost($input: PostInput!) { post(input: $input) { id status sentAt dueAt channelId } }`;
+          async function read(id){
+            const response = await fetch('https://api.buffer.com',{
+              method:'POST',
+              headers:{'content-type':'application/json','authorization':'Bearer '+process.env.BUFFER_API_KEY},
+              body:JSON.stringify({query,variables:{input:{id}}})
+            });
+            const raw=await response.json();
+            if(!response.ok || raw.errors?.length || !raw.data?.post) throw Error('Buffer read-only query failed: '+(raw.errors?.map(x=>x.message).join('; ')||response.status));
+            const p=raw.data.post;
+            if(p.id !== id || p.channelId !== '6acde74d778b240e2ff489a7') throw Error('Provider returned unexpected post ID or channel');
+            return {id:p.id,status:p.status,sentAt:p.sentAt,dueAt:p.dueAt};
+          }
+          let posts={},error=null;
+          for(let attempt=0;attempt<14;attempt++){
+            try {posts={video:await read(ids.video),photo:await read(ids.photo)};error=null;}
+            catch(e){error=String(e.message).slice(0,220);}
+            if(posts.video?.status==='sent' && posts.photo?.status==='sent') break;
+            if(attempt<13) await wait(10000);
+          }
+          const result={
+            checkedAt:new Date().toISOString(),
+            ok:posts.video?.status==='sent' && posts.photo?.status==='sent',
+            statuses:posts,
+            error,
+            note:'Read-only provider verification of exact post IDs; no new social content was sent'
+          };
+          fs.writeFileSync('results/verification/info-vacancy-20261019-buffer.json',JSON.stringify(result,null,2)+'\n');
+          console.log('BUFFER_VERIFICATION='+JSON.stringify({ok:result.ok,statuses:Object.fromEntries(Object.entries(posts).map(([k,v])=>[k,v.status])),error:result.error}));
+          JS
+          node /tmp/check-buffer-story-status.mjs
+      - name: Save read-only verification report
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ ! -f results/verification/info-vacancy-20261019-buffer.json ]; then exit 0; fi
+          git config user.name 'ls-buffer-verifier-bot'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add results/verification/info-vacancy-20261019-buffer.json
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m 'Record final read-only Buffer vacancy Story statuses [skip ci]'
+          git pull --rebase origin main
+          git push origin HEAD:main
