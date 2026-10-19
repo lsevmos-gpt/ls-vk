@@ -1,0 +1,19 @@
+{
+  "id": "info-vacancy-20261019-1501-ig-photo",
+  "type": "instagram",
+  "approved": true,
+  "publicContent": true,
+  "handle": "liniya__sporta",
+  "postType": "story",
+  "publishNow": false,
+  "publishAt": "2026-10-19T15:01:00+03:00",
+  "dueAt": "2026-10-19T12:01:00Z",
+  "media": [
+    {
+      "type": "image",
+      "url": "https://raw.githubusercontent.com/lsevmos-gpt/ls-vk/main/media/2026-10-19-vacancy-assistant-final-original.png"
+    }
+  ],
+  "text": "",
+  "isAiGenerated": false
+}
