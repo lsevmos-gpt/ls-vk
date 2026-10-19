@@ -1,9 +1,15 @@
 {
   "id": "info-vacancy-20261019-1500-vk-batch",
   "platform": "vk",
-  "status": "reserved_before_provider_call",
+  "status": "submitted_to_vk",
   "publishAtUTC": "2026-10-19T12:00:00Z",
   "reservedAtUTC": "2026-10-19T11:54:16.212207+00:00",
   "runId": "39247972741",
-  "note": "One durable attempt marker; never retry without manual reconciliation"
+  "note": "One durable attempt marker; never retry without manual reconciliation",
+  "finishedAtUTC": "2026-10-19T12:01:37.837418+00:00",
+  "provider": {
+    "returned_story_ids": [],
+    "reported_count": 2
+  },
+  "error": null
 }
