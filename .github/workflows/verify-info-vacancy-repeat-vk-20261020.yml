@@ -1,0 +1,86 @@
+name: Verify today's repeated VK Info/vacancy Stories (READ-ONLY)
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'verification/info-vacancy-repeat-20261020-vk.json'
+permissions:
+  contents: write
+concurrency:
+  group: verify-info-vacancy-repeat-20261020-vk
+  cancel-in-progress: false
+jobs:
+  verify:
+    if: github.repository == 'lsevmos-gpt/ls-vk' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      VK_GROUP_TOKEN: ${{ secrets.VK_GROUP_TOKEN }}
+      VK_API_VERSION: '5.199'
+      VK_GROUP_ID: '48198173'
+      VK_GROUP_SCREEN_NAME: 'liniya__sporta'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Read-only inspection of exact target community after release time
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$VK_GROUP_TOKEN"
+          npm install --omit=dev --ignore-scripts --no-package-lock --no-audit --no-fund
+          mkdir -p results/verification
+          cat > .tmp-verify-info-vacancy-repeat-vk.mjs <<'JS'
+          import fs from 'node:fs';
+          import {vkCall} from './src/vk.js';
+          const sleep=ms=>new Promise(done=>setTimeout(done,ms));
+          const min=Math.floor(Date.parse('2026-10-20T14:29:00Z')/1000);
+          const start=Date.parse('2026-10-20T14:31:00Z');
+          while(Date.now()<start) await sleep(Math.min(15000,start-Date.now()));
+          let relevant=[],error=null;
+          for(let attempt=0;attempt<15;attempt++){
+            try{
+              const response=await vkCall('stories.get',{owner_id:-48198173},process.env.VK_GROUP_TOKEN);
+              const items=Array.isArray(response?.items)?response.items:Array.isArray(response)?response:[];
+              const flat=items.flatMap(x=>Array.isArray(x?.stories)?x.stories:Array.isArray(x)?x:[x]);
+              relevant=flat.filter(s=>Number(s?.owner_id)===-48198173 &&
+                Number(s?.date)>=min && Number(s?.date)<min+1200 && Number.isInteger(s?.id))
+                .map(s=>({id:s.id,owner_id:s.owner_id,type:s.type,date:s.date}))
+                .sort((a,b)=>a.date-b.date);
+              error=null;
+            }catch(e){error=String(e.message).slice(0,240)}
+            if(relevant.some(s=>s.type==='video')&&relevant.some(s=>s.type==='photo')) break;
+            if(attempt<14)await sleep(12000);
+          }
+          const video=relevant.find(s=>s.type==='video');
+          const photo=relevant.find(s=>s.type==='photo' && (!video || s.date>=video.date));
+          const data={
+            checkedAtUTC:new Date().toISOString(),readonly:true,
+            windowStartUTC:'2026-10-20T14:29:00Z',
+            groupId:48198173,matchingStories:relevant,
+            matchingVideoId:video?.id??null,matchingPhotoId:photo?.id??null,
+            observedSequence:Boolean(video&&photo),error,
+            note:'Read-only VK community Story enumeration. Attribution by date, owner and media types; original source SHA is controlled by upload manifest.'
+          };
+          fs.writeFileSync('results/verification/info-vacancy-repeat-20261020-vk.json',JSON.stringify(data,null,2)+'\n');
+          console.log('VK_READONLY_STORY_CHECK='+JSON.stringify(data));
+          JS
+          node .tmp-verify-info-vacancy-repeat-vk.mjs
+          rm -f .tmp-verify-info-vacancy-repeat-vk.mjs
+      - name: Commit nonsecret verification result only
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f results/verification/info-vacancy-repeat-20261020-vk.json || exit 0
+          git config user.name ls-vk-readonly-verifier
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add results/verification/info-vacancy-repeat-20261020-vk.json
+          git diff --cached --quiet && exit 0
+          git commit -m 'Record read-only VK verification for repeated vacancy Story sequence [skip ci]'
+          git pull --rebase origin main
+          git push origin HEAD:main
