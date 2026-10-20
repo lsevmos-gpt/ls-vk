@@ -1,0 +1,162 @@
+name: Publish approved Lady Dance VK Clip at 11:00 Moscow exactly once
+on:
+  schedule:
+    - cron: '45,50,55 7 20 10 *'
+  push:
+    branches: [main]
+    paths:
+      - 'requests/campaigns/lady-dance-20261020-vk-run.json'
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: lady-dance-20261020-vk-clip-one-provider-attempt
+  cancel-in-progress: false
+jobs:
+  publish:
+    if: github.repository == 'lsevmos-gpt/ls-vk' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      VK_API_VERSION: '5.199'
+      VK_GROUP_ID: '48198173'
+      VK_GROUP_SCREEN_NAME: 'liniya__sporta'
+      VK_GROUP_TOKEN: ${{ secrets.VK_GROUP_TOKEN }}
+      VK_USER_TOKEN: ${{ secrets.VK_USER_TOKEN }}
+      SOCIAL_PLATFORM: vk
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Validate intended exact date, original-provenance media, unique VK job
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from datetime import datetime,timezone
+          from pathlib import Path
+          import json
+          now=datetime.now(timezone.utc)
+          target=datetime(2026,10,20,8,0,0,tzinfo=timezone.utc)
+          assert now.date()==target.date() and now<target,'Wrong date or missed 11:00, never post late'
+          req=json.loads(Path('requests/campaigns/lady-dance-20261020-1100-vk.json').read_text())
+          ready=json.loads(Path('results/verification/lady-dance-20261020-final.json').read_text())
+          assert req['id']=='lady-dance-20261020-1100-vk' and req['type']=='clip'
+          assert req['approved'] is True and req['publicContent'] is True and req['postToWall'] is True
+          assert req['mediaUrl']=='https://github.com/lsevmos-gpt/ls-vk/releases/download/lady-dance-20261020-final/lady-dance-20261020-final.mp4'
+          assert req['fileName']=='lady-dance-20261020-final.mp4'
+          assert ready['ok'] is True and ready['width']==1080 and ready['height']==1920 and ready['sizeBytes']<299000000
+          assert not Path('results/campaigns/lady-dance-20261020-vk.json').exists(),'VK already attempted; never duplicate'
+          assert not Path('results/lady-dance-20261020-1100-vk.json').exists(),'Legacy receipt already exists; never duplicate'
+          print('VK_APPROVAL_QUALITY_DATE_AND_DEDUPLICATION_CHECK=PASS')
+          PY
+      - name: Require real VK user token for video upload, otherwise do not submit
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$VK_GROUP_TOKEN" || { echo '::error::VK_GROUP_TOKEN missing'; exit 1; }
+          test -n "$VK_USER_TOKEN" || { echo '::error::VK_USER_TOKEN absent; Cannot publish Clip. No posting attempted'; exit 1; }
+      - name: Install client and verify exact VK community
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm install --omit=dev --ignore-scripts --no-package-lock --no-audit --no-fund
+          node scripts/check_social_targets.mjs
+      - name: Confirm user video permission, read-only
+        shell: bash
+        run: |
+          node --input-type=module - <<'JS'
+          import {vkCall} from './src/vk.js';
+          const perms=await vkCall('account.getAppPermissions',{},process.env.VK_USER_TOKEN);
+          if ((Number(perms)&16)!==16) throw Error('User token has no video scope (bit 16); no publishing');
+          console.log('VK_USER_VIDEO_SCOPE_VERIFIED');
+          JS
+      - name: Reserve exactly one VK Clip submission before publication
+        id: reserve
+        shell: bash
+        run: |
+          set -euo pipefail
+          git pull --ff-only origin main
+          mkdir -p results/campaigns
+          p=results/campaigns/lady-dance-20261020-vk.json
+          if test -e "$p" || test -e results/lady-dance-20261020-1100-vk.json; then
+            echo '::error::Attempt already recorded; do not duplicate'; exit 1
+          fi
+          printf '%s\n' '{"id":"lady-dance-20261020-1100-vk","status":"reserved_before_provider_call","platform":"vk","intendedAtUTC":"2026-10-20T08:00:00Z","note":"One approved attempt; no automatic retry if result uncertain"}' > "$p"
+          git config user.name ls-social-bot
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add "$p"
+          git commit -m 'Reserve one Lady Dance VK Clip at 11:00 MSK [skip ci]'
+          git push origin HEAD:main
+          echo 'reserved=true' >> "$GITHUB_OUTPUT"
+      - name: Wait until 11:00:00 Moscow (08:00:00 UTC), never post late
+        if: steps.reserve.outputs.reserved == 'true'
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from datetime import datetime,timezone
+          import time
+          target=datetime(2026,10,20,8,0,0,tzinfo=timezone.utc)
+          while True:
+            remain=(target-datetime.now(timezone.utc)).total_seconds()
+            if remain <= 0:
+              if remain < -8: raise SystemExit('Exact VK 11:00 time missed; no publication')
+              break
+            time.sleep(min(remain,15))
+          print('VK_UPLOAD_STARTED_AT_1100_MSK')
+          PY
+      - name: Submit VK Clip and attached wall post once (not auto-retried)
+        if: steps.reserve.outputs.reserved == 'true'
+        id: send
+        shell: bash
+        run: |
+          set +e
+          node scripts/publish-job.js requests/campaigns/lady-dance-20261020-1100-vk.json
+          code=$?
+          echo "exit_code=$code" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Save VK video and wall IDs or unresolved-provider receipt
+        if: always() && steps.reserve.outputs.reserved == 'true'
+        shell: bash
+        env:
+          VK_SUBMIT_EXIT: ${{ steps.send.outputs.exit_code }}
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          import json,os,datetime
+          path=Path('results/campaigns/lady-dance-20261020-vk.json')
+          data=json.loads(path.read_text())
+          receipt=Path('results/lady-dance-20261020-1100-vk.json')
+          p=json.loads(receipt.read_text()) if receipt.is_file() else {}
+          result=p.get('result') if isinstance(p.get('result'),dict) else {}
+          video=result.get('uploaded',{}).get('video',{}) if isinstance(result.get('uploaded'),dict) else {}
+          post=result.get('post',{}) if isinstance(result.get('post'),dict) else {}
+          videoId=video.get('id')
+          ownerId=video.get('owner_id')
+          wallId=post.get('post_id')
+          accepted=p.get('ok') is True and p.get('id')=='lady-dance-20261020-1100-vk' and bool(videoId) and bool(ownerId) and bool(wallId) and os.environ.get('VK_SUBMIT_EXIT')=='0'
+          data.update({'status':'vk_api_accepted' if accepted else 'manual_reconciliation_required','videoId':videoId,'videoOwnerId':ownerId,'wallPostId':wallId,'finishedAtUTC':datetime.datetime.now(datetime.timezone.utc).isoformat(),'providerError':p.get('error')})
+          path.write_text(json.dumps(data,ensure_ascii=False,indent=2)+'\n')
+          print('VK_ACCEPTED',accepted,'VIDEO_ID',videoId,'WALL_ID',wallId)
+          PY
+          git add results/campaigns/lady-dance-20261020-vk.json
+          if test -e results/lady-dance-20261020-1100-vk.json; then
+            git add results/lady-dance-20261020-1100-vk.json
+          fi
+          git commit -m 'Record verified VK video and wall ID for Lady Dance [skip ci]'
+          git pull --rebase origin main
+          git push origin HEAD:main
+      - name: Flag unknown VK provider outcome, never retry automatically
+        if: always() && steps.reserve.outputs.reserved == 'true'
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import json
+          r=json.load(open('results/campaigns/lady-dance-20261020-vk.json'))
+          assert r['status']=='vk_api_accepted','VK posting failed or uncertain; never publish a duplicate'
+          PY
