@@ -1,0 +1,10 @@
+{
+  "id": "lady-dance-20261020-audio-final",
+  "approved": true,
+  "publicContent": true,
+  "sourceRelease": "lady-dance-20261020-reel",
+  "videoPacketPolicy": "exact video stream copy, AAC <=128000 bps",
+  "targetRelease": "lady-dance-20261020-final",
+  "intendedPublishAt": "2026-10-20T11:00:00+03:00",
+  "note": "Provider-compatible final remux only. Never publishes social posts."
+}
