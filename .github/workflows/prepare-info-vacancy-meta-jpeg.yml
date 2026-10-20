@@ -1,0 +1,67 @@
+name: Prepare exact vacancy Story PNG as high-fidelity Meta JPEG (no publication)
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'media-prep/2026-10-20-info-vacancy-meta-jpeg.json'
+permissions:
+  contents: write
+concurrency:
+  group: ls-info-vacancy-meta-jpeg-20261020
+  cancel-in-progress: false
+jobs:
+  convert:
+    if: github.repository == 'lsevmos-gpt/ls-vk' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Convert byte-verified original without cropping or upscaling
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check 'Pillow>=11,<13'
+          mkdir -p results/verification media
+          python - <<'PY'
+          from PIL import Image, ImageOps
+          from pathlib import Path
+          import json,hashlib,datetime
+          source=Path('media/2026-10-19-vacancy-assistant-final-original.png')
+          target=Path('media/2026-10-20-vacancy-assistant-meta-highquality.jpg')
+          receipt=Path('results/verification/2026-10-20-vacancy-meta-jpeg.json')
+          digest=hashlib.sha256(source.read_bytes()).hexdigest()
+          assert digest=='e50854b8d439f779c007d9f3346bba480ea4ebad10c13ab0efdf6e3fe105dfdd'
+          with Image.open(source) as im:
+            assert im.format=='PNG' and im.size==(941,1672)
+            rgb=im.convert('RGB')
+            rgb.save(target,'JPEG',quality=98,subsampling=0,optimize=True,progressive=False)
+          with Image.open(target) as out:
+            assert out.format=='JPEG' and out.size==(941,1672)
+          assert 0<target.stat().st_size<8*1024*1024
+          target_digest=hashlib.sha256(target.read_bytes()).hexdigest()
+          receipt.write_text(json.dumps({
+            'ok':True,'doesNotPublish':True,'source':str(source),'sourceSHA256':digest,
+            'output':str(target),'outputSHA256':target_digest,
+            'format':'JPEG','quality':98,'subsampling':0,'sizeBytes':target.stat().st_size,
+            'width':941,'height':1672,'noCropNoResample':True,
+            'createdAtUTC':datetime.datetime.now(datetime.timezone.utc).isoformat()
+          },ensure_ascii=False,indent=2)+'\n')
+          print('STORY_JPEG_VERIFIED',target.stat().st_size,target_digest)
+          PY
+      - name: Save converted media and verification metadata (no social posts)
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name ls-social-media-bot
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add media/2026-10-20-vacancy-assistant-meta-highquality.jpg results/verification/2026-10-20-vacancy-meta-jpeg.json
+          git diff --cached --quiet && exit 0
+          git commit -m 'Stage Meta-compatible high-fidelity vacancy Story JPEG [skip ci]'
+          git pull --rebase origin main
+          git push origin HEAD:main
