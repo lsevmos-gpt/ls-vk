@@ -1,0 +1,22 @@
+{
+  "id": "lady-dance-20261020-1100-instagram",
+  "type": "instagram",
+  "approved": true,
+  "publicContent": true,
+  "handle": "liniya__sporta",
+  "postType": "reel",
+  "publishNow": false,
+  "dueAt": "2026-10-20T08:00:00Z",
+  "shouldShareToFeed": true,
+  "isAiGenerated": false,
+  "text": "LADY DANCE 💃\n\nЛиния спорта",
+  "media": [
+    {
+      "type": "video",
+      "url": "https://github.com/lsevmos-gpt/ls-vk/releases/download/lady-dance-20261020-final/lady-dance-20261020-final.mp4",
+      "thumbnailOffset": 0,
+      "title": "LADY DANCE — Линия спорта"
+    }
+  ],
+  "note": "Approved cover first 0.4 seconds, 1080x1920 H264 25fps AAC 122kbps, 74,586,098 bytes; no automatic duplicate."
+}
