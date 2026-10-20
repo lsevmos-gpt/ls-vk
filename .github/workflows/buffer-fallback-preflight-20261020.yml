@@ -1,0 +1,69 @@
+name: Check Buffer fallback access for vacancy Stories (READ-ONLY)
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'diagnostics/2026-10-20-buffer-preflight-trigger.json'
+permissions:
+  contents: write
+concurrency:
+  group: ls-buffer-fallback-readonly-preflight-20261020
+  cancel-in-progress: false
+jobs:
+  check:
+    if: github.repository == 'lsevmos-gpt/ls-vk' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    env:
+      BUFFER_API_KEY: ${{ secrets.BUFFER_API_KEY }}
+      SOCIAL_PLATFORM: buffer
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Read-only Buffer status and target identification
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p results/verification
+          node --input-type=module <<'JS'
+          import fs from 'node:fs';
+          import {checkBufferConnection,discoverChannel} from './src/buffer.js';
+          const data={checkTimeUTC:new Date().toISOString(),readOnly:true,hasSecret:Boolean(process.env.BUFFER_API_KEY)};
+          try{
+            if(!data.hasSecret)throw Error('BUFFER_API_KEY missing');
+            const c=await checkBufferConnection();
+            const resolved=await discoverChannel({handle:'liniya__sporta',service:'instagram'});
+            data.instagramTargetVerified=resolved.channel.id==='6acde74d778b240e2ff489a7';
+            data.instagramChannelId=resolved.channel.id;
+            data.queuePaused=resolved.channel.isQueuePaused;
+            const url='https://api.buffer.com';
+            const query='query FetchBufferPost($input: PostInput!) { post(input: $input) { id status sentAt dueAt channelId } }';
+            data.priorPostStatuses={};
+            for(const id of ['6ad604e0be29a9b16b36ad3a','6ad604e3e0cb711786f59149']){
+              const raw=await fetch(url,{method:'POST',headers:{'content-type':'application/json','authorization':'Bearer '+process.env.BUFFER_API_KEY},body:JSON.stringify({query,variables:{input:{id}}})});
+              const j=await raw.json();
+              data.priorPostStatuses[id]={http:raw.status,id:j?.data?.post?.id??null,status:j?.data?.post?.status??null,error:j?.errors?.map(x=>x.message).join('; ')?.slice(0,150)??null};
+            }
+            data.ok=data.instagramTargetVerified===true && data.queuePaused!==true;
+          }catch(e){data.ok=false;data.error=String(e.message).slice(0,220)}
+          fs.writeFileSync('results/verification/2026-10-20-buffer-stories-preflight.json',JSON.stringify(data,null,2)+'\n');
+          console.log('BUFFER_READONLY_PREFLIGHT='+JSON.stringify(data));
+          JS
+      - name: Commit nonsecret read-only report
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f results/verification/2026-10-20-buffer-stories-preflight.json || exit 0
+          git config user.name ls-buffer-diagnostic
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add results/verification/2026-10-20-buffer-stories-preflight.json
+          git diff --cached --quiet && exit 0
+          git commit -m 'Record Buffer fallback read-only access check [skip ci]'
+          git pull --rebase origin main
+          git push origin HEAD:main
