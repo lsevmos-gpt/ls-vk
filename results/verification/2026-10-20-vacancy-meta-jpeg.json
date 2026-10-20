@@ -1,0 +1,16 @@
+{
+  "ok": true,
+  "doesNotPublish": true,
+  "source": "media/2026-10-19-vacancy-assistant-final-original.png",
+  "sourceSHA256": "e50854b8d439f779c007d9f3346bba480ea4ebad10c13ab0efdf6e3fe105dfdd",
+  "output": "media/2026-10-20-vacancy-assistant-meta-highquality.jpg",
+  "outputSHA256": "97dc4f961ac8b227124c459f7a032e74eda2a09c21276cb701f6be566f1b9306",
+  "format": "JPEG",
+  "quality": 98,
+  "subsampling": 0,
+  "sizeBytes": 748828,
+  "width": 941,
+  "height": 1672,
+  "noCropNoResample": true,
+  "createdAtUTC": "2026-10-20T14:14:31.443267+00:00"
+}
