@@ -1,0 +1,30 @@
+name: Instagram Meta credential check (read only)
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/meta-ig-readiness.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify:
+    if: github.repository == 'lsevmos-gpt/ls-vk' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    env:
+      META_IG_ACCESS_TOKEN: ${{ secrets.META_IG_ACCESS_TOKEN }}
+      META_IG_USER_ID: ${{ secrets.META_IG_USER_ID }}
+      META_GRAPH_VERSION: v26.0
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Check required secrets exist without displaying them
+        shell: bash
+        run: |
+          test -n "$META_IG_ACCESS_TOKEN" || { echo "::error::META_IG_ACCESS_TOKEN is not configured"; exit 1; }
+          test -n "$META_IG_USER_ID" || { echo "::error::META_IG_USER_ID is not configured"; exit 1; }
+      - name: Verify Meta account (GET only; never publish)
+        run: python -m scripts.instagram_collab check -
