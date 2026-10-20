@@ -46,7 +46,7 @@ jobs:
           assert j['approved'] is True and j['publicContent'] is True
           assert j['collaborators']==['victoria_simora']
           assert j['shouldShareToFeed'] is True
-          assert j['media']==[{'type':'video','url':'https://github.com/lsevmos-gpt/ls-vk/releases/download/lady-dance-20261020-final/lady-dance-20261020-final.mp4'}]
+          assert j['media']==[{'type':'video','url':'https://raw.githubusercontent.com/lsevmos-gpt/ls-vk/main/media/2026-10-20-lady-dance-meta-collab-final.mp4'}]
           assert j['coverUrl']=='https://raw.githubusercontent.com/lsevmos-gpt/ls-vk/main/media/2026-10-20-lady-dance-cover-meta.jpg'
           assert 'Давно смотришь на Lady Dance' in j['text']
           assert 'Линия Спорта' in j['text']
@@ -63,7 +63,7 @@ jobs:
         run: |
           set -euo pipefail
           curl -fLSs --retry 2 --max-time 70 --range 0-1023 \
-            'https://github.com/lsevmos-gpt/ls-vk/releases/download/lady-dance-20261020-final/lady-dance-20261020-final.mp4' \
+            'https://raw.githubusercontent.com/lsevmos-gpt/ls-vk/main/media/2026-10-20-lady-dance-meta-collab-final.mp4' \
             -o /tmp/lady-video-preflight
           python - <<'PY'
           from pathlib import Path
