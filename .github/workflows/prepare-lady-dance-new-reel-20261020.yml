@@ -1,0 +1,96 @@
+name: Prepare NEW approved Lady Dance Reel from uploaded 4K source (NO SOCIAL PUBLISH)
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'media-prep/lady-dance-new-reel-source-20261020.json'
+permissions:
+  contents: write
+concurrency:
+  group: ls-prepare-lady-dance-new-upload-20261020
+  cancel-in-progress: false
+jobs:
+  prepare:
+    if: github.repository == 'lsevmos-gpt/ls-vk' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 38
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - name: Download exact uploaded source and verify SHA-256
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/ladynew media results/verification
+          path='media-prep/lady-dance-new-reel-source-20261020.json'
+          jq -e '.approved == true and .publicContent == true and .id == "lady-dance-new-20261020-source"' "$path" >/dev/null
+          src=$(jq -r '.sourceUrl' "$path")
+          test "$src" = 'https://at.adobe.com/A09nSYLZPO2Xgk9t'
+          curl --fail --show-error --location --retry 3 --connect-timeout 30 --max-time 1100 "$src" -o /tmp/ladynew/original.mp4
+          test "$(stat -c %s /tmp/ladynew/original.mp4)" = 239278483
+          printf '%s  %s\n' '665b1311740dd4fc4471d28b365ac09c2be50d68fb1e2e1a1a9ecc9ab037e18d' '/tmp/ladynew/original.mp4' | sha256sum --check
+          printf '%s  %s\n' '8f78ccc438204534682a8f492e6fe29504a1612250737b566829d5118243a91e' 'media/2026-10-20-lady-dance-cover-original.png' | sha256sum --check
+          printf '%s  %s\n' '55c047f8157058c69a7294313645cb2f6559f416e1ee74d39f031282ac778e11' 'media/2026-10-20-lady-dance-cover-meta.jpg' | sha256sum --check
+          ffprobe -v error -show_entries stream=codec_type,codec_name,width,height,r_frame_rate -show_entries format=duration,size -of json /tmp/ladynew/original.mp4 > /tmp/ladynew/original-probe.json
+          python3 - <<'PY'
+          import json
+          d=json.load(open('/tmp/ladynew/original-probe.json'))
+          vs=next(s for s in d['streams'] if s['codec_type']=='video')
+          assert (vs['width'],vs['height'],vs['r_frame_rate'],vs['codec_name'])==(2160,3840,'25/1','h264')
+          assert 41<float(d['format']['duration'])<43
+          print('ORIGINAL_NEW_VIDEO_IDENTIFIED_SOURCE_SHA256=PASS')
+          PY
+      - name: Preserve full composition in highest practical Meta-compatible 1080x1920 encoding
+        shell: bash
+        run: |
+          set -euo pipefail
+          command -v ffmpeg && command -v ffprobe
+          ffmpeg -hide_banner -nostdin -loglevel error -stats \
+            -i /tmp/ladynew/original.mp4 \
+            -map 0:v:0 -map 0:a:0 -dn -sn \
+            -vf 'scale=1080:1920:flags=lanczos,format=yuv420p' \
+            -c:v libx264 -preset medium -crf 14 -maxrate 18000k -bufsize 36000k \
+            -g 50 -keyint_min 50 -sc_threshold 0 -x264-params open-gop=0 \
+            -c:a aac -b:a 128k -ar 48000 -ac 2 \
+            -movflags +faststart -y media/2026-10-20-lady-dance-new-meta-fullquality.mp4
+          ffprobe -v error -show_entries stream=codec_type,codec_name,width,height,r_frame_rate,bit_rate,sample_rate,channels -show_entries format=duration,size,bit_rate -of json media/2026-10-20-lady-dance-new-meta-fullquality.mp4 > /tmp/ladynew/ready-probe.json
+          python3 - <<'PY'
+          from pathlib import Path
+          import json,hashlib,datetime
+          f=Path('media/2026-10-20-lady-dance-new-meta-fullquality.mp4')
+          d=json.loads(Path('/tmp/ladynew/ready-probe.json').read_text())
+          vs=next(s for s in d['streams'] if s['codec_type']=='video')
+          a=next(s for s in d['streams'] if s['codec_type']=='audio')
+          assert (vs['width'],vs['height'],vs['r_frame_rate'])==(1080,1920,'25/1')
+          assert vs['codec_name']=='h264' and a['codec_name']=='aac' and a['sample_rate']=='48000'
+          assert 41<float(d['format']['duration'])<43
+          assert f.stat().st_size<95_000_000, 'GitHub raw media limit requires <95MB'
+          assert float(d['format']['bit_rate'])<25_000_000
+          with f.open('rb') as fin: sha=hashlib.file_digest(fin,'sha256').hexdigest()
+          rec={
+            'id':'lady-dance-new-20261020-source','ok':True,
+            'originalSha256':'665b1311740dd4fc4471d28b365ac09c2be50d68fb1e2e1a1a9ecc9ab037e18d',
+            'originalSizeBytes':239278483,'originalDimensions':'2160x3840',
+            'metaFile':str(f),'sha256':sha,'sizeBytes':f.stat().st_size,
+            'format':d['format'],'streams':d['streams'],
+            'coverFile':'media/2026-10-20-lady-dance-cover-meta.jpg',
+            'coverSha256':'55c047f8157058c69a7294313645cb2f6559f416e1ee74d39f031282ac778e11',
+            'cropped':False,'upscaled':False,'modifiedFacesOrLogo':False,
+            'doesNotPublish':True,'checkedAtUTC':datetime.datetime.now(datetime.timezone.utc).isoformat()
+          }
+          Path('results/verification/lady-dance-new-20261020-prepared.json').write_text(json.dumps(rec,ensure_ascii=False,indent=2)+'\n')
+          print('READY_FOR_META',f.stat().st_size,sha,flush=True)
+          PY
+      - name: Commit prepared Meta file and exact inspection receipt, NO SOCIAL CALLS
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name ls-media-prepare
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -- media/2026-10-20-lady-dance-new-meta-fullquality.mp4 results/verification/lady-dance-new-20261020-prepared.json
+          git diff --cached --quiet && exit 0
+          git commit -m 'Stage new 4K-source Lady Dance Reel as Meta-compliant high-quality video [skip ci]'
+          git pull --rebase origin main
+          git push origin HEAD:main
