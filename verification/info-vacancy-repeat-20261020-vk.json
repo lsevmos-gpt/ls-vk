@@ -1,0 +1,16 @@
+{
+  "id": "info-vacancy-repeat-20261020-vk-readonly",
+  "groupId": 48198173,
+  "readOnly": true,
+  "matchStartUTC": "2026-10-20T14:29:00Z",
+  "matchedMediaTypes": [
+    "video",
+    "photo"
+  ],
+  "expectedOrder": [
+    "video",
+    "photo"
+  ],
+  "trigger": "verify-after-post",
+  "note": "No upload, publish, retry, or delete. Observe VK Stories."
+}
