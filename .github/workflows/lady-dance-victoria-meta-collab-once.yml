@@ -1,0 +1,177 @@
+name: Lady Dance Victoria Instagram Collab one-time approved repost
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'requests/instagram-meta/lady-dance-20261020-victoria-collab.json'
+permissions:
+  contents: write
+concurrency:
+  group: ls-social-single-approved-provider-submission
+  cancel-in-progress: false
+jobs:
+  publish-once:
+    if: github.repository == 'lsevmos-gpt/ls-vk' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      META_IG_ACCESS_TOKEN: ${{ secrets.META_IG_ACCESS_TOKEN }}
+      META_IG_USER_ID: ${{ secrets.META_IG_USER_ID }}
+      META_GRAPH_VERSION: v26.0
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Validate one approved replacement, exact collab username, unchanged media
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$META_IG_ACCESS_TOKEN" || { echo '::error::META_IG_ACCESS_TOKEN missing; no publication'; exit 1; }
+          test -n "$META_IG_USER_ID" || { echo '::error::META_IG_USER_ID missing; no publication'; exit 1; }
+          python -m unittest discover -s tests -v
+          python -m scripts.validate_social
+          python -m scripts.instagram_collab validate requests/instagram-meta/lady-dance-20261020-victoria-collab.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path('requests/instagram-meta/lady-dance-20261020-victoria-collab.json')
+          j=json.loads(p.read_text(encoding='utf-8'))
+          ready=json.loads(Path('results/verification/lady-dance-20261020-final.json').read_text())
+          cover=json.loads(Path('results/verification/lady-dance-meta-cover.json').read_text())
+          assert j['id']==p.stem=='lady-dance-20261020-victoria-collab'
+          assert j['approved'] is True and j['publicContent'] is True
+          assert j['collaborators']==['victoria_simora']
+          assert j['shouldShareToFeed'] is True
+          assert j['media']==[{'type':'video','url':'https://github.com/lsevmos-gpt/ls-vk/releases/download/lady-dance-20261020-final/lady-dance-20261020-final.mp4'}]
+          assert j['coverUrl']=='https://raw.githubusercontent.com/lsevmos-gpt/ls-vk/main/media/2026-10-20-lady-dance-cover-meta.jpg'
+          assert 'Давно смотришь на Lady Dance' in j['text']
+          assert 'Линия Спорта' in j['text']
+          assert 700<len(j['text'])<2100
+          assert ready['ok'] is True and ready['sizeBytes']==74586098 and ready['sha256']=='e565d4f973a20242e51b20e5bd35b24506c6dd1e34111b7ec404f8cd7e2a8bf8'
+          assert cover['ok'] is True and cover['sha256']=='55c047f8157058c69a7294313645cb2f6559f416e1ee74d39f031282ac778e11'
+          assert not Path('results/instagram-meta/lady-dance-20261020-victoria-collab.json').exists(),'This Reel was already attempted'
+          print('APPROVED_REPLACEMENT_NO_DUPLICATES_VALIDATED')
+          PY
+      - name: Verify exact Instagram account through Meta GET (no publish)
+        run: python -m scripts.instagram_collab check -
+      - name: Check video and JPEG are public and available without credentials
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -fLSs --retry 2 --max-time 70 --range 0-1023 \
+            'https://github.com/lsevmos-gpt/ls-vk/releases/download/lady-dance-20261020-final/lady-dance-20261020-final.mp4' \
+            -o /tmp/lady-video-preflight
+          python - <<'PY'
+          from pathlib import Path
+          with open('/tmp/lady-video-preflight','rb') as f:
+            f.seek(4)
+            assert f.read(4)==b'ftyp','Video URL does not serve MP4'
+          PY
+          curl -fLSs --retry 2 --max-time 35 \
+            'https://raw.githubusercontent.com/lsevmos-gpt/ls-vk/main/media/2026-10-20-lady-dance-cover-meta.jpg' \
+            -o /tmp/lady-cover-preflight.jpg
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('/tmp/lady-cover-preflight.jpg')
+          with p.open('rb') as f: assert f.read(3)==b'\xff\xd8\xff','Cover URL does not serve JPEG'
+          assert 10000<p.stat().st_size<8*1024*1024
+          print('META_MEDIA_URLS_VALID')
+          PY
+      - name: Reserve exactly one approved Instagram Collab attempt before first Meta mutation
+        id: reserve
+        shell: bash
+        run: |
+          set -euo pipefail
+          git pull --ff-only origin main
+          receipt='results/instagram-meta/lady-dance-20261020-victoria-collab.json'
+          if test -e "$receipt"; then
+            echo '::error::Attempt already exists, no duplicate'; exit 1
+          fi
+          mkdir -p results/instagram-meta
+          python - <<'PY'
+          from pathlib import Path
+          import json,os,datetime
+          p=Path('results/instagram-meta/lady-dance-20261020-victoria-collab.json')
+          marker={'id':'lady-dance-20261020-victoria-collab','platform':'instagram-meta','status':'submission_started','run_id':os.environ['GITHUB_RUN_ID'],'startedAtUTC':datetime.datetime.now(datetime.timezone.utc).isoformat(),'invitedCollaborator':'victoria_simora','note':'One explicit user-approved repost after deleting previous Buffer Reel; no automatic retries'}
+          with p.open('x',encoding='utf-8') as f: json.dump(marker,f,ensure_ascii=False,indent=2);f.write('\n')
+          PY
+          git config user.name ls-social-bot
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add "$receipt"
+          git commit -m 'Reserve one user-approved Lady Dance Victoria Collab repost [skip ci]'
+          git push origin HEAD:main
+          echo 'reserved=true' >> "$GITHUB_OUTPUT"
+      - name: Submit exactly one Meta REELS publish with collaborator invitation
+        id: publish
+        if: steps.reserve.outputs.reserved == 'true'
+        shell: bash
+        run: |
+          set +e
+          python - <<'PY'
+          from pathlib import Path
+          from scripts.instagram_collab import load_job,MetaClient,TRANSIENT_RESULTS
+          import os,json
+          path='requests/instagram-meta/lady-dance-20261020-victoria-collab.json'
+          job=load_job(path)
+          receipt=Path('results/instagram-meta/lady-dance-20261020-victoria-collab.json')
+          marker=json.loads(receipt.read_text(encoding='utf-8'))
+          assert marker['status']=='submission_started' and marker['run_id']==os.environ['GITHUB_RUN_ID']
+          client=MetaClient(os.environ['META_IG_ACCESS_TOKEN'],os.environ['META_IG_USER_ID'],graph_version=os.environ.get('META_GRAPH_VERSION','v26.0'))
+          result=client.publish_reel(job)
+          # Meta media_publish returned an ID. Read-back is best effort; never resubmit media.
+          try:
+            details=client._api('GET',result['published_media_id'],{'fields':'id,permalink,media_type,timestamp'})
+            result['permalink']=details.get('permalink')
+            result['media_type']=details.get('media_type')
+          except Exception as exc:
+            result['readbackNote']='Media publish succeeded; readback not yet available'
+          TRANSIENT_RESULTS.mkdir(parents=True,exist_ok=True)
+          (TRANSIENT_RESULTS/(job['id']+'.json')).write_text(json.dumps({'ok':True,'id':job['id'],'result':result},ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+          print('META_PUBLISHED_REEL_ID',result['published_media_id'])
+          print('INVITED_COLLABORATOR=victoria_simora; invitation acceptance pending')
+          if result.get('permalink'): print('PERMALINK='+result['permalink'])
+          PY
+          result=$?
+          echo "exit_code=$result" >> "$GITHUB_OUTPUT"
+          echo 'Meta submission complete; no second call or automatic retries'
+          exit 0
+      - name: Save final provider ID or uncertainty receipt without secrets
+        if: always() && steps.reserve.outputs.reserved == 'true'
+        shell: bash
+        env:
+          PUBLISH_EXIT_CODE: ${{ steps.publish.outputs.exit_code }}
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          import json,os,datetime
+          p=Path('results/instagram-meta/lady-dance-20261020-victoria-collab.json')
+          rec=json.loads(p.read_text(encoding='utf-8'))
+          temp=Path('instagram-meta-results/lady-dance-20261020-victoria-collab.json')
+          response=json.loads(temp.read_text(encoding='utf-8')) if temp.exists() else {}
+          details=response.get('result') if isinstance(response.get('result'),dict) else {}
+          id=details.get('published_media_id','')
+          ok=(os.environ.get('PUBLISH_EXIT_CODE')=='0' and response.get('ok') is True and response.get('id')==rec['id'] and isinstance(id,str) and id.isdecimal())
+          rec.update({'status':'published' if ok else 'manual_review_required','providerOk':bool(ok),'finishedAtUTC':datetime.datetime.now(datetime.timezone.utc).isoformat(),'instagramMediaId':id if ok else None,'permalink':details.get('permalink') if ok else None,'invitationStatus':'requested; acceptance not verified' if ok else 'unknown','note':'Meta confirmed Reel media ID; collaborator must accept invitation' if ok else 'Provider outcome uncertain or failed; do not retry without checking Instagram'})
+          p.write_text(json.dumps(rec,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+          print('COLLAB_PROVIDER_STATUS='+rec['status'])
+          if ok: print('INSTAGRAM_MEDIA_ID='+id)
+          PY
+          git add results/instagram-meta/lady-dance-20261020-victoria-collab.json
+          git commit -m 'Save Lady Dance Victoria Instagram Collab one-shot publication result [skip ci]'
+          git pull --rebase origin main
+          git push origin HEAD:main
+      - name: Stop if no publish confirmation, never retry
+        if: always() && steps.reserve.outputs.reserved == 'true'
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          p='results/instagram-meta/lady-dance-20261020-victoria-collab.json'
+          result=json.load(open(p,encoding='utf-8'))
+          assert result['status']=='published','Meta outcome unknown: do not create a duplicate'
+          PY
