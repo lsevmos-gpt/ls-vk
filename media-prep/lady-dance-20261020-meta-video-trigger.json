@@ -1,0 +1,10 @@
+{
+  "id": "lady-dance-20261020-meta-raw-staging",
+  "approved": true,
+  "publicContent": true,
+  "sourceRelease": "lady-dance-20261020-final",
+  "expectedBytes": 74586098,
+  "sha256": "e565d4f973a20242e51b20e5bd35b24506c6dd1e34111b7ec404f8cd7e2a8bf8",
+  "target": "media/2026-10-20-lady-dance-meta-collab-final.mp4",
+  "intent": "Stage for collaborator publication; no direct provider call"
+}
