@@ -16,6 +16,10 @@ jobs:
       META_IG_ACCESS_TOKEN: ${{ secrets.META_IG_ACCESS_TOKEN }}
       META_IG_USER_ID: ${{ secrets.META_IG_USER_ID }}
     steps:
+      - name: Install FFmpeg and FFprobe for audio diagnostics
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq ffmpeg
       - name: Compare published Instagram media to exact uploaded source without changing posts
         shell: bash
         run: |
