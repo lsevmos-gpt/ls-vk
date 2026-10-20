@@ -1,9 +1,14 @@
 {
   "id": "lady-dance-20261020-new-video-victoria",
   "platform": "instagram-meta",
-  "status": "submission_started",
+  "status": "published",
   "run_id": "39454721229",
   "startedAtUTC": "2026-10-20T16:08:14.622853+00:00",
   "invitedCollaborator": "victoria_simora",
-  "note": "One explicit user-approved NEW video upload 239MB 2160x3840 source; authorized post. No automatic retries"
+  "note": "Meta confirmed Reel media ID; collaborator must accept invitation",
+  "providerOk": true,
+  "finishedAtUTC": "2026-10-20T16:09:19.401540+00:00",
+  "instagramMediaId": "18062820158794888",
+  "permalink": "https://www.instagram.com/reel/DeuOg0AEud7/",
+  "invitationStatus": "requested; acceptance not verified"
 }
