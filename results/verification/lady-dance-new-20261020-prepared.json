@@ -1,0 +1,44 @@
+{
+  "id": "lady-dance-new-20261020-source",
+  "ok": true,
+  "originalSha256": "665b1311740dd4fc4471d28b365ac09c2be50d68fb1e2e1a1a9ecc9ab037e18d",
+  "originalSizeBytes": 239278483,
+  "originalDimensions": "2160x3840",
+  "metaFile": "media/2026-10-20-lady-dance-new-meta-fullquality.mp4",
+  "sha256": "72ad0edf8e2c0f7c4d4618035bbbba65cee5489c9460c5be6079891241fed822",
+  "sizeBytes": 75346476,
+  "format": {
+    "duration": "41.598000",
+    "size": "75346476",
+    "bit_rate": "14490403"
+  },
+  "streams": [
+    {
+      "codec_name": "h264",
+      "codec_type": "video",
+      "width": 1080,
+      "height": 1920,
+      "r_frame_rate": "25/1",
+      "bit_rate": "14368102"
+    },
+    {
+      "codec_name": "aac",
+      "codec_type": "audio",
+      "sample_rate": "48000",
+      "channels": 2,
+      "r_frame_rate": "0/0",
+      "bit_rate": "128994"
+    },
+    {
+      "codec_type": "data",
+      "r_frame_rate": "0/0"
+    }
+  ],
+  "coverFile": "media/2026-10-20-lady-dance-cover-meta.jpg",
+  "coverSha256": "55c047f8157058c69a7294313645cb2f6559f416e1ee74d39f031282ac778e11",
+  "cropped": false,
+  "upscaled": false,
+  "modifiedFacesOrLogo": false,
+  "doesNotPublish": true,
+  "checkedAtUTC": "2026-10-20T16:07:14.416005+00:00"
+}
