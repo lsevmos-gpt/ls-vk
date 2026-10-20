@@ -118,7 +118,10 @@ def validate_manifest(doc: object, path: Path, *, permit_draft: bool = True) -> 
     raw_collabs = doc.get("collaborators", [])
     if not isinstance(raw_collabs, list) or len(raw_collabs) > 3:
         raise CalendarError("collaborators must be a list of up to three accounts")
-    collabs = normalize_collaborators(raw_collabs) if raw_collabs else []
+    try:
+        collabs = normalize_collaborators(raw_collabs) if raw_collabs else []
+    except CollabError as exc:
+        raise CalendarError(str(exc)) from exc
     if collabs and post_type != "reel":
         raise CalendarError("Collaborators currently validated only for Reels")
     share = doc.get("shouldShareToFeed", True)
