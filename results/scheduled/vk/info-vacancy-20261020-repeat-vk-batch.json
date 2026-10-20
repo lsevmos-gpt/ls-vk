@@ -1,9 +1,12 @@
 {
   "id": "info-vacancy-20261020-repeat-vk-batch",
   "platform": "vk",
-  "status": "reserved_before_provider_call",
+  "status": "manual_reconciliation_required",
   "publishAtUTC": "2026-10-20T14:29:00Z",
   "reservedAtUTC": "2026-10-20T14:16:19.529150+00:00",
   "runId": "39437654196",
-  "note": "One durable attempt marker; never retry without manual reconciliation"
+  "note": "One durable attempt marker; never retry without manual reconciliation",
+  "finishedAtUTC": "2026-10-20T14:30:26.026020+00:00",
+  "provider": null,
+  "error": "Provider action failed; check GitHub logs (no automatic retry)"
 }
