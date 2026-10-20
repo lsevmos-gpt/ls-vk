@@ -1,0 +1,134 @@
+name: Republish approved Info/vacancy Instagram Story sequence once via Meta
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'media-prep/2026-10-20-info-vacancy-meta-stories-release.json'
+permissions:
+  contents: write
+concurrency:
+  group: ls-social-single-approved-provider-submission
+  cancel-in-progress: false
+jobs:
+  publish:
+    if: github.repository == 'lsevmos-gpt/ls-vk' && github.ref == 'refs/heads/main' && github.actor == 'lsevmos-gpt'
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    env:
+      META_IG_ACCESS_TOKEN: ${{ secrets.META_IG_ACCESS_TOKEN }}
+      META_IG_USER_ID: ${{ secrets.META_IG_USER_ID }}
+      META_GRAPH_VERSION: v26.0
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Validate exact source media, destination, and approved queue
+        shell: bash
+        run: |
+          set -euo pipefail
+          git pull --ff-only origin main
+          python -m unittest discover -s tests -v
+          python -m scripts.instagram_meta_calendar validate
+          python - <<'PY'
+          import hashlib,json
+          from pathlib import Path
+          root=Path('.')
+          expected={
+            'media/2026-10-19-info-intro-original.mp4':'1d724948f0aa3b434819daeafc3ec8f1aa3f7756833ff9c99c01a00939e880e8',
+            'media/2026-10-19-vacancy-assistant-final-original.png':'e50854b8d439f779c007d9f3346bba480ea4ebad10c13ab0efdf6e3fe105dfdd',
+            'media/2026-10-20-vacancy-assistant-meta-highquality.jpg':'97dc4f961ac8b227124c459f7a032e74eda2a09c21276cb701f6be566f1b9306'
+          }
+          for p,sha in expected.items():
+            h=hashlib.sha256((root/p).read_bytes()).hexdigest()
+            assert h==sha, 'Unapproved/changed source: '+p
+          original=json.loads((root/'calendar/instagram/2026-10/ig-20261020-1729-vacancy-intro-story.json').read_text())
+          photo=json.loads((root/'calendar/instagram/2026-10/ig-20261020-1739-vacancy-girl-story.json').read_text())
+          assert original['postType']=='story' and original['approved'] is True
+          assert photo['postType']=='story' and photo['approved'] is False
+          assert original['publishAt']=='2026-10-20T17:29:00+03:00'
+          assert photo['publishAt']=='2026-10-20T17:39:00+03:00'
+          print('EXACT_STORY_SEQUENCE_VALIDATED; NO_CROP; VIDEO_ORIGINAL')
+          PY
+      - name: Publish original video first, photo only after confirmed video ID
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json,os,time,subprocess
+          from datetime import datetime,timezone,timedelta
+          from pathlib import Path
+          from scripts.instagram_collab import MetaClient
+          from scripts.instagram_meta_calendar import (
+              ROOT,RESULTS,validate_manifest,_when,record,publish_via_meta,MAX_LATE
+          )
+          repo=os.environ.get('GITHUB_REPOSITORY')
+          actor=os.environ.get('GITHUB_ACTOR')
+          run_id=os.environ.get('GITHUB_RUN_ID','')
+          assert repo=='lsevmos-gpt/ls-vk' and actor=='lsevmos-gpt'
+          assert os.environ.get('GITHUB_REF')=='refs/heads/main' and run_id.isdecimal()
+          first=Path('calendar/instagram/2026-10/ig-20261020-1729-vacancy-intro-story.json')
+          second=Path('calendar/instagram/2026-10/ig-20261020-1739-vacancy-girl-story.json')
+          def git(*args):
+              subprocess.run(['git',*args],check=True,timeout=90)
+          git('config','user.name','ls-social-media-bot')
+          git('config','user.email','41898282+github-actions[bot]@users.noreply.github.com')
+          client=MetaClient(os.environ.get('META_IG_ACCESS_TOKEN',''),
+                            os.environ.get('META_IG_USER_ID',''),graph_version='v26.0')
+          client.verify_account()
+          def status(job):
+              path=ROOT/RESULTS/(job['id']+'.json')
+              if not path.exists():return None
+              return json.loads(path.read_text())
+          def finish(job):
+              old=status(job)
+              if old is not None:
+                  if old.get('status')=='published' and str(old.get('instagramMediaId','')).isdecimal():
+                      print('ALREADY_PUBLISHED_SKIP',job['id'],old['instagramMediaId'])
+                      return str(old['instagramMediaId'])
+                  raise RuntimeError('Pre-existing uncertain receipt: '+job['id']+'; never submit twice')
+              due=job['publishAt']
+              while datetime.now(timezone.utc)<due:
+                  remain=(due-datetime.now(timezone.utc)).total_seconds()
+                  time.sleep(min(max(remain,0),15))
+              if datetime.now(timezone.utc)-due>MAX_LATE:
+                  record(ROOT,job,'missed_window',run_id=run_id,
+                         note='Missed one-shot due time. No provider call made.')
+                  raise RuntimeError('Missed approved due window for '+job['id'])
+              record(ROOT,job,'submission_started',run_id=run_id,
+                     note='Unique one-shot reservation before official Meta call; no auto retry')
+              try:
+                  media_id=publish_via_meta(client,job)
+              except Exception:
+                  record(ROOT,job,'manual_review_required',run_id=run_id,
+                         note='Outcome uncertain; never automatically retry')
+                  raise
+              record(ROOT,job,'published',run_id=run_id,media_id=media_id,
+                     note='Meta media_publish returned media ID; no re-encoding of video')
+              print('PUBLISHED_IN_ORDER',job['id'],media_id,flush=True)
+              return media_id
+          video_doc=json.loads((ROOT/first).read_text())
+          video=validate_manifest(video_doc,first,permit_draft=False)
+          assert video is not None and video['postType']=='story' and video['media'][0]['type']=='video'
+          vid=finish(video)
+          assert str(vid).isdecimal()
+          # The picture is deliberately a DRAFT until the preceding video is confirmed.
+          photo_doc=json.loads((ROOT/second).read_text())
+          assert photo_doc['id']=='ig-20261020-1739-vacancy-girl-story'
+          assert photo_doc['publishAt']=='2026-10-20T17:39:00+03:00'
+          assert photo_doc['media']==[{'type':'image','url':'https://raw.githubusercontent.com/lsevmos-gpt/ls-vk/main/media/2026-10-20-vacancy-assistant-meta-highquality.jpg'}]
+          assert photo_doc['approved'] is False
+          photo_doc['approved']=True
+          photo=validate_manifest(photo_doc,second,permit_draft=False)
+          (ROOT/second).write_text(json.dumps(photo_doc,ensure_ascii=False,indent=2)+'\n')
+          git('add','--',str(second))
+          git('commit','-m','Unlock approved vacancy photo Story after video published [skip ci]')
+          git('pull','--rebase','origin','main')
+          git('push','origin','HEAD:main')
+          pid=finish(photo)
+          assert str(pid).isdecimal()
+          print('SEQUENCE_COMPLETED video='+str(vid)+' photo='+str(pid),flush=True)
+          PY
