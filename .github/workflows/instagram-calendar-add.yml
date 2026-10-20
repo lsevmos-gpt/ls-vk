@@ -1,0 +1,91 @@
+name: Add Instagram calendar post (Meta only)
+on:
+  workflow_dispatch:
+    inputs:
+      post_type:
+        description: 'Post type'
+        type: choice
+        options: [reel, photo, carousel, story]
+        default: reel
+        required: true
+      publish_time:
+        description: 'Local Simferopol/Moscow time: YYYY-MM-DD HH:MM'
+        type: string
+        required: true
+      media_urls:
+        description: 'Public HTTPS .mp4/.mov/.jpg links; carousel separate with semicolon'
+        type: string
+        required: true
+      caption:
+        description: 'Caption (Stories must be empty, no link sticker)'
+        type: string
+        required: false
+      cover_url:
+        description: 'Optional public JPEG Reel cover URL'
+        type: string
+        required: false
+      collaborators:
+        description: 'Up to three Instagram usernames, comma-separated (Reels only)'
+        type: string
+        required: false
+      share_to_feed:
+        description: 'Reels: also show in feed'
+        type: boolean
+        default: true
+        required: false
+      approved:
+        description: 'Confirm the final content and its release schedule are APPROVED'
+        type: boolean
+        default: false
+        required: true
+      public_content:
+        description: 'Confirm all URLs/caption are permitted in this PUBLIC GitHub repo'
+        type: boolean
+        default: false
+        required: true
+permissions:
+  contents: write
+concurrency:
+  group: ls-instagram-calendar-register
+  cancel-in-progress: false
+jobs:
+  register:
+    if: github.repository == 'lsevmos-gpt/ls-vk' && github.actor == 'lsevmos-gpt' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      FORM_KIND: ${{ inputs.post_type }}
+      FORM_TIME: ${{ inputs.publish_time }}
+      FORM_MEDIA_URLS: ${{ inputs.media_urls }}
+      FORM_CAPTION: ${{ inputs.caption }}
+      FORM_COVER_URL: ${{ inputs.cover_url }}
+      FORM_COLLABORATORS: ${{ inputs.collaborators }}
+      FORM_SHARE_TO_FEED: ${{ inputs.share_to_feed }}
+      FORM_APPROVED: ${{ inputs.approved }}
+      FORM_PUBLIC: ${{ inputs.public_content }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Run safety unit tests and sync latest calendar
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m unittest discover -s tests -v
+          git pull --ff-only origin main
+      - name: Validate and create explicitly approved calendar entry (NO PUBLISH)
+        run: python -m scripts.instagram_calendar_add
+      - name: Save approved plan to main; scheduled workflow will publish it later
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "ls-social-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -- calendar/instagram/
+          git commit -m "Add approved Instagram calendar post [skip ci]"
+          git pull --rebase origin main
+          git push origin HEAD:main

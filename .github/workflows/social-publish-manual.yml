@@ -1,4 +1,4 @@
-name: Publish approved public social request (MANUAL FALLBACK)
+name: Publish approved VK request (MANUAL FALLBACK; Instagram uses Meta)
 on:
   workflow_dispatch:
     inputs:
@@ -6,7 +6,7 @@ on:
         description: 'Network'
         required: true
         type: choice
-        options: [vk, buffer]
+        options: [vk]
       job_id:
         description: 'Exact new request ID; never use old queue files'
         required: true
@@ -35,7 +35,6 @@ jobs:
       VK_GROUP_SCREEN_NAME: 'liniya__sporta'
       VK_GROUP_TOKEN: ${{ secrets.VK_GROUP_TOKEN }}
       VK_USER_TOKEN: ${{ secrets.VK_USER_TOKEN }}
-      BUFFER_API_KEY: ${{ secrets.BUFFER_API_KEY }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -53,13 +52,8 @@ jobs:
           git pull --ff-only origin main
           python -m unittest discover -s tests -v
           python -m scripts.validate_social
-          if [ "$SOCIAL_PLATFORM" = 'vk' ]; then
-            test -n "$VK_GROUP_TOKEN" || { echo '::error::VK_GROUP_TOKEN missing'; exit 1; }
-          elif [ "$SOCIAL_PLATFORM" = 'buffer' ]; then
-            test -n "$BUFFER_API_KEY" || { echo '::error::BUFFER_API_KEY missing'; exit 1; }
-          else
-            echo '::error::Unsupported network'; exit 1
-          fi
+          if [ "$SOCIAL_PLATFORM" != 'vk' ]; then echo '::error::Only VK is supported here; Instagram uses Meta'; exit 1; fi
+          test -n "$VK_GROUP_TOKEN" || { echo '::error::VK_GROUP_TOKEN missing'; exit 1; }
       - name: Install dependencies without lifecycle hooks
         run: npm install --omit=dev --ignore-scripts --no-package-lock --no-audit --no-fund
       - name: Verify exact target (read-only)
@@ -82,11 +76,7 @@ jobs:
         shell: bash
         run: |
           set +e
-          if [ "$SOCIAL_PLATFORM" = 'vk' ]; then
-            node scripts/publish-job.js "requests/vk/$SOCIAL_JOB_ID.json" > /tmp/social.log 2>&1
-          else
-            node scripts/buffer-job.js "requests/buffer/$SOCIAL_JOB_ID.json" > /tmp/social.log 2>&1
-          fi
+          node scripts/publish-job.js "requests/vk/$SOCIAL_JOB_ID.json" > /tmp/social.log 2>&1
           code=$?
           echo "exit_code=$code" >> "$GITHUB_OUTPUT"
           echo 'Submission attempt finished. Do not retry automatically.'
