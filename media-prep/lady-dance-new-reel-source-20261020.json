@@ -1,0 +1,13 @@
+{
+  "id": "lady-dance-new-20261020-source",
+  "approved": true,
+  "publicContent": true,
+  "sourceFileName": "ниже.mp4",
+  "sourceUrl": "https://at.adobe.com/A09nSYLZPO2Xgk9t",
+  "sourceSha256": "665b1311740dd4fc4471d28b365ac09c2be50d68fb1e2e1a1a9ecc9ab037e18d",
+  "sourceSizeBytes": 239278483,
+  "output": "media/2026-10-20-lady-dance-new-meta-fullquality.mp4",
+  "coverSha256": "8f78ccc438204534682a8f492e6fe29504a1612250737b566829d5118243a91e",
+  "stageOnly": true,
+  "note": "Same 2026-10-20 cover, distinct user-uploaded NEW source video. No social media publication in staging step."
+}
