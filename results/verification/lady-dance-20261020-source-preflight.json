@@ -1,0 +1,40 @@
+{
+  "sources": [
+    {
+      "name": "drive-uc-confirm",
+      "url": "https://drive.google.com/uc?export=download&id=1cxQEiMo5RSK4lgpNEK5ASCrK93-aoNh9&confirm=t",
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "contentLength": "2462",
+      "contentRange": null,
+      "disposition": null,
+      "signature": "3c21444f43545950452068746d6c3e3c68746d6c3e3c686561643e3c7469746c",
+      "mp4": false,
+      "html": true
+    },
+    {
+      "name": "drive-usercontent-confirm",
+      "url": "https://drive.usercontent.google.com/download?id=1cxQEiMo5RSK4lgpNEK5ASCrK93-aoNh9&export=download&confirm=t",
+      "status": 206,
+      "contentType": "video/mp4",
+      "contentLength": "1024",
+      "contentRange": "bytes 0-1023/406740484",
+      "disposition": "attachment; filename=\"lady-dance.mp4\"",
+      "signature": "000000206674797069736f6d0000020069736f6d69736f32617663316d703431",
+      "mp4": true,
+      "html": false
+    },
+    {
+      "name": "drive-usercontent-uc",
+      "url": "https://drive.usercontent.google.com/uc?export=download&id=1cxQEiMo5RSK4lgpNEK5ASCrK93-aoNh9&confirm=t",
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "contentLength": "2462",
+      "contentRange": null,
+      "disposition": null,
+      "signature": "3c21444f43545950452068746d6c3e3c68746d6c3e3c686561643e3c7469746c",
+      "mp4": false,
+      "html": true
+    }
+  ]
+}
