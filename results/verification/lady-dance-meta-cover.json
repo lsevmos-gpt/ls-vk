@@ -1,0 +1,15 @@
+{
+  "ok": true,
+  "source": "media/2026-10-20-lady-dance-cover-original.png",
+  "sourceSHA256": "8f78ccc438204534682a8f492e6fe29504a1612250737b566829d5118243a91e",
+  "file": "media/2026-10-20-lady-dance-cover-meta.jpg",
+  "sha256": "55c047f8157058c69a7294313645cb2f6559f416e1ee74d39f031282ac778e11",
+  "format": "JPEG",
+  "quality": 98,
+  "subsampling": 0,
+  "sizeBytes": 605679,
+  "width": 941,
+  "height": 1672,
+  "checkedAt": "2026-10-20T08:13:14.413332+00:00",
+  "doesNotPublish": true
+}
