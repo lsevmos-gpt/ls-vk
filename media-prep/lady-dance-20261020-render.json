@@ -1,0 +1,11 @@
+{
+  "id": "lady-dance-20261020-render",
+  "approved": true,
+  "publicContent": true,
+  "sourceGoogleDriveId": "1cxQEiMo5RSK4lgpNEK5ASCrK93-aoNh9",
+  "sourceSha256": "05546ae51efa5f89756cea8c2c618146c071be71fe49e8d2df01b9224d36e4a8",
+  "coverSha256": "8f78ccc438204534682a8f492e6fe29504a1612250737b566829d5118243a91e",
+  "output": "1080x1920 H264 25fps, 0.4s cover, 128kbps AAC; CRF 14",
+  "intendedPublishAt": "2026-10-20T11:00:00+03:00",
+  "note": "Renders and prepares release, no social network posts."
+}
