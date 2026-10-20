@@ -1,0 +1,14 @@
+{
+  "id": "2026-10-20-instagram-buffer-stories",
+  "status": "reserved_before_provider_call",
+  "handle": "liniya__sporta",
+  "channelId": "6acde74d778b240e2ff489a7",
+  "mode": "shareNow",
+  "format": "Instagram STORY",
+  "source": "originals from 2026-10-19",
+  "approved": true,
+  "createdAtUTC": "2026-10-20T14:58:30.684Z",
+  "originalVideoSha256": "1d724948f0aa3b434819daeafc3ec8f1aa3f7756833ff9c99c01a00939e880e8",
+  "originalPhotoSha256": "e50854b8d439f779c007d9f3346bba480ea4ebad10c13ab0efdf6e3fe105dfdd",
+  "note": "Submit video exactly once, await provider SENT, then submit PNG photo exactly once. No automatic retries."
+}
