@@ -1,0 +1,60 @@
+name: Prepare approved Lady Dance Meta JPEG cover (no publication)
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'media-prep/lady-dance-meta-cover-trigger.json'
+permissions:
+  contents: write
+concurrency:
+  group: lady-dance-meta-cover-20261020-once
+  cancel-in-progress: false
+jobs:
+  prepare:
+    if: github.repository == 'lsevmos-gpt/ls-vk' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Convert approved PNG to highest quality baseline JPEG
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check 'Pillow>=11,<13'
+          mkdir -p results/verification
+          python - <<'PY'
+          from PIL import Image
+          from pathlib import Path
+          import hashlib,json,datetime
+          source=Path('media/2026-10-20-lady-dance-cover-original.png')
+          target=Path('media/2026-10-20-lady-dance-cover-meta.jpg')
+          info=Path('results/verification/lady-dance-meta-cover.json')
+          with source.open('rb') as f: original=hashlib.file_digest(f,'sha256').hexdigest()
+          assert original=='8f78ccc438204534682a8f492e6fe29504a1612250737b566829d5118243a91e'
+          with Image.open(source) as im:
+            assert im.size==(941,1672)
+            im.convert('RGB').save(target, 'JPEG', quality=98, subsampling=0, optimize=True, progressive=False)
+          with Image.open(target) as im:
+            assert im.format=='JPEG' and im.size==(941,1672)
+          assert target.stat().st_size<=8*1024*1024
+          with target.open('rb') as f: digest=hashlib.file_digest(f,'sha256').hexdigest()
+          info.write_text(json.dumps({'ok':True,'source':'media/2026-10-20-lady-dance-cover-original.png','sourceSHA256':original,'file':str(target),'sha256':digest,'format':'JPEG','quality':98,'subsampling':0,'sizeBytes':target.stat().st_size,'width':941,'height':1672,'checkedAt':datetime.datetime.now(datetime.timezone.utc).isoformat(),'doesNotPublish':True},ensure_ascii=False,indent=2)+'\n')
+          print('COVER_JPEG_READY',target.stat().st_size,digest)
+          PY
+      - name: Commit exact standalone Meta cover and verified receipt
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name ls-social-media-bot
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add media/2026-10-20-lady-dance-cover-meta.jpg results/verification/lady-dance-meta-cover.json
+          git diff --cached --quiet && exit 0
+          git commit -m 'Prepare Meta-compatible Lady Dance high-fidelity JPEG cover [skip ci]'
+          git pull --rebase origin main
+          git push origin HEAD:main
