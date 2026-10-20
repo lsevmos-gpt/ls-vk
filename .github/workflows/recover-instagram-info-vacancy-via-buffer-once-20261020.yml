@@ -1,0 +1,130 @@
+name: Recover approved Instagram Info then vacancy Stories via Buffer (ONE SHOT)
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'recovery/2026-10-20-instagram-buffer-stories-trigger.json'
+permissions:
+  contents: write
+concurrency:
+  group: ls-instagram-vacancy-buffer-recovery-once-20261020
+  cancel-in-progress: false
+jobs:
+  publish:
+    if: github.repository == 'lsevmos-gpt/ls-vk' && github.ref == 'refs/heads/main' && github.actor == 'lsevmos-gpt'
+    runs-on: ubuntu-latest
+    timeout-minutes: 17
+    env:
+      BUFFER_API_KEY: ${{ secrets.BUFFER_API_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Validate originals and obtain durable pre-submission reservation
+        shell: bash
+        run: |
+          set -euo pipefail
+          git pull --ff-only origin main
+          test -n "$BUFFER_API_KEY" || { echo '::error::No BUFFER_API_KEY'; exit 1; }
+          node --input-type=module <<'JS'
+          import fs from 'node:fs';
+          import {discoverChannel} from './src/buffer.js';
+          const preflight=JSON.parse(fs.readFileSync('results/verification/2026-10-20-buffer-stories-preflight.json','utf8'));
+          if(preflight.ok!==true || preflight.instagramChannelId!=='6acde74d778b240e2ff489a7')throw Error('Buffer preflight not verified');
+          const target=await discoverChannel({service:'instagram',handle:'liniya__sporta'});
+          if(target.channel.id!=='6acde74d778b240e2ff489a7'||target.channel.isQueuePaused)throw Error('Unexpected or paused Instagram channel');
+          const receipt='results/recovery/2026-10-20-instagram-buffer-stories.json';
+          if(fs.existsSync(receipt))throw Error('Already attempted; NEVER replay');
+          fs.mkdirSync('results/recovery',{recursive:true});
+          const data={
+            id:'2026-10-20-instagram-buffer-stories',
+            status:'reserved_before_provider_call',
+            handle:'liniya__sporta',channelId:target.channel.id,
+            mode:'shareNow',format:'Instagram STORY',
+            source:'originals from 2026-10-19',approved:true,
+            createdAtUTC:new Date().toISOString(),
+            originalVideoSha256:'1d724948f0aa3b434819daeafc3ec8f1aa3f7756833ff9c99c01a00939e880e8',
+            originalPhotoSha256:'e50854b8d439f779c007d9f3346bba480ea4ebad10c13ab0efdf6e3fe105dfdd',
+            note:'Submit video exactly once, await provider SENT, then submit PNG photo exactly once. No automatic retries.'
+          };
+          fs.writeFileSync(receipt,JSON.stringify(data,null,2)+'\n');
+          console.log('BUFFER_TARGET_VERIFIED_AND_PREPARED',target.channel.id);
+          JS
+          printf '%s  %s\n' '1d724948f0aa3b434819daeafc3ec8f1aa3f7756833ff9c99c01a00939e880e8' 'media/2026-10-19-info-intro-original.mp4' 'e50854b8d439f779c007d9f3346bba480ea4ebad10c13ab0efdf6e3fe105dfdd' 'media/2026-10-19-vacancy-assistant-final-original.png' | sha256sum --check --
+          git config user.name ls-instagram-recovery
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -- results/recovery/2026-10-20-instagram-buffer-stories.json
+          git commit -m 'Reserve one approved recovery of Instagram Info/photo Stories via Buffer [skip ci]'
+          git pull --rebase origin main
+          git push origin HEAD:main
+      - name: Submit video once; verify Buffer SENT; submit original photo once; verify status
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --input-type=module <<'JS'
+          import fs from 'node:fs';
+          import {execFileSync} from 'node:child_process';
+          import {createInstagramPost} from './src/buffer.js';
+          const path='results/recovery/2026-10-20-instagram-buffer-stories.json';
+          const data=JSON.parse(fs.readFileSync(path,'utf8'));
+          if(data.status!=='reserved_before_provider_call')throw Error('One-shot reserve must exist');
+          const channelId='6acde74d778b240e2ff489a7';
+          function git(...a){execFileSync('git',a,{stdio:'pipe',timeout:85000})}
+          function checkpoint(status,fields={}){
+            Object.assign(data,fields,{status,updatedAtUTC:new Date().toISOString()});
+            fs.writeFileSync(path,JSON.stringify(data,null,2)+'\n');
+            git('add','--',path);
+            git('commit','-m','Record Instagram Buffer Story recovery '+status+' [skip ci]');
+            git('pull','--rebase','origin','main');
+            git('push','origin','HEAD:main');
+            console.log('BUFFER_CHECKPOINT',JSON.stringify({status,videoId:data.videoBufferPostId,photoId:data.photoBufferPostId}));
+          }
+          const wait=(ms)=>new Promise(r=>setTimeout(r,ms));
+          async function read(id){
+            const query='query FetchBufferPost($input: PostInput!) { post(input: $input) { id status sentAt dueAt channelId } }';
+            const r=await fetch('https://api.buffer.com',{method:'POST',
+              headers:{'content-type':'application/json','authorization':'Bearer '+process.env.BUFFER_API_KEY},
+              body:JSON.stringify({query,variables:{input:{id}}})});
+            const j=await r.json();
+            if(!r.ok || j.errors?.length || !j.data?.post)throw Error('Buffer read-back failed '+r.status+': '+(j.errors?.[0]?.message||'missing post'));
+            const p=j.data.post;
+            if(p.id!==id||p.channelId!==channelId)throw Error('Buffer returned mismatching channel or post');
+            return p;
+          }
+          async function sendOne(kind,url,label){
+            console.log('BUFFER_CREATE_ONCE',label);
+            const post=await createInstagramPost({channelId,text:'',postType:'story',
+              media:[{type:kind,url}],publishNow:true,shouldShareToFeed:false,isAiGenerated:false});
+            if(post.channelId!==channelId||!post.id)throw Error('Buffer create returned mismatched channel/id');
+            checkpoint(label+'_accepted',{[label+'BufferPostId']:post.id,[label+'InitialStatus']:post.status});
+            const started=Date.now();
+            let last=null;
+            while(Date.now()-started<300000){
+              last=await read(post.id);
+              console.log('BUFFER_STATUS',label,last.status,last.id);
+              if(last.status==='sent') {
+                checkpoint(label+'_sent',{[label+'SentAt']:last.sentAt});
+                return last;
+              }
+              if(['failed','error','rejected','cancelled','canceled'].includes(String(last.status).toLowerCase()))throw Error('Buffer '+label+' status '+last.status);
+              await wait(10000);
+            }
+            throw Error('Buffer '+label+' not SENT within 5 minutes: last='+last?.status+'; no further Story will be sent');
+          }
+          try{
+            await sendOne('video','https://raw.githubusercontent.com/lsevmos-gpt/ls-vk/main/media/2026-10-19-info-intro-original.mp4','video');
+            await wait(8000);
+            await sendOne('image','https://raw.githubusercontent.com/lsevmos-gpt/ls-vk/main/media/2026-10-19-vacancy-assistant-final-original.png','photo');
+            checkpoint('both_sent_by_buffer',{note:'Buffer statuses SENT for both, but must check Instagram live Story media IDs separately'});
+            console.log('BOTH_BUFFER_SENT; live Instagram verification still required.');
+          }catch(e){
+            const message=String(e.message).slice(0,320);
+            checkpoint('manual_review_required',{error:message,note:'No automatic retry. Read confirmed Buffer post IDs before taking any new action.'});
+            console.error('::error::BUFFER_STORY_RECOVERY',message);
+            process.exitCode=1;
+          }
+          JS
