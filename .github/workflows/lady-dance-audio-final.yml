@@ -1,0 +1,78 @@
+name: Lady Dance delivery encode - keep H264 1080p video lossless
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'media-prep/lady-dance-20261020-audio-final.json'
+permissions:
+  contents: write
+concurrency:
+  group: lady-dance-one-final-media-release
+  cancel-in-progress: false
+jobs:
+  finalize:
+    if: github.repository == 'lsevmos-gpt/ls-vk' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 16
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - name: Install ffmpeg
+        run: |
+          set -euo pipefail
+          if ! command -v ffmpeg >/dev/null; then sudo apt-get update -qq && sudo apt-get install -y ffmpeg; fi
+      - name: Retain bit-exact video packets and make 120kbps AAC for Buffer
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/lady
+          curl -fLSs --retry 3 --connect-timeout 25 --max-time 240 \
+            'https://github.com/lsevmos-gpt/ls-vk/releases/download/lady-dance-20261020-reel/lady-dance-20261020-1080p-cover.mp4' \
+            -o /tmp/lady/before.mp4
+          printf '%s  %s\n' '8ee988739266f4c88c43d97697b2948e689d425765af4605e665cb4f9b1da2d5' /tmp/lady/before.mp4 | sha256sum --check --
+          ffmpeg -hide_banner -loglevel warning -y -i /tmp/lady/before.mp4 -map 0:v:0 -map 0:a:0 \
+            -c:v copy -c:a aac -b:a 120k -ar 48000 \
+            -movflags +faststart /tmp/lady/lady-dance-20261020-final.mp4
+          ffprobe -v error -show_format -show_streams -of json /tmp/lady/lady-dance-20261020-final.mp4 > /tmp/lady/metadata.json
+          python3 - <<'PY'
+          import json,pathlib,hashlib,datetime
+          p=pathlib.Path('/tmp/lady/lady-dance-20261020-final.mp4')
+          m=json.loads(pathlib.Path('/tmp/lady/metadata.json').read_text())
+          v=next(s for s in m['streams'] if s.get('codec_type')=='video')
+          a=next(s for s in m['streams'] if s.get('codec_type')=='audio')
+          assert (v['width'],v['height'],v['codec_name'],v['avg_frame_rate']) == (1080,1920,'h264','25/1'),v
+          assert a['codec_name']=='aac' and int(a.get('bit_rate','0'))<=128000,a
+          assert 41.9 < float(m['format']['duration']) < 42.5,m['format']['duration']
+          assert 0<p.stat().st_size<299000000,p.stat().st_size
+          with p.open('rb') as f: sha=hashlib.file_digest(f,'sha256').hexdigest()
+          obj={'id':'lady-dance-20261020-final','status':'ready','ok':True,'fileName':p.name,'sizeBytes':p.stat().st_size,'sha256':sha,'videoCodec':'h264','width':1080,'height':1920,'fps':'25/1','durationSeconds':float(m['format']['duration']),'audioCodec':'aac','audioBitrate':a['bit_rate'],'videoSourceReelSha256':'8ee988739266f4c88c43d97697b2948e689d425765af4605e665cb4f9b1da2d5','videoWasReencodedDuringFinalAudioStep':False,'introCoverSeconds':0.4,'intendedPublicationTime':'2026-10-20T11:00:00+03:00','checkedAt':datetime.datetime.now(datetime.timezone.utc).isoformat()}
+          pathlib.Path('results/verification/lady-dance-20261020-final.json').write_text(json.dumps(obj,ensure_ascii=False,indent=2)+'\n')
+          print('DELIVERY_FINAL_PASS',json.dumps(obj,ensure_ascii=False))
+          PY
+      - name: Publish final verified media asset (not social posting)
+        shell: bash
+        run: |
+          set -euo pipefail
+          tag='lady-dance-20261020-final'
+          if gh release view "$tag" --repo lsevmos-gpt/ls-vk >/dev/null 2>&1; then
+            echo '::error::Final release already exists; no automatic replacement'
+            exit 1
+          fi
+          gh release create "$tag" /tmp/lady/lady-dance-20261020-final.mp4 --repo lsevmos-gpt/ls-vk \
+            --title 'Lady Dance Reel approved final - 20 Oct 2026' \
+            --notes 'Approved 1080x1920 H.264 25fps, 0.4s image cover, source retained separately. AAC <=128kbps for Buffer, final remux did not reencode video.' --latest=false
+          echo 'https://github.com/lsevmos-gpt/ls-vk/releases/download/lady-dance-20261020-final/lady-dance-20261020-final.mp4'
+      - name: Save verified final output receipt
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name ls-media-prep-bot
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add results/verification/lady-dance-20261020-final.json
+          git commit -m 'Record exact final Lady Dance 1080p video and 120kbps audio for Buffer [skip ci]'
+          git pull --rebase origin main
+          git push origin HEAD:main
