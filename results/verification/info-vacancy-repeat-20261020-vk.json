@@ -1,0 +1,19 @@
+{
+  "checkedAtUTC": "2026-10-20T14:33:59.568Z",
+  "readonly": true,
+  "windowStartUTC": "2026-10-20T14:29:00Z",
+  "groupId": 48198173,
+  "matchingStories": [
+    {
+      "id": 456240675,
+      "owner_id": -48198173,
+      "type": "video",
+      "date": 1792506543
+    }
+  ],
+  "matchingVideoId": 456240675,
+  "matchingPhotoId": null,
+  "observedSequence": false,
+  "error": null,
+  "note": "Read-only VK community Story enumeration. Attribution by date, owner and media types; original source SHA is controlled by upload manifest."
+}
