@@ -1,0 +1,9 @@
+{
+  "id": "lady-dance-meta-cover-20261020",
+  "sourceFile": "media/2026-10-20-lady-dance-cover-original.png",
+  "expectedSourceSha256": "8f78ccc438204534682a8f492e6fe29504a1612250737b566829d5118243a91e",
+  "approved": true,
+  "publicContent": true,
+  "description": "Convert approved cover only; no publishing",
+  "output": "media/2026-10-20-lady-dance-cover-meta.jpg"
+}
