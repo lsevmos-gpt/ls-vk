@@ -1,0 +1,23 @@
+{
+  "checkTimeUTC": "2026-10-20T14:55:22.747Z",
+  "readOnly": true,
+  "hasSecret": true,
+  "instagramTargetVerified": true,
+  "instagramChannelId": "6acde74d778b240e2ff489a7",
+  "queuePaused": false,
+  "priorPostStatuses": {
+    "6ad604e0be29a9b16b36ad3a": {
+      "http": 200,
+      "id": "6ad604e0be29a9b16b36ad3a",
+      "status": "sent",
+      "error": null
+    },
+    "6ad604e3e0cb711786f59149": {
+      "http": 200,
+      "id": "6ad604e3e0cb711786f59149",
+      "status": "sent",
+      "error": null
+    }
+  },
+  "ok": true
+}
