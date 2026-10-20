@@ -11,7 +11,8 @@ concurrency:
   cancel-in-progress: false
 jobs:
   verify:
-    if: github.repository == 'lsevmos-gpt/ls-vk' && github.ref == 'refs/heads/main'
+    # Legacy retrospective Buffer check retired after Meta-only transition.
+    if: ${{ false }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
     env:
