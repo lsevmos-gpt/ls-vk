@@ -224,7 +224,7 @@ def main(argv: list[str] | None = None) -> int:
         return 2
     phase, request_path = argv
     try:
-        job = load_job(request_path)
+        job = None if phase == "check" and request_path == "-" else load_job(request_path)
         if phase == "validate":
             print("VALID Instagram Collab request: " + job["id"] + "; no API calls or publishing")
             return 0
