@@ -6,3 +6,6 @@ npm-debug.log*
 .DS_Store
 *.tmp
 *.log
+
+# Instagram Meta Collab provider receipts remain ephemeral in Actions
+instagram-meta-results/

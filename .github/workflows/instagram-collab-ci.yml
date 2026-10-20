@@ -1,0 +1,34 @@
+name: Instagram Collab (offline CI)
+on:
+  pull_request:
+    paths:
+      - 'scripts/instagram_collab.py'
+      - 'scripts/instagram_collab_guard.py'
+      - 'tests/test_instagram_collab.py'
+      - '.github/workflows/instagram-collab-publish.yml'
+      - '.github/workflows/instagram-collab-ci.yml'
+      - 'INSTAGRAM_COLLABORATORS.md'
+  push:
+    branches:
+      - 'feature/instagram-meta-collaborators-20261020'
+    paths:
+      - 'scripts/instagram_collab.py'
+      - 'scripts/instagram_collab_guard.py'
+      - 'tests/test_instagram_collab.py'
+      - '.github/workflows/instagram-collab-publish.yml'
+      - '.github/workflows/instagram-collab-ci.yml'
+permissions:
+  contents: read
+jobs:
+  offline-validation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Test safety guards and collaborator payloads (no API calls)
+        run: |
+          python -m unittest discover -s tests -v
+          python -m scripts.validate_social
