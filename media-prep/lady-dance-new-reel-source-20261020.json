@@ -9,5 +9,6 @@
   "output": "media/2026-10-20-lady-dance-new-meta-fullquality.mp4",
   "coverSha256": "8f78ccc438204534682a8f492e6fe29504a1612250737b566829d5118243a91e",
   "stageOnly": true,
-  "note": "Same 2026-10-20 cover, distinct user-uploaded NEW source video. No social media publication in staging step."
+  "note": "Only preparation is retriggered after installing required FFmpeg; no social publication or previous Meta call occurred.",
+  "retryPreparationOnly": 2
 }
