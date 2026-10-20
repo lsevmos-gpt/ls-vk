@@ -1,6 +1,6 @@
 {
   "id": "2026-10-20-instagram-buffer-stories",
-  "status": "video_accepted",
+  "status": "video_sent",
   "handle": "liniya__sporta",
   "channelId": "6acde74d778b240e2ff489a7",
   "mode": "shareNow",
@@ -13,5 +13,6 @@
   "note": "Submit video exactly once, await provider SENT, then submit PNG photo exactly once. No automatic retries.",
   "videoBufferPostId": "6ad781998e28a63abaf12620",
   "videoInitialStatus": "sending",
-  "updatedAtUTC": "2026-10-20T14:58:43.825Z"
+  "updatedAtUTC": "2026-10-20T14:59:36.490Z",
+  "videoSentAt": "2026-10-20T14:59:28.082Z"
 }
