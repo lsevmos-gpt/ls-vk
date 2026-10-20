@@ -36,3 +36,4 @@ jobs:
         run: |
           python -m unittest discover -s tests -p test_meta_ig_token_health.py -v
           python -m scripts.meta_ig_token_health
+# Rotation verification requested 2026-10-20: read-only Meta GET, no publishing.
