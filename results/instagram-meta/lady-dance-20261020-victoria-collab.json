@@ -1,9 +1,14 @@
 {
   "id": "lady-dance-20261020-victoria-collab",
   "platform": "instagram-meta",
-  "status": "submission_started",
+  "status": "published",
   "run_id": "39392449857",
   "startedAtUTC": "2026-10-20T08:18:41.126108+00:00",
   "invitedCollaborator": "victoria_simora",
-  "note": "One explicit user-approved repost after deleting previous Buffer Reel; no automatic retries"
+  "note": "Meta confirmed Reel media ID; collaborator must accept invitation",
+  "providerOk": true,
+  "finishedAtUTC": "2026-10-20T08:19:33.349839+00:00",
+  "instagramMediaId": "18180291292430391",
+  "permalink": "https://www.instagram.com/reel/DetYxlAjX_n/",
+  "invitationStatus": "requested; acceptance not verified"
 }
