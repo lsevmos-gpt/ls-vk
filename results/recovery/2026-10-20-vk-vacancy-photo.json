@@ -4,7 +4,13 @@
   "precedingVideoId": 456240675,
   "previousVideoVisible": true,
   "checkedAtUTC": "2026-10-20T14:54:45.763Z",
-  "status": "reserved_before_provider_call",
+  "status": "published_verified_by_vk",
   "priorPhotoIds": [],
-  "note": "Attempt only once. A visible photo blocks uploading."
+  "note": "Attempt only once. A visible photo blocks uploading.",
+  "providerResponseOk": true,
+  "providerError": null,
+  "observedPhotoIds": [
+    456240676
+  ],
+  "completedAtUTC": "2026-10-20T14:55:39.837Z"
 }
