@@ -1,0 +1,10 @@
+{
+  "id": "2026-10-20-vk-vacancy-photo-recovery",
+  "groupId": 48198173,
+  "precedingVideoId": 456240675,
+  "previousVideoVisible": true,
+  "checkedAtUTC": "2026-10-20T14:54:45.763Z",
+  "status": "reserved_before_provider_call",
+  "priorPhotoIds": [],
+  "note": "Attempt only once. A visible photo blocks uploading."
+}
