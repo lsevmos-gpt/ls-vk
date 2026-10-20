@@ -1,4 +1,4 @@
-name: Legacy Buffer Instagram Stories scheduler (DISABLED: Meta-only migration)
+name: "Legacy Buffer Instagram Stories scheduler (DISABLED: Meta-only migration)"
 on:
   workflow_dispatch:
 permissions:
