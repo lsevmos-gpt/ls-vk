@@ -1,0 +1,14 @@
+{
+  "id": "lady-dance-20261020-1100-vk",
+  "type": "clip",
+  "approved": true,
+  "publicContent": true,
+  "mediaUrl": "https://github.com/lsevmos-gpt/ls-vk/releases/download/lady-dance-20261020-final/lady-dance-20261020-final.mp4",
+  "fileName": "lady-dance-20261020-final.mp4",
+  "name": "LADY DANCE — Линия спорта",
+  "description": "LADY DANCE 💃\n\n«Линия спорта»",
+  "postToWall": true,
+  "wallText": "LADY DANCE 💃\n\n«Линия спорта»",
+  "intentPublishAt": "2026-10-20T11:00:00+03:00",
+  "note": "Approved VK Clip only. Execute through dedicated guarded runner at 11:00 MSK; needs VK_USER_TOKEN with video permission. Never retry after uncertain provider call."
+}
