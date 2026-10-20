@@ -1,0 +1,74 @@
+name: Instagram Meta monthly calendar (no Buffer)
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'calendar/instagram/**/*.json'
+      - 'scripts/instagram_meta_calendar.py'
+      - 'tests/test_instagram_meta_calendar.py'
+      - '.github/workflows/instagram-meta-calendar.yml'
+  pull_request:
+    paths:
+      - 'calendar/instagram/**/*.json'
+      - 'scripts/instagram_meta_calendar.py'
+      - 'tests/test_instagram_meta_calendar.py'
+      - '.github/workflows/instagram-meta-calendar.yml'
+  schedule:
+    - cron: '3/5 * * * *'
+  workflow_dispatch:
+    inputs:
+      operation:
+        type: choice
+        description: 'preview only or publish approved due posts (manual immediate check)'
+        required: true
+        options:
+          - preview
+          - process
+        default: preview
+permissions:
+  contents: write
+concurrency:
+  group: ls-social-single-approved-provider-submission
+  cancel-in-progress: false
+jobs:
+  validate:
+    if: github.repository == 'lsevmos-gpt/ls-vk'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Offline unit tests and approved calendar validation
+        run: |
+          python -m unittest discover -s tests -v
+          python -m scripts.instagram_meta_calendar validate
+      - name: Show pending calendar items (no publish)
+        if: github.event_name == 'workflow_dispatch' && inputs.operation == 'preview'
+        run: python -m scripts.instagram_meta_calendar preview
+  publish:
+    needs: validate
+    if: >-
+      github.repository == 'lsevmos-gpt/ls-vk' &&
+      github.ref == 'refs/heads/main' &&
+      (github.event_name == 'schedule' ||
+       (github.event_name == 'workflow_dispatch' && inputs.operation == 'process' && github.actor == 'lsevmos-gpt'))
+    runs-on: ubuntu-latest
+    timeout-minutes: 22
+    env:
+      META_IG_ACCESS_TOKEN: ${{ secrets.META_IG_ACCESS_TOKEN }}
+      META_IG_USER_ID: ${{ secrets.META_IG_USER_ID }}
+      META_GRAPH_VERSION: v26.0
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Autonomous one-shot Instagram publish at scheduled time
+        run: python -m scripts.instagram_meta_calendar run
