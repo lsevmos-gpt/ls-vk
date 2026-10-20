@@ -1,0 +1,42 @@
+{
+  "ok": true,
+  "id": "lady-dance-20261020-1100-instagram",
+  "type": "instagram",
+  "finishedAt": "2026-10-20T07:23:14.034Z",
+  "result": {
+    "channel": {
+      "id": "6acde74d778b240e2ff489a7",
+      "name": "liniya__sporta",
+      "displayName": "liniya__sporta",
+      "service": "instagram",
+      "avatar": "https://buffer-channel-avatars-bucket.s3.amazonaws.com/6acde74d778b240e2ff489a7_1791878989700",
+      "isQueuePaused": false
+    },
+    "organization": {
+      "id": "6acde6b61c988298343cfdb9",
+      "name": "My organization",
+      "ownerEmail": "mosin.e.a@gmail.com",
+      "channelCount": 1
+    },
+    "post": {
+      "id": "6ad716e19d034d7aede2156c",
+      "text": "LADY DANCE 💃\n\nЛиния спорта",
+      "dueAt": "2026-10-20T08:00:00.000Z",
+      "status": "scheduled",
+      "channelId": "6acde74d778b240e2ff489a7",
+      "assets": [
+        {
+          "id": null,
+          "mimeType": "video/mp4",
+          "source": "https://github.com/lsevmos-gpt/ls-vk/releases/download/lady-dance-20261020-final/lady-dance-20261020-final.mp4",
+          "thumbnail": "https://images.buffer.com/thumbnail/cWOI8qu_He_DSMUpLpZtRSevFkI1w_sdaAbMW3es5-M?url=https%3A%2F%2Fgithub.com%2Flsevmos-gpt%2Fls-vk%2Freleases%2Fdownload%2Flady-dance-20261020-final%2Flady-dance-20261020-final.mp4"
+        }
+      ],
+      "metadata": {
+        "type": "reel",
+        "shouldShareToFeed": true,
+        "isAiGenerated": false
+      }
+    }
+  }
+}

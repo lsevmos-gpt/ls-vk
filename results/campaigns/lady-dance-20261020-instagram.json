@@ -1,1 +1,11 @@
-{"id":"lady-dance-20261020-1100-instagram","status":"reserved_before_provider_call","platform":"instagram","scheduledAtUTC":"2026-10-20T08:00:00Z","note":"One provider attempt; never retry if uncertain"}
+{
+  "id": "lady-dance-20261020-1100-instagram",
+  "status": "scheduled_in_buffer",
+  "platform": "instagram",
+  "scheduledAtUTC": "2026-10-20T08:00:00Z",
+  "note": "One provider attempt; never retry if uncertain",
+  "bufferPostId": "6ad716e19d034d7aede2156c",
+  "bufferStatus": "scheduled",
+  "providerAcceptedScheduleUTC": "2026-10-20T08:00:00.000Z",
+  "finishedAtUTC": "2026-10-20T07:23:14.084484+00:00"
+}
