@@ -5,7 +5,7 @@ on:
     paths:
       - '.github/workflows/meta-ig-readiness.yml'
   schedule:
-    - cron: '7 5 * * *' # Read-only at about 08:07 MSK; GitHub may delay
+    - cron: '17 * * * *' # Hourly read-only credential check; GitHub may delay
   workflow_dispatch:
 permissions:
   contents: read
