@@ -1,0 +1,123 @@
+name: Lady Dance Instagram Reel schedule at 11 MSK (one-time)
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'requests/campaigns/lady-dance-20261020-1100-instagram.json'
+permissions:
+  contents: write
+concurrency:
+  group: lady-dance-20261020-buffer-single-submission
+  cancel-in-progress: false
+jobs:
+  schedule:
+    if: github.repository == 'lsevmos-gpt/ls-vk' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      BUFFER_API_KEY: ${{ secrets.BUFFER_API_KEY }}
+      SOCIAL_PLATFORM: buffer
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Validate immutable approved Reel, cover and exact time
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$BUFFER_API_KEY"
+          python3 - <<'PY'
+          from pathlib import Path
+          from datetime import datetime,timezone,timedelta
+          import json
+          path=Path('requests/campaigns/lady-dance-20261020-1100-instagram.json')
+          req=json.loads(path.read_text())
+          v=json.loads(Path('results/verification/lady-dance-20261020-final.json').read_text())
+          url='https://github.com/lsevmos-gpt/ls-vk/releases/download/lady-dance-20261020-final/lady-dance-20261020-final.mp4'
+          assert req['id']==path.stem=='lady-dance-20261020-1100-instagram'
+          assert req['approved'] is True and req['publicContent'] is True
+          assert req['type']=='instagram' and req['postType']=='reel' and req['handle']=='liniya__sporta'
+          assert req['publishNow'] is False and req['shouldShareToFeed'] is True
+          assert req['dueAt']=='2026-10-20T08:00:00Z'
+          assert req['media']==[{'type':'video','url':url,'thumbnailOffset':0,'title':'LADY DANCE — Линия спорта'}]
+          assert v['ok'] is True and v['videoCodec']=='h264' and v['sizeBytes']<299000000
+          due=datetime.fromisoformat(req['dueAt'].replace('Z','+00:00'))
+          assert due>datetime.now(timezone.utc)+timedelta(minutes=2),'Too late to schedule reliably'
+          assert not Path('results/campaigns/lady-dance-20261020-instagram.json').exists()
+          assert not Path('buffer-results/lady-dance-20261020-1100-instagram.json').exists()
+          print('VALIDATED_APPROVED_VIDEO_ORIGINAL_PROVENANCE_COVER_AND_SCHEDULE')
+          PY
+      - name: Install Buffer client and validate exactly one account (read-only)
+        shell: bash
+        run: |
+          npm install --omit=dev --ignore-scripts --no-package-lock --no-audit --no-fund
+          node scripts/check_social_targets.mjs
+      - name: Reserve one unique Buffer submission before provider call
+        id: reserve
+        shell: bash
+        run: |
+          set -euo pipefail
+          git pull --ff-only origin main
+          path='results/campaigns/lady-dance-20261020-instagram.json'
+          if test -e "$path" || test -e 'buffer-results/lady-dance-20261020-1100-instagram.json'; then
+            echo '::error::An attempt is already recorded; never duplicate'
+            exit 1
+          fi
+          mkdir -p results/campaigns
+          printf '%s\n' '{"id":"lady-dance-20261020-1100-instagram","status":"reserved_before_provider_call","platform":"instagram","scheduledAtUTC":"2026-10-20T08:00:00Z","note":"One provider attempt; never retry if uncertain"}' > "$path"
+          git config user.name ls-social-bot
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add "$path"
+          git commit -m 'Reserve approved Lady Dance Instagram one-time schedule [skip ci]'
+          git push origin HEAD:main
+          echo 'reserved=true' >> "$GITHUB_OUTPUT"
+      - name: Schedule Reel with Buffer native dueAt once
+        if: steps.reserve.outputs.reserved == 'true'
+        id: send
+        shell: bash
+        run: |
+          set +e
+          node scripts/buffer-job.js requests/campaigns/lady-dance-20261020-1100-instagram.json
+          code=$?
+          echo "exit_code=$code" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Save exact provider ID and final nonduplicate receipt
+        if: always() && steps.reserve.outputs.reserved == 'true'
+        shell: bash
+        env:
+          SUBMISSION_EXIT_CODE: ${{ steps.send.outputs.exit_code }}
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          import json,os,datetime
+          path=Path('results/campaigns/lady-dance-20261020-instagram.json')
+          data=json.loads(path.read_text())
+          prior=Path('buffer-results/lady-dance-20261020-1100-instagram.json')
+          provider=json.loads(prior.read_text()) if prior.exists() else {}
+          post=(provider.get('result') or {}).get('post') or {}
+          valid=(provider.get('ok') is True and provider.get('id')=='lady-dance-20261020-1100-instagram' and post.get('id') and post.get('status')=='scheduled' and post.get('dueAt')=='2026-10-20T08:00:00.000Z' and post.get('channelId')=='6acde74d778b240e2ff489a7' and os.environ.get('SUBMISSION_EXIT_CODE')=='0')
+          data.update({'status':'scheduled_in_buffer' if valid else 'manual_reconciliation_required','bufferPostId':post.get('id'),'bufferStatus':post.get('status'),'providerAcceptedScheduleUTC':post.get('dueAt'),'finishedAtUTC':datetime.datetime.now(datetime.timezone.utc).isoformat()})
+          path.write_text(json.dumps(data,ensure_ascii=False,indent=2)+'\n')
+          print('BUFFER_SCHEDULE',data['status'],'ID',data['bufferPostId'])
+          PY
+          git add results/campaigns/lady-dance-20261020-instagram.json
+          if test -e buffer-results/lady-dance-20261020-1100-instagram.json; then
+            git add buffer-results/lady-dance-20261020-1100-instagram.json
+          fi
+          git commit -m 'Record Lady Dance Buffer Reel native 11 MSK schedule result [skip ci]'
+          git pull --rebase origin main
+          git push origin HEAD:main
+      - name: Fail if Buffer did not accept native exact schedule
+        if: always() && steps.reserve.outputs.reserved == 'true'
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import json
+          r=json.load(open('results/campaigns/lady-dance-20261020-instagram.json'))
+          assert r['status']=='scheduled_in_buffer','Buffer posting outcome unknown or failed; do not retry automatically'
+          PY
