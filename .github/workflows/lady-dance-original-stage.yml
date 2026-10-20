@@ -1,0 +1,92 @@
+name: Lady Dance original media inspect and stage
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'media-prep/lady-dance-20261020-original.json'
+permissions:
+  contents: write
+concurrency:
+  group: lady-dance-source-stage
+  cancel-in-progress: false
+jobs:
+  prepare:
+    if: github.repository == 'lsevmos-gpt/ls-vk' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - name: Download approved original 406MB video and uploaded cover unchanged
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/lady-dance
+          url='https://drive.usercontent.google.com/download?id=1cxQEiMo5RSK4lgpNEK5ASCrK93-aoNh9&export=download&confirm=t'
+          curl --fail --show-error --location --retry 2 --connect-timeout 30 --max-time 700 "$url" -o /tmp/lady-dance/lady-dance-source.mp4
+          curl --fail --show-error --location --retry 3 --connect-timeout 30 --max-time 90 'https://at.adobe.com/wIPI68yc27RftXdi' -o /tmp/lady-dance/lady-dance-cover.png
+          test "$(stat -c%s /tmp/lady-dance/lady-dance-source.mp4)" = 406740484
+          python3 - <<'PY'
+          from pathlib import Path
+          with open('/tmp/lady-dance/lady-dance-source.mp4','rb') as f: f.seek(4); assert f.read(4)==b'ftyp', 'Video is not MP4'
+          with open('/tmp/lady-dance/lady-dance-cover.png','rb') as f: assert f.read(8)==b'\x89PNG\r\n\x1a\n', 'Cover not PNG'
+          print('SOURCE_AND_COVER_IDENTIFIED')
+          PY
+      - name: Inspect media metadata and calculate hashes
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p results/verification media
+          ffprobe -v error -show_format -show_streams -of json /tmp/lady-dance/lady-dance-source.mp4 > /tmp/lady-dance/video-metadata.json
+          ffprobe -v error -show_streams -of json /tmp/lady-dance/lady-dance-cover.png > /tmp/lady-dance/cover-metadata.json
+          python3 - <<'PY'
+          import json, hashlib, pathlib, datetime
+          root=pathlib.Path('/tmp/lady-dance')
+          original=root/'lady-dance-source.mp4'
+          cover=root/'lady-dance-cover.png'
+          with original.open('rb') as f: sha=hashlib.file_digest(f,'sha256').hexdigest()
+          with cover.open('rb') as f: cover_sha=hashlib.file_digest(f,'sha256').hexdigest()
+          data={
+            'sourceFile':'lady-dance.mp4',
+            'sizeBytes':original.stat().st_size,
+            'sha256Original':sha,
+            'sha256Cover':cover_sha,
+            'original':json.loads((root/'video-metadata.json').read_text()),
+            'cover':json.loads((root/'cover-metadata.json').read_text()),
+            'checkedAt':datetime.datetime.now(datetime.timezone.utc).isoformat(),
+            'intendedSchedule':'2026-10-20T11:00:00+03:00',
+            'status':'read_only_inspected',
+            'publishesToSocialNetworks':False
+          }
+          pathlib.Path('results/verification/lady-dance-20261020-original.json').write_text(json.dumps(data,ensure_ascii=False,indent=2)+'\n')
+          print('SOURCE',original.stat().st_size,data['sha256Original'])
+          print('ORIGINAL_STREAMS',[(s.get('codec_type'),s.get('codec_name'),s.get('width'),s.get('height'),s.get('avg_frame_rate'),s.get('bit_rate')) for s in data['original']['streams']])
+          print('DURATION',data['original']['format'].get('duration'))
+          PY
+          cp /tmp/lady-dance/lady-dance-cover.png media/2026-10-20-lady-dance-cover-original.png
+      - name: Release original source (public media, not social publish)
+        shell: bash
+        run: |
+          set -euo pipefail
+          tag='lady-dance-20261020-original'
+          if ! gh release view "$tag" --repo lsevmos-gpt/ls-vk >/dev/null 2>&1; then
+            gh release create "$tag" /tmp/lady-dance/lady-dance-source.mp4 --repo lsevmos-gpt/ls-vk --title "Lady Dance original 2026-10-20" --notes "Approved media staging. Original retained byte-for-byte; reel prepared separately." --latest=false
+          else
+            echo 'Original release already exists; will not reupload'
+          fi
+          echo "ORIGINAL_ASSET=https://github.com/lsevmos-gpt/ls-vk/releases/download/$tag/lady-dance-source.mp4"
+      - name: Save media info and approved PNG
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "ls-reels-prep-bot"
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add media/2026-10-20-lady-dance-cover-original.png results/verification/lady-dance-20261020-original.json
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m 'Stage exact Lady Dance cover and record original video parameters [skip ci]'
+          git pull --rebase origin main
+          git push origin HEAD:main
