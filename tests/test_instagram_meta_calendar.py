@@ -164,7 +164,7 @@ class CalendarTests(unittest.TestCase):
 
     def test_publisher_single_photo(self):
         self.save(self.manifest(postType="photo", media=[{"type": "image", "url": "https://cdn.example.org/a.jpg"}],
-                                coverUrl=None, collaborators=[], shouldShareToFeed=True))
+                                coverUrl=None, collaborators=[]))
         doc = load_calendar(self.root)[0]
         fake = FakeMeta()
         publish_via_meta(fake, doc)
@@ -172,16 +172,20 @@ class CalendarTests(unittest.TestCase):
         self.assertEqual(fake.calls[0][2]["image_url"], "https://cdn.example.org/a.jpg")
 
     def test_publisher_story_and_carousel(self):
-        self.save(self.manifest(postType="story", media=[{"type": "video", "url": "https://cdn.example.org/a.mp4"}],
-                                coverUrl=None, collaborators=[], text=""))
+        story = self.manifest(postType="story", media=[{"type": "video", "url": "https://cdn.example.org/a.mp4"}],
+                              coverUrl=None, collaborators=[], text="")
+        story.pop("shouldShareToFeed")
+        self.save(story)
         fake = FakeMeta()
         publish_via_meta(fake, load_calendar(self.root)[0])
         self.assertEqual(fake.calls[0][2]["media_type"], "STORIES")
         self.assertIn("video_url", fake.calls[0][2])
-        self.save(self.manifest(postType="carousel", media=[
+        carousel = self.manifest(postType="carousel", media=[
             {"type": "image", "url": "https://cdn.example.org/a.jpg"},
             {"type": "video", "url": "https://cdn.example.org/b.mp4"},
-        ], coverUrl=None, collaborators=[]))
+        ], coverUrl=None, collaborators=[])
+        carousel.pop("shouldShareToFeed")
+        self.save(carousel)
         fake = FakeMeta()
         publish_via_meta(fake, load_calendar(self.root)[0])
         self.assertEqual(fake.containers, 3)
