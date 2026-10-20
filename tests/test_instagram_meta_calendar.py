@@ -163,8 +163,10 @@ class CalendarTests(unittest.TestCase):
         self.assertTrue(client.calls[-1][1].endswith("/media_publish"))
 
     def test_publisher_single_photo(self):
-        self.save(self.manifest(postType="photo", media=[{"type": "image", "url": "https://cdn.example.org/a.jpg"}],
-                                coverUrl=None, collaborators=[]))
+        photo = self.manifest(postType="photo", media=[{"type": "image", "url": "https://cdn.example.org/a.jpg"}],
+                              coverUrl=None, collaborators=[])
+        photo.pop("shouldShareToFeed")
+        self.save(photo)
         doc = load_calendar(self.root)[0]
         fake = FakeMeta()
         publish_via_meta(fake, doc)
