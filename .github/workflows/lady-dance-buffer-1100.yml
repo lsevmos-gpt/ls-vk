@@ -11,7 +11,8 @@ concurrency:
   cancel-in-progress: false
 jobs:
   schedule:
-    if: github.repository == 'lsevmos-gpt/ls-vk' && github.ref == 'refs/heads/main'
+    # Historical Buffer publishing path disabled after direct Meta migration.
+    if: ${{ false }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
     env:
