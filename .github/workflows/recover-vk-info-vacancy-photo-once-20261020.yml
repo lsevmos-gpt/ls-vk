@@ -1,0 +1,127 @@
+name: Complete missing vacancy VK photo Story after verified video (ONE-SHOT)
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'recovery/2026-10-20-vk-vacancy-photo-trigger.json'
+permissions:
+  contents: write
+concurrency:
+  group: ls-vk-vacancy-photo-recovery-once-20261020
+  cancel-in-progress: false
+jobs:
+  complete:
+    if: github.repository == 'lsevmos-gpt/ls-vk' && github.ref == 'refs/heads/main' && github.actor == 'lsevmos-gpt'
+    runs-on: ubuntu-latest
+    timeout-minutes: 14
+    env:
+      VK_API_VERSION: '5.199'
+      VK_GROUP_ID: '48198173'
+      VK_GROUP_SCREEN_NAME: 'liniya__sporta'
+      VK_GROUP_TOKEN: ${{ secrets.VK_GROUP_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Prepare official VK client
+        run: npm install --omit=dev --ignore-scripts --no-package-lock --no-audit --no-fund
+      - name: Verify exact source, previous video, absence of photo; reserve before any social call
+        shell: bash
+        run: |
+          set -euo pipefail
+          git pull --ff-only origin main
+          test -n "$VK_GROUP_TOKEN" || { echo '::error::VK_GROUP_TOKEN missing'; exit 1; }
+          sha256sum media/2026-10-19-vacancy-assistant-final-original.png
+          printf '%s  %s\n' 'e50854b8d439f779c007d9f3346bba480ea4ebad10c13ab0efdf6e3fe105dfdd' 'media/2026-10-19-vacancy-assistant-final-original.png' | sha256sum --check --
+          mkdir -p results/recovery
+          test ! -f results/recovery/2026-10-20-vk-vacancy-photo.json || { echo 'Existing recovery receipt: no replay'; exit 1; }
+          node --input-type=module <<'JS'
+          import fs from 'node:fs';
+          import {vkCall,getGroupId} from './src/vk.js';
+          if((await getGroupId())!==48198173)throw Error('Wrong VK group');
+          const r=await vkCall('stories.get',{owner_id:-48198173},process.env.VK_GROUP_TOKEN);
+          const items=Array.isArray(r?.items)?r.items:Array.isArray(r)?r:[];
+          const stories=items.flatMap(a=>Array.isArray(a?.stories)?a.stories:Array.isArray(a)?a:[a]);
+          const existingVideo=stories.find(s=>s?.owner_id===-48198173 && s?.id===456240675 && s.type==='video');
+          if(!existingVideo)throw Error('Previously published Info video 456240675 is not visible; no photo-only publish');
+          const since=Date.parse('2026-10-20T14:29:00Z')/1000;
+          const photos=stories.filter(s=>Number(s?.owner_id)===-48198173 && s.type==='photo' && Number(s.date)>=since);
+          const record={
+            id:'2026-10-20-vk-vacancy-photo-recovery',
+            groupId:48198173,precedingVideoId:456240675,
+            previousVideoVisible:true,checkedAtUTC:new Date().toISOString(),
+            status:photos.length?'photo_already_present_no_submission':'reserved_before_provider_call',
+            priorPhotoIds:photos.map(s=>s.id),note:'Attempt only once. A visible photo blocks uploading.'
+          };
+          fs.writeFileSync('results/recovery/2026-10-20-vk-vacancy-photo.json',JSON.stringify(record,null,2)+'\n');
+          console.log('VK_PHOTO_RECOVERY_PREFLIGHT',JSON.stringify({previousVideoId:456240675,previousPhotoCount:photos.length,status:record.status}));
+          JS
+          git config user.name ls-vk-story-recovery
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -- results/recovery/2026-10-20-vk-vacancy-photo.json
+          git commit -m 'Reserve once for VK vacancy Story photo recovery [skip ci]'
+          git pull --rebase origin main
+          git push origin HEAD:main
+      - name: Upload original PNG as VK Story photo only when absent
+        shell: bash
+        run: |
+          set -euo pipefail
+          status=$(python - <<'PY'
+          import json
+          print(json.load(open('results/recovery/2026-10-20-vk-vacancy-photo.json'))['status'])
+          PY
+          )
+          if [ "$status" != reserved_before_provider_call ]; then
+            echo 'PHOTO_ALREADY_PRESENT; no further calls'
+            exit 0
+          fi
+          set +e
+          node scripts/publish-job.js recovery/2026-10-20-vk-vacancy-photo-request.json
+          rc=$?
+          set -e
+          echo "VK_POST_EXIT_CODE=$rc"
+          echo "VK_POST_EXIT_CODE=$rc" >> "$GITHUB_ENV"
+      - name: Read-only live verification and durable receipt
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f results/recovery/2026-10-20-vk-vacancy-photo.json || exit 0
+          node --input-type=module <<'JS'
+          import fs from 'node:fs';
+          import {vkCall} from './src/vk.js';
+          const path='results/recovery/2026-10-20-vk-vacancy-photo.json';
+          const data=JSON.parse(fs.readFileSync(path,'utf8'));
+          if(data.status==='photo_already_present_no_submission'){console.log('PHOTO_ALREADY_PRESENT');process.exit(0)}
+          const outputPath='results/2026-10-20-vk-vacancy-photo-recovery.json';
+          const upload=fs.existsSync(outputPath)?JSON.parse(fs.readFileSync(outputPath,'utf8')):null;
+          data.providerResponseOk=upload?.ok===true;
+          data.providerError=String(upload?.error||'').slice(0,250)||null;
+          const cutoff=Date.parse('2026-10-20T14:29:00Z')/1000;
+          let found=[];
+          for(let i=0;i<9;i++){
+            try{
+              const r=await vkCall('stories.get',{owner_id:-48198173},process.env.VK_GROUP_TOKEN);
+              const items=Array.isArray(r?.items)?r.items:Array.isArray(r)?r:[];
+              const stories=items.flatMap(a=>Array.isArray(a?.stories)?a.stories:Array.isArray(a)?a:[a]);
+              found=stories.filter(s=>Number(s?.owner_id)===-48198173&&s.type==='photo'&&Number(s?.date)>=cutoff).map(s=>({id:s.id,date:s.date}));
+              if(found.length)break;
+            }catch(e){data.verificationError=String(e.message).slice(0,150)}
+            if(i<8)await new Promise(r=>setTimeout(r,10000));
+          }
+          data.status=found.length?'published_verified_by_vk':'manual_review_required';
+          data.observedPhotoIds=found.map(x=>x.id);
+          data.completedAtUTC=new Date().toISOString();
+          fs.writeFileSync(path,JSON.stringify(data,null,2)+'\n');
+          console.log('VK_PHOTO_FINAL',JSON.stringify({status:data.status,photoIds:data.observedPhotoIds,providerResponseOk:data.providerResponseOk,providerError:data.providerError}));
+          JS
+          git add -- results/recovery/2026-10-20-vk-vacancy-photo.json
+          if ! git diff --cached --quiet; then
+            git commit -m 'Record verified VK vacancy photo recovery outcome [skip ci]'
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
