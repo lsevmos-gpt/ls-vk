@@ -1,0 +1,91 @@
+name: Prepare three Meta Stories AAC-compatible copies without video re-encoding (NO PUBLICATION)
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'media-prep/bar-three-stories-meta-audio-20261021.json'
+permissions:
+  contents: write
+concurrency:
+  group: bar-meta-three-stories-20261021-audio
+  cancel-in-progress: false
+jobs:
+  prepare:
+    if: github.repository == 'lsevmos-gpt/ls-vk' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - name: Ensure FFmpeg, verify exact staging and all media hashes
+        shell: bash
+        run: |
+          set -euo pipefail
+          command -v ffmpeg >/dev/null && command -v ffprobe >/dev/null || { sudo apt-get update -qq; sudo apt-get install -y ffmpeg; }
+          python3 - <<'PY'
+          import json,hashlib
+          from pathlib import Path
+          data=json.loads(Path('media-prep/bar-three-stories-meta-audio-20261021.json').read_text())
+          ready=json.loads(Path('results/verification/bar-three-stories-20261021-stage.json').read_text())
+          assert data['id']=='bar-three-stories-20261021-meta-audio' and data['approved'] is True and data['publicContent'] is True
+          assert ready['ok'] is True
+          for path,attributes in ready['files'].items():
+              p=Path(path)
+              with p.open('rb') as f: actual=hashlib.file_digest(f,'sha256').hexdigest()
+              assert actual==attributes['sha256']
+          print('EXACT_STAGED_STORIES_VERIFIED')
+          PY
+      - name: Preserve all three original H264 streams; adapt AAC to Meta 128k/48k only
+        shell: bash
+        run: |
+          set -euo pipefail
+          ffmpeg -hide_banner -nostdin -loglevel error -i media/bar-20261021-intro-original.mp4             -map 0:v:0 -map 0:a:0 -c:v copy -c:a aac -b:a 128k -ar 48000 -ac 2             -movflags +faststart -y media/bar-20261021-intro-meta-audio.mp4
+          ffmpeg -hide_banner -nostdin -loglevel error -i media/bar-20261021-berry-v2-original.mp4             -map 0:v:0 -map 0:a:0 -c:v copy -c:a aac -b:a 128k -ar 48000 -ac 2             -movflags +faststart -y media/bar-20261021-berry-v2-meta-audio.mp4
+          ffmpeg -hide_banner -nostdin -loglevel error -i media/bar-20261021-creatine-meta-vk-hq.mp4             -map 0:v:0 -map 0:a:0 -c:v copy -c:a aac -b:a 128k -ar 48000 -ac 2             -movflags +faststart -y media/bar-20261021-creatine-meta-audio.mp4
+          python3 - <<'PY'
+          from pathlib import Path
+          from subprocess import run
+          import hashlib,json,datetime
+          pairs=[
+           ('media/bar-20261021-intro-original.mp4','media/bar-20261021-intro-meta-audio.mp4'),
+           ('media/bar-20261021-berry-v2-original.mp4','media/bar-20261021-berry-v2-meta-audio.mp4'),
+           ('media/bar-20261021-creatine-meta-vk-hq.mp4','media/bar-20261021-creatine-meta-audio.mp4')
+          ]
+          def video_hash(path):
+              output=run(['ffmpeg','-v','error','-i',path,'-map','0:v:0','-c:v','copy','-f','hash','-hash','SHA256','-'],capture_output=True,check=True,text=True,timeout=60)
+              return output.stdout.strip()
+          outputs=[]
+          for src,tgt in pairs:
+              src_sha=video_hash(src)
+              tgt_sha=video_hash(tgt)
+              assert src_sha==tgt_sha, f'Video stream unexpectedly transcoded in {tgt}'
+              probe=run(['ffprobe','-v','error','-show_entries','format=duration,size,bit_rate:stream=codec_type,codec_name,sample_rate,bit_rate,width,height,r_frame_rate','-of','json',tgt],
+                        capture_output=True,check=True,text=True,timeout=60)
+              data=json.loads(probe.stdout)
+              av=next(s for s in data['streams'] if s['codec_type']=='audio')
+              video=next(s for s in data['streams'] if s['codec_type']=='video')
+              assert av['codec_name']=='aac' and av['sample_rate']=='48000'
+              assert int(av['bit_rate'])<=130000
+              assert video['codec_name']=='h264'
+              assert 3<float(data['format']['duration'])<60
+              assert Path(tgt).stat().st_size<100000000
+              with Path(tgt).open('rb') as f: sha=hashlib.file_digest(f,'sha256').hexdigest()
+              outputs.append({'source':src,'meta':tgt,'sha256':sha,'videoStreamSHA256':tgt_sha,'bytes':Path(tgt).stat().st_size,'duration':data['format']['duration'],'videoWidth':video['width'],'videoHeight':video['height'],'videoFps':video['r_frame_rate'],'audioBitrate':av['bit_rate']})
+          result={'id':'bar-three-stories-20261021-meta-audio','ok':True,'videoStreamsCopiedWithoutReencode':True,'order':['bar-intro','berry-smoothie-v2','creatine'],'files':outputs,'doesNotPublish':True,'createdAtUTC':datetime.datetime.now(datetime.timezone.utc).isoformat()}
+          p=Path('results/verification/bar-three-stories-20261021-meta-audio.json')
+          p.write_text(json.dumps(result,ensure_ascii=False,indent=2)+'\n')
+          print('META_STORY_AUDIO_VERIFIED',json.dumps(outputs,ensure_ascii=False))
+          PY
+      - name: Persist only compatible copies and inspection, never call social API
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name ls-story-audio-prep
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add media/bar-20261021-intro-meta-audio.mp4 media/bar-20261021-berry-v2-meta-audio.mp4 media/bar-20261021-creatine-meta-audio.mp4 results/verification/bar-three-stories-20261021-meta-audio.json
+          git diff --cached --quiet && exit 0
+          git commit -m 'Prepare lossless-video AAC-128 Meta Story versions [skip ci]'
+          git pull --rebase origin main
+          git push origin HEAD:main
