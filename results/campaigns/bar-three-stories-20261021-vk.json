@@ -2,7 +2,7 @@
   "id": "bar-three-stories-20261021-vk",
   "provider": "vk",
   "groupId": 48198173,
-  "status": "submission_started",
+  "status": "partial_submitted_to_vk",
   "runId": "39637829043",
   "createdAtUTC": "2026-10-21T16:47:06.329Z",
   "published": [
@@ -12,10 +12,15 @@
       "vkStoryId": 456240677,
       "ownerId": -48198173,
       "publishedAtUTC": "2026-10-21T16:47:15.027Z"
+    },
+    {
+      "index": 2,
+      "name": "berry-smoothie-v2",
+      "vkStoryId": 456240678,
+      "ownerId": -48198173,
+      "publishedAtUTC": "2026-10-21T16:47:25.292Z"
     }
   ],
   "note": "Only the 3 approved video files. No replay after uncertain provider response.",
-  "updatedAtUTC": "2026-10-21T16:47:19.176Z",
-  "attemptingIndex": 2,
-  "attemptingItem": "berry-smoothie-v2"
+  "updatedAtUTC": "2026-10-21T16:47:25.292Z"
 }
