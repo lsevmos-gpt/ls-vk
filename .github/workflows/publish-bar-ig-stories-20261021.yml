@@ -1,0 +1,48 @@
+name: Publish Bar-Berry-Creatine Instagram Stories through direct Meta API ONCE
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'requests/campaigns/bar-three-stories-20261021-instagram.json'
+permissions:
+  contents: write
+concurrency:
+  group: ls-social-single-approved-provider-submission
+  cancel-in-progress: false
+jobs:
+  publish:
+    if: github.repository == 'lsevmos-gpt/ls-vk' && github.ref == 'refs/heads/main' && github.actor == 'lsevmos-gpt'
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    env:
+      META_IG_ACCESS_TOKEN: ${{ secrets.META_IG_ACCESS_TOKEN }}
+      META_IG_USER_ID: ${{ secrets.META_IG_USER_ID }}
+      META_GRAPH_VERSION: v26.0
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Validate source sequence and regressions (no publication)
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$META_IG_ACCESS_TOKEN" && test -n "$META_IG_USER_ID"
+          python -m unittest discover -s tests -v
+          python -m scripts.instagram_meta_calendar validate
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          stage=json.loads(Path('results/verification/bar-three-stories-20261021-stage.json').read_text())
+          assert stage['ok'] is True and stage['introAndBerryUnchanged'] is True
+          assert stage['creatineScaledOnly'] is True
+          print('PREFLIGHT_APPROVED_3_VIDEOS')
+          PY
+      - name: Verify Instagram account via Meta GET; publish three ordered Stories only once
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m scripts.publish_bar_stories_meta_20261021
