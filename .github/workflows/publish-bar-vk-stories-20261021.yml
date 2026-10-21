@@ -1,0 +1,49 @@
+name: Publish three Bar Berry Creatine VK community Stories exactly ONCE
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'requests/campaigns/bar-three-stories-20261021-vk.json'
+permissions:
+  contents: write
+concurrency:
+  group: ls-social-single-approved-provider-submission
+  cancel-in-progress: false
+jobs:
+  publish:
+    if: github.repository == 'lsevmos-gpt/ls-vk' && github.ref == 'refs/heads/main' && github.actor == 'lsevmos-gpt'
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    env:
+      VK_API_VERSION: '5.199'
+      VK_GROUP_ID: '48198173'
+      VK_GROUP_SCREEN_NAME: 'liniya__sporta'
+      VK_GROUP_TOKEN: ${{ secrets.VK_GROUP_TOKEN }}
+      SOCIAL_PLATFORM: vk
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Offline source check; install VK dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$VK_GROUP_TOKEN" || { echo '::error::Missing VK_GROUP_TOKEN'; exit 1; }
+          npm install --omit=dev --ignore-scripts --no-package-lock --no-audit --no-fund
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          stage=json.loads(Path('results/verification/bar-three-stories-20261021-stage.json').read_text())
+          assert stage['ok'] and len(stage['orderedMedia'])==3
+          assert stage['introAndBerryUnchanged']
+          print('VK_3_STORIES_STAGE_OK')
+          PY
+      - name: Target group read-only check; durable reserve; upload each Story and verify sequence
+        shell: bash
+        run: |
+          set -euo pipefail
+          node scripts/publish_bar_stories_vk_20261021.mjs
