@@ -1,0 +1,11 @@
+{
+  "id": "bar-three-stories-20261021-ig",
+  "account": "liniya__sporta",
+  "provider": "meta",
+  "status": "reserved_before_provider_call",
+  "runId": "39638259895",
+  "source": "requests/campaigns/bar-three-stories-20261021-instagram.json",
+  "createdAtUTC": "2026-10-21T16:50:00.855626+00:00",
+  "published": [],
+  "note": "Exactly one attempt. Never replay after uncertain provider result."
+}
