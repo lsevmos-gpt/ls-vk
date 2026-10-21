@@ -1,0 +1,62 @@
+{
+  "ok": true,
+  "id": "bar-three-stories-20261021",
+  "orderedMedia": [
+    "media/bar-20261021-intro-original.mp4",
+    "media/bar-20261021-berry-v2-original.mp4",
+    "media/bar-20261021-creatine-meta-vk-hq.mp4"
+  ],
+  "files": {
+    "media/bar-20261021-intro-original.mp4": {
+      "sha256": "96a269ddf1e5dc65e8a33bfddbbd1463b7943a22bab92079d149b128540eba3e",
+      "sizeBytes": 2459850
+    },
+    "media/bar-20261021-berry-v2-original.mp4": {
+      "sha256": "edc6d12b52992e66b730dc4c925906288855822968f2f500a4a63980d1ee48fb",
+      "sizeBytes": 8088261
+    },
+    "media/bar-20261021-creatine-meta-vk-hq.mp4": {
+      "sha256": "ecf2ed306a49840b549a44962dd1136a3c67ff126786818bf7457436f227cb97",
+      "sizeBytes": 12846337
+    }
+  },
+  "originalSourcesSHA256": [
+    "96a269ddf1e5dc65e8a33bfddbbd1463b7943a22bab92079d149b128540eba3e",
+    "edc6d12b52992e66b730dc4c925906288855822968f2f500a4a63980d1ee48fb",
+    "5f9dc0de86fbfd6b937cfd5071b092ef0eaf2c82425e1fbaec0e4f783ee62ec3"
+  ],
+  "sourceResolutionCreatine": "2160x3840",
+  "optimizedCreatine": {
+    "programs": [],
+    "streams": [
+      {
+        "codec_name": "h264",
+        "codec_type": "video",
+        "width": 1080,
+        "height": 1920,
+        "r_frame_rate": "24/1",
+        "bit_rate": "14394428"
+      },
+      {
+        "codec_name": "aac",
+        "codec_type": "audio",
+        "r_frame_rate": "0/0",
+        "bit_rate": "191408"
+      },
+      {
+        "codec_type": "data",
+        "r_frame_rate": "0/0",
+        "bit_rate": "4"
+      }
+    ],
+    "format": {
+      "duration": "7.061000",
+      "size": "12846337",
+      "bit_rate": "14554694"
+    }
+  },
+  "introAndBerryUnchanged": true,
+  "creatineScaledOnly": true,
+  "doesNotPublish": true,
+  "checkedAtUTC": "2026-10-21T16:41:40.917104+00:00"
+}
