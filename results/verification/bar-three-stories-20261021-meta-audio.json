@@ -1,0 +1,50 @@
+{
+  "id": "bar-three-stories-20261021-meta-audio",
+  "ok": true,
+  "videoStreamsCopiedWithoutReencode": true,
+  "order": [
+    "bar-intro",
+    "berry-smoothie-v2",
+    "creatine"
+  ],
+  "files": [
+    {
+      "source": "media/bar-20261021-intro-original.mp4",
+      "meta": "media/bar-20261021-intro-meta-audio.mp4",
+      "sha256": "3a7ff6f77d70ea30e1da363944be4e5fa6cd7ddfce8603359d1cb2772810e5d3",
+      "videoStreamSHA256": "SHA256=e7cefbe7abe470084ee7845462997f0bfc9984f108f60e541329ff73016bc8c9",
+      "bytes": 2426894,
+      "duration": "4.096000",
+      "videoWidth": 720,
+      "videoHeight": 1280,
+      "videoFps": "24/1",
+      "audioBitrate": "112086"
+    },
+    {
+      "source": "media/bar-20261021-berry-v2-original.mp4",
+      "meta": "media/bar-20261021-berry-v2-meta-audio.mp4",
+      "sha256": "33feadb56230357f875c00cd624d626dbb778b319385d4e45ce13581953cb582",
+      "videoStreamSHA256": "SHA256=729760f753bfb4cc33b51b61c915f31f5327301d9b460a841077c9e6043ac006",
+      "bytes": 7793816,
+      "duration": "12.010000",
+      "videoWidth": 1080,
+      "videoHeight": 1920,
+      "videoFps": "24/1",
+      "audioBitrate": "117113"
+    },
+    {
+      "source": "media/bar-20261021-creatine-meta-vk-hq.mp4",
+      "meta": "media/bar-20261021-creatine-meta-audio.mp4",
+      "sha256": "adaab08472dc26aa412fb36b024042daeebf25c93a2738bb8faa07ab15b88f8a",
+      "videoStreamSHA256": "SHA256=a69fc78ebd470ba2a83c81c89f53d26f66405578633554b0b105884224ff75ce",
+      "bytes": 12774738,
+      "duration": "7.061000",
+      "videoWidth": 1080,
+      "videoHeight": 1920,
+      "videoFps": "24/1",
+      "audioBitrate": "110535"
+    }
+  ],
+  "doesNotPublish": true,
+  "createdAtUTC": "2026-10-21T16:48:50.193755+00:00"
+}
