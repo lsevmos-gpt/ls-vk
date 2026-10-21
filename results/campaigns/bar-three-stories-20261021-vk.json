@@ -2,9 +2,12 @@
   "id": "bar-three-stories-20261021-vk",
   "provider": "vk",
   "groupId": 48198173,
-  "status": "reserved_before_provider_call",
+  "status": "submission_started",
   "runId": "39637829043",
   "createdAtUTC": "2026-10-21T16:47:06.329Z",
   "published": [],
-  "note": "Only the 3 approved video files. No replay after uncertain provider response."
+  "note": "Only the 3 approved video files. No replay after uncertain provider response.",
+  "attemptingIndex": 1,
+  "attemptingItem": "bar-intro",
+  "updatedAtUTC": "2026-10-21T16:47:08.429Z"
 }
