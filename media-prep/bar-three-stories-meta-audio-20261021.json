@@ -1,0 +1,18 @@
+{
+  "id": "bar-three-stories-20261021-meta-audio",
+  "approved": true,
+  "publicContent": true,
+  "sources": [
+    "media/bar-20261021-intro-original.mp4",
+    "media/bar-20261021-berry-v2-original.mp4",
+    "media/bar-20261021-creatine-meta-vk-hq.mp4"
+  ],
+  "conversions": "H264 stream copy; only AAC 128kbps/48kHz for Meta API",
+  "output": [
+    "media/bar-20261021-intro-meta-audio.mp4",
+    "media/bar-20261021-berry-v2-meta-audio.mp4",
+    "media/bar-20261021-creatine-meta-audio.mp4"
+  ],
+  "stageOnly": true,
+  "immediatePublishLater": true
+}
