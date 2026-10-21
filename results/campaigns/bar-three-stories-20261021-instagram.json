@@ -2,7 +2,7 @@
   "id": "bar-three-stories-20261021-ig",
   "account": "liniya__sporta",
   "provider": "meta",
-  "status": "submission_started",
+  "status": "partial_published",
   "runId": "39638259895",
   "source": "requests/campaigns/bar-three-stories-20261021-instagram.json",
   "createdAtUTC": "2026-10-21T16:50:00.855626+00:00",
@@ -14,10 +14,16 @@
       "publishedAtUTC": "2026-10-21T16:50:39.431274+00:00",
       "permalink": "https://www.instagram.com/stories/liniya__sporta/4012953929956838168",
       "metaReadbackConfirmed": true
+    },
+    {
+      "index": 2,
+      "name": "berry-smoothie-v2",
+      "instagramMediaId": "18095248433448066",
+      "publishedAtUTC": "2026-10-21T16:52:11.065004+00:00",
+      "permalink": "https://www.instagram.com/stories/liniya__sporta/4012954699141723316",
+      "metaReadbackConfirmed": true
     }
   ],
   "note": "Exactly one attempt. Never replay after uncertain provider result.",
-  "updatedAtUTC": "2026-10-21T16:50:44.744866+00:00",
-  "attemptingIndex": 2,
-  "attemptingItem": "berry-smoothie-v2"
+  "updatedAtUTC": "2026-10-21T16:52:11.065029+00:00"
 }
