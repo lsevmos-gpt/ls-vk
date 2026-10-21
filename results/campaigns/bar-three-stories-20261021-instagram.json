@@ -2,13 +2,20 @@
   "id": "bar-three-stories-20261021-ig",
   "account": "liniya__sporta",
   "provider": "meta",
-  "status": "submission_started",
+  "status": "partial_published",
   "runId": "39638259895",
   "source": "requests/campaigns/bar-three-stories-20261021-instagram.json",
   "createdAtUTC": "2026-10-21T16:50:00.855626+00:00",
-  "published": [],
+  "published": [
+    {
+      "index": 1,
+      "name": "bar-intro",
+      "instagramMediaId": "17906037261348342",
+      "publishedAtUTC": "2026-10-21T16:50:39.431274+00:00",
+      "permalink": "https://www.instagram.com/stories/liniya__sporta/4012953929956838168",
+      "metaReadbackConfirmed": true
+    }
+  ],
   "note": "Exactly one attempt. Never replay after uncertain provider result.",
-  "attemptingIndex": 1,
-  "attemptingItem": "bar-intro",
-  "updatedAtUTC": "2026-10-21T16:50:02.648296+00:00"
+  "updatedAtUTC": "2026-10-21T16:50:39.431299+00:00"
 }
