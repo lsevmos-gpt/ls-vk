@@ -1,0 +1,40 @@
+{
+  "id": "bar-three-stories-20261021",
+  "approved": true,
+  "publicContent": true,
+  "channels": [
+    "instagram:liniya__sporta",
+    "vk:48198173"
+  ],
+  "postType": "story",
+  "sequence": [
+    {
+      "id": "bar-intro",
+      "original": "бар.mp4",
+      "googleDriveFileId": "1HBB02Uq-sE_4HSmIB0qwVrUOPYdEYvfb",
+      "sourceUrl": "https://at.adobe.com/DIRDE2DHENTchczG",
+      "sha256": "96a269ddf1e5dc65e8a33bfddbbd1463b7943a22bab92079d149b128540eba3e",
+      "readyFile": "media/bar-20261021-intro-original.mp4"
+    },
+    {
+      "id": "berry-smoothie-v2",
+      "original": "Berry_Smoothie_Story_FINAL_v2.mp4",
+      "googleDriveFileId": "1gvrJJNjfKPz5g_zmDM_HI5GW3NhoJi5h",
+      "sourceUrl": "https://at.adobe.com/nOFMzmdfBLgZPfNL",
+      "sha256": "edc6d12b52992e66b730dc4c925906288855822968f2f500a4a63980d1ee48fb",
+      "readyFile": "media/bar-20261021-berry-v2-original.mp4"
+    },
+    {
+      "id": "creatine",
+      "original": "Креатин.mp4",
+      "googleDriveFileId": "1Rfm3_7XygmakmK-k7wwFps3B0WaoV8Vf",
+      "sourceUrl": "https://at.adobe.com/QTKEzshBKlTyznE7",
+      "sha256": "5f9dc0de86fbfd6b937cfd5071b092ef0eaf2c82425e1fbaec0e4f783ee62ec3",
+      "readyFile": "media/bar-20261021-creatine-meta-vk-hq.mp4"
+    }
+  ],
+  "submitWhen": "after-source-integrity-and-technical-validation",
+  "publishNow": true,
+  "stageOnly": true,
+  "note": "Staging does not publish. After stage receipt, use guarded one-time approved Instagram Meta and VK workflows without retries."
+}
