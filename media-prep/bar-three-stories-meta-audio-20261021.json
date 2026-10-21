@@ -14,5 +14,8 @@
     "media/bar-20261021-creatine-meta-audio.mp4"
   ],
   "stageOnly": true,
-  "immediatePublishLater": true
+  "immediatePublishLater": true,
+  "audioMaxBitrate": 128000,
+  "requestedEncoderBitrate": "112k",
+  "runRevision": 2
 }
