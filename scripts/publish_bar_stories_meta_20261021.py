@@ -18,12 +18,18 @@ ROOT = Path(__file__).resolve().parents[1]
 JOB_ID = "bar-three-stories-20261021-ig"
 MANIFEST = ROOT / "requests/campaigns/bar-three-stories-20261021-instagram.json"
 STAGE = ROOT / "results/verification/bar-three-stories-20261021-stage.json"
+AUDIO_STAGE = ROOT / "results/verification/bar-three-stories-20261021-meta-audio.json"
 RECEIPT = ROOT / "results/campaigns/bar-three-stories-20261021-instagram.json"
 PREFIX = "https://raw.githubusercontent.com/lsevmos-gpt/ls-vk/main/"
-ITEMS = [
+SOURCE_ITEMS = [
     ("bar-intro", "media/bar-20261021-intro-original.mp4", "96a269ddf1e5dc65e8a33bfddbbd1463b7943a22bab92079d149b128540eba3e"),
     ("berry-smoothie-v2", "media/bar-20261021-berry-v2-original.mp4", "edc6d12b52992e66b730dc4c925906288855822968f2f500a4a63980d1ee48fb"),
     ("creatine", "media/bar-20261021-creatine-meta-vk-hq.mp4", "ecf2ed306a49840b549a44962dd1136a3c67ff126786818bf7457436f227cb97"),
+]
+ITEMS = [
+    ("bar-intro", "media/bar-20261021-intro-meta-audio.mp4"),
+    ("berry-smoothie-v2", "media/bar-20261021-berry-v2-meta-audio.mp4"),
+    ("creatine", "media/bar-20261021-creatine-meta-audio.mp4"),
 ]
 
 def now():
@@ -52,22 +58,36 @@ def run():
     if RECEIPT.exists():raise RuntimeError("Existing Instagram Bar Story attempt, no duplicate publishing")
     doc=json.loads(MANIFEST.read_text(encoding="utf-8"))
     stage=json.loads(STAGE.read_text(encoding="utf-8"))
+    audio_stage=json.loads(AUDIO_STAGE.read_text(encoding="utf-8"))
     if not(doc["approved"] is True and doc["publicContent"] is True
            and doc["id"]==JOB_ID and doc["platform"]=="instagram"
            and doc["account"]=="liniya__sporta"
-           and doc["submitNow"] is True and stage["ok"] is True):
+           and doc["submitNow"] is True and stage["ok"] is True
+           and audio_stage["ok"] is True and audio_stage["videoStreamsCopiedWithoutReencode"] is True):
         raise RuntimeError("Manifest not approved or stage invalid")
     expected=[{"id":x[0],"type":"video","mediaUrl":PREFIX+x[1]} for x in ITEMS]
     if doc["stories"]!=expected:raise RuntimeError("Unapproved order or wrong media")
-    if stage["orderedMedia"]!=[x[1] for x in ITEMS]:
-        raise RuntimeError("Staging media sequence mismatch")
-    for _,path,expected_sha in ITEMS:
+    if stage["orderedMedia"]!=[x[1] for x in SOURCE_ITEMS]:
+        raise RuntimeError("Staging source sequence mismatch")
+    if audio_stage["order"]!=[x[0] for x in ITEMS] or len(audio_stage["files"])!=3:
+        raise RuntimeError("Meta audio output order mismatch")
+    for _,path,expected_sha in SOURCE_ITEMS:
         file=ROOT/path
         if not file.is_file() or file.is_symlink():raise RuntimeError("Missing original media "+path)
         with file.open("rb") as handle:
             actual=hashlib.file_digest(handle,"sha256").hexdigest()
         if actual!=expected_sha or actual!=stage["files"][path]["sha256"]:
             raise RuntimeError("Unauthorized source bytes "+path)
+    for index,(item_id,path) in enumerate(ITEMS):
+        item=audio_stage["files"][index]
+        if item["meta"]!=path or item["source"]!=SOURCE_ITEMS[index][1]:
+            raise RuntimeError("Unapproved Meta derivative "+item_id)
+        file=ROOT/path
+        if not file.is_file() or file.is_symlink():raise RuntimeError("Missing Meta media "+path)
+        with file.open("rb") as handle:
+            actual=hashlib.file_digest(handle,"sha256").hexdigest()
+        if actual!=item["sha256"] or int(item["audioBitrate"])>128000:
+            raise RuntimeError("Invalid Meta media bytes/audio "+path)
     client=MetaClient(os.environ.get("META_IG_ACCESS_TOKEN",""),
                       os.environ.get("META_IG_USER_ID",""),
                       graph_version=os.environ.get("META_GRAPH_VERSION","v26.0"))
@@ -85,7 +105,7 @@ def run():
     git("add","--",str(RECEIPT.relative_to(ROOT)))
     git("commit","-m","Reserve approved 3 Instagram Bar Stories [skip ci]")
     git("push","origin","HEAD:main")
-    for idx,(item_id,path,_sha) in enumerate(ITEMS,1):
+    for idx,(item_id,path) in enumerate(ITEMS,1):
         marker["status"]="submission_started"
         marker["attemptingIndex"]=idx
         marker["attemptingItem"]=item_id
