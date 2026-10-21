@@ -1,0 +1,28 @@
+{
+  "id": "bar-three-stories-20261021-ig",
+  "platform": "instagram",
+  "account": "liniya__sporta",
+  "approved": true,
+  "publicContent": true,
+  "submitNow": true,
+  "postType": "story",
+  "stories": [
+    {
+      "id": "bar-intro",
+      "type": "video",
+      "mediaUrl": "https://raw.githubusercontent.com/lsevmos-gpt/ls-vk/main/media/bar-20261021-intro-meta-audio.mp4"
+    },
+    {
+      "id": "berry-smoothie-v2",
+      "type": "video",
+      "mediaUrl": "https://raw.githubusercontent.com/lsevmos-gpt/ls-vk/main/media/bar-20261021-berry-v2-meta-audio.mp4"
+    },
+    {
+      "id": "creatine",
+      "type": "video",
+      "mediaUrl": "https://raw.githubusercontent.com/lsevmos-gpt/ls-vk/main/media/bar-20261021-creatine-meta-audio.mp4"
+    }
+  ],
+  "stageVerification": "results/verification/bar-three-stories-20261021-meta-audio.json",
+  "note": "Three Instagram Stories through direct Meta API in order, one-time, no resubmission. H264 streams bit-identical to verified prepared video; AAC compatible ≤128kbps."
+}
