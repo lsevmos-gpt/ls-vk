@@ -1,0 +1,29 @@
+{
+  "id": "bar-three-stories-20261021-vk",
+  "platform": "vk",
+  "communityId": 48198173,
+  "approved": true,
+  "publicContent": true,
+  "submitNow": true,
+  "stories": [
+    {
+      "id": "bar-intro",
+      "storyType": "video",
+      "media": "media/bar-20261021-intro-original.mp4",
+      "addToNews": true
+    },
+    {
+      "id": "berry-smoothie-v2",
+      "storyType": "video",
+      "media": "media/bar-20261021-berry-v2-original.mp4",
+      "addToNews": true
+    },
+    {
+      "id": "creatine",
+      "storyType": "video",
+      "media": "media/bar-20261021-creatine-meta-vk-hq.mp4",
+      "addToNews": true
+    }
+  ],
+  "note": "One-time approved immediate VK Stories with exact sequence and max compatible media. Persist Story IDs; never auto retry."
+}
