@@ -1,0 +1,108 @@
+name: Stage three original Bar Stories for approved Instagram and VK release (NO PUBLICATION)
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'media-prep/bar-three-stories-20261021.json'
+permissions:
+  contents: write
+concurrency:
+  group: stage-bar-three-stories-20261021
+  cancel-in-progress: false
+jobs:
+  stage:
+    if: github.repository == 'lsevmos-gpt/ls-vk' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - name: Install FFmpeg for source inspection and third-video compatibility
+        run: |
+          set -euo pipefail
+          command -v ffprobe >/dev/null && command -v ffmpeg >/dev/null || { sudo apt-get update -qq; sudo apt-get install -y ffmpeg; }
+      - name: Download exact approved source bytes and SHA-256 validate all three
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p media results/verification /tmp/bar-stories-20261021
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          f=Path('media-prep/bar-three-stories-20261021.json')
+          data=json.loads(f.read_text())
+          assert data['approved'] is True and data['publicContent'] is True and data['id']=='bar-three-stories-20261021'
+          assert [x['id'] for x in data['sequence']]==['bar-intro','berry-smoothie-v2','creatine']
+          print('THREE_STORY_APPROVAL_AND_ORDER_VERIFIED')
+          PY
+          curl --fail --show-error --location --retry 3 --connect-timeout 25 --max-time 180             'https://at.adobe.com/DIRDE2DHENTchczG' -o media/bar-20261021-intro-original.mp4
+          curl --fail --show-error --location --retry 3 --connect-timeout 25 --max-time 180             'https://at.adobe.com/nOFMzmdfBLgZPfNL' -o media/bar-20261021-berry-v2-original.mp4
+          curl --fail --show-error --location --retry 3 --connect-timeout 25 --max-time 540             'https://at.adobe.com/QTKEzshBKlTyznE7' -o /tmp/bar-stories-20261021/creatine-4k-original.mp4
+          printf '%s  %s\n' '96a269ddf1e5dc65e8a33bfddbbd1463b7943a22bab92079d149b128540eba3e' 'media/bar-20261021-intro-original.mp4' 'edc6d12b52992e66b730dc4c925906288855822968f2f500a4a63980d1ee48fb' 'media/bar-20261021-berry-v2-original.mp4' '5f9dc0de86fbfd6b937cfd5071b092ef0eaf2c82425e1fbaec0e4f783ee62ec3' '/tmp/bar-stories-20261021/creatine-4k-original.mp4' | sha256sum --check
+          ffprobe -v error -show_entries format=duration,size,bit_rate:stream=codec_type,codec_name,width,height,r_frame_rate,bit_rate -of json media/bar-20261021-intro-original.mp4 >/tmp/bar-stories-20261021/intro.json
+          ffprobe -v error -show_entries format=duration,size,bit_rate:stream=codec_type,codec_name,width,height,r_frame_rate,bit_rate -of json media/bar-20261021-berry-v2-original.mp4 >/tmp/bar-stories-20261021/berry.json
+          ffprobe -v error -show_entries format=duration,size,bit_rate:stream=codec_type,codec_name,width,height,r_frame_rate,bit_rate -of json /tmp/bar-stories-20261021/creatine-4k-original.mp4 >/tmp/bar-stories-20261021/creatine-original.json
+          python3 - <<'PY'
+          import json,pathlib
+          root=pathlib.Path('/tmp/bar-stories-20261021')
+          cases={'intro':(720,1280,24,3.8,4.4),'berry':(1080,1920,24,11.8,12.2),'creatine-original':(2160,3840,24,6.8,7.4)}
+          for item,(w,h,fps,minlen,maxlen) in cases.items():
+              d=json.loads((root/(item+'.json')).read_text())
+              video=next(s for s in d['streams'] if s['codec_type']=='video')
+              audio=next(s for s in d['streams'] if s['codec_type']=='audio')
+              assert (video['width'],video['height'],video['codec_name'],video['r_frame_rate'])==(w,h,'h264',str(fps)+'/1'),item
+              assert audio['codec_name']=='aac',item
+              assert minlen<float(d['format']['duration'])<maxlen,item
+          print('SOURCE_FORMATS_VERIFIED; VIDEO_1_AND_VIDEO_2_NO_REENCODING')
+          PY
+      - name: Downscale only 4K creatine to best compatible 1080x1920 Stories quality
+        shell: bash
+        run: |
+          set -euo pipefail
+          ffmpeg -hide_banner -nostdin -loglevel error -stats             -i /tmp/bar-stories-20261021/creatine-4k-original.mp4             -map 0:v:0 -map 0:a:0 -dn -sn             -vf 'scale=1080:1920:flags=lanczos,format=yuv420p'             -c:v libx264 -preset medium -crf 14 -maxrate 18000k -bufsize 36000k             -g 48 -keyint_min 48 -sc_threshold 0             -c:a aac -b:a 192k -ar 48000 -ac 2             -movflags +faststart -y media/bar-20261021-creatine-meta-vk-hq.mp4
+          ffprobe -v error -show_entries format=duration,size,bit_rate:stream=codec_type,codec_name,width,height,r_frame_rate,bit_rate -of json media/bar-20261021-creatine-meta-vk-hq.mp4 >/tmp/bar-stories-20261021/creatine-ready.json
+          python3 - <<'PY'
+          from pathlib import Path
+          import hashlib,json,datetime
+          root=Path('/tmp/bar-stories-20261021')
+          orig=root/'creatine-original.json'
+          ready=root/'creatine-ready.json'
+          d=json.loads(ready.read_text())
+          v=next(x for x in d['streams'] if x['codec_type']=='video')
+          a=next(x for x in d['streams'] if x['codec_type']=='audio')
+          p=Path('media/bar-20261021-creatine-meta-vk-hq.mp4')
+          assert (v['codec_name'],v['width'],v['height'],v['r_frame_rate'])==('h264',1080,1920,'24/1')
+          assert a['codec_name']=='aac'
+          assert 6.8<float(d['format']['duration'])<7.4
+          assert int(d['format']['bit_rate'])<25000000
+          assert p.stat().st_size<95000000
+          files={}
+          for path in [
+            Path('media/bar-20261021-intro-original.mp4'),
+            Path('media/bar-20261021-berry-v2-original.mp4'),
+            p
+          ]:
+            with path.open('rb') as f: sha=hashlib.file_digest(f,'sha256').hexdigest()
+            files[str(path)]={'sha256':sha,'sizeBytes':path.stat().st_size}
+          result={'ok':True,'id':'bar-three-stories-20261021',
+           'orderedMedia':[str(x) for x in files], 'files':files,
+           'originalSourcesSHA256':['96a269ddf1e5dc65e8a33bfddbbd1463b7943a22bab92079d149b128540eba3e','edc6d12b52992e66b730dc4c925906288855822968f2f500a4a63980d1ee48fb','5f9dc0de86fbfd6b937cfd5071b092ef0eaf2c82425e1fbaec0e4f783ee62ec3'],
+           'sourceResolutionCreatine':'2160x3840','optimizedCreatine':d,
+           'introAndBerryUnchanged':True,'creatineScaledOnly':True,
+           'doesNotPublish':True,'checkedAtUTC':datetime.datetime.now(datetime.timezone.utc).isoformat()}
+          Path('results/verification/bar-three-stories-20261021-stage.json').write_text(json.dumps(result,ensure_ascii=False,indent=2)+'\n')
+          print('BAR_THREE_STORIES_MEDIA_READY',json.dumps(files))
+          PY
+      - name: Save verified high-quality media once; no social publishing
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name ls-social-media-bot
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add media/bar-20261021-intro-original.mp4 media/bar-20261021-berry-v2-original.mp4 media/bar-20261021-creatine-meta-vk-hq.mp4 results/verification/bar-three-stories-20261021-stage.json
+          git diff --cached --quiet && exit 0
+          git commit -m 'Stage 3 approved Bar Stories original/HQ media without publication [skip ci]'
+          git pull --rebase origin main
+          git push origin HEAD:main
