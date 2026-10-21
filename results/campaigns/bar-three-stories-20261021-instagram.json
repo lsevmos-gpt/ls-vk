@@ -2,7 +2,7 @@
   "id": "bar-three-stories-20261021-ig",
   "account": "liniya__sporta",
   "provider": "meta",
-  "status": "partial_published",
+  "status": "submission_started",
   "runId": "39638259895",
   "source": "requests/campaigns/bar-three-stories-20261021-instagram.json",
   "createdAtUTC": "2026-10-21T16:50:00.855626+00:00",
@@ -25,5 +25,7 @@
     }
   ],
   "note": "Exactly one attempt. Never replay after uncertain provider result.",
-  "updatedAtUTC": "2026-10-21T16:52:11.065029+00:00"
+  "updatedAtUTC": "2026-10-21T16:52:15.521546+00:00",
+  "attemptingIndex": 3,
+  "attemptingItem": "creatine"
 }
