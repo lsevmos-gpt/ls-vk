@@ -2,7 +2,7 @@
   "id": "bar-three-stories-20261021-vk",
   "provider": "vk",
   "groupId": 48198173,
-  "status": "submitted_to_vk",
+  "status": "published_verified_by_vk",
   "runId": "39637829043",
   "createdAtUTC": "2026-10-21T16:47:06.329Z",
   "published": [
@@ -29,5 +29,10 @@
     }
   ],
   "note": "Only the 3 approved video files. No replay after uncertain provider response.",
-  "updatedAtUTC": "2026-10-21T16:47:36.108Z"
+  "updatedAtUTC": "2026-10-21T16:47:37.976Z",
+  "liveVerifiedStoryIds": [
+    456240677,
+    456240678,
+    456240679
+  ]
 }
