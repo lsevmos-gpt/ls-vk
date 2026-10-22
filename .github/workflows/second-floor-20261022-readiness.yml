@@ -27,6 +27,13 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
+      - name: Syntax-check both exact-time publishers (no posting)
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m py_compile scripts/second_floor_reel_20261022_ig.py
+          node --check scripts/second_floor_reel_20261022_vk.mjs
+          echo SECOND_FLOOR_PUBLISHER_SYNTAX_VALID
       - name: Check authentic video and cover files with strict SHA-256 (no posting)
         shell: bash
         run: |
