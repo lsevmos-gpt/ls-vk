@@ -95,6 +95,9 @@ export async function getGroupId() {
 }
 
 async function uploadMultipart(uploadUrl, fieldName, filePath, originalName, mimeType) {
+  // High-quality vertical VK clips may be 50-95 MB; retain a realistic network
+  // upload deadline while preserving the historic 120-second small-media path.
+  const uploadSeconds = fs.statSync(filePath).size > 40_000_000 ? "360" : "120";
   const formArg =
     `${fieldName}=@${filePath};filename=${originalName || "upload.bin"};type=${mimeType || "application/octet-stream"}`;
 
@@ -107,7 +110,7 @@ async function uploadMultipart(uploadUrl, fieldName, filePath, originalName, mim
         "--show-error",
         "--fail-with-body",
         "--max-time",
-        "120",
+        uploadSeconds,
         "--request",
         "POST",
         "--form",
