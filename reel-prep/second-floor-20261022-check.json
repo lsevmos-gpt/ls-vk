@@ -5,5 +5,7 @@
   "coverFile": "media/second-floor-20261022-cover-meta.jpg",
   "onlyReadOnly": true,
   "preflightRevision": 2,
-  "note": "Syntax checks of both timed publisher scripts plus media/permission read-only checks. No provider mutation."
+  "note": "Syntax checks of both timed publisher scripts plus media/permission read-only checks. No provider mutation.",
+  "verification_request": "2026-10-22 17:46 Moscow: user requested immediate fresh Meta and VK readiness; read only, no publishing",
+  "verification_revision": 1
 }
