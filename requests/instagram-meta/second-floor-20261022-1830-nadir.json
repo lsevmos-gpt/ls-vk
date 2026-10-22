@@ -1,0 +1,20 @@
+{
+  "id": "second-floor-20261022-1830-nadir",
+  "type": "instagram-reel",
+  "postType": "reel",
+  "handle": "liniya__sporta",
+  "approved": true,
+  "publicContent": true,
+  "text": "🔥 Мы создаём возможности для вас!\n\nМы прислушиваемся к вашим потребностям, развиваемся, обновляем пространство и постоянно ищем возможности сделать Линию Спорта ещё лучше.\n\nПотому что для нас важно, чтобы вы приходили не просто потренироваться, а чувствовали себя частью места, где о вас думают, где есть выбор и где хочется становиться лучше.\n\nИ это только часть того, что мы готовы вам предложить! 🚀\n\nПриходи в Линию Спорта и найди свой формат тренировок!",
+  "media": [
+    {
+      "type": "video",
+      "url": "https://raw.githubusercontent.com/lsevmos-gpt/ls-vk/main/media/second-floor-20261022-reel-meta-vk.mp4"
+    }
+  ],
+  "coverUrl": "https://raw.githubusercontent.com/lsevmos-gpt/ls-vk/main/media/second-floor-20261022-cover-meta.jpg",
+  "collaborators": [
+    "kurtvafov_nadir"
+  ],
+  "shouldShareToFeed": true
+}
