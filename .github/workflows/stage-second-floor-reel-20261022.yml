@@ -1,0 +1,142 @@
+name: Prepare approved Second Floor Reel from Google Drive original (NO SOCIAL POSTING)
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'reel-prep/second-floor-20261022-source.json'
+permissions:
+  contents: write
+concurrency:
+  group: second-floor-media-stage-20261022
+  cancel-in-progress: false
+jobs:
+  prepare:
+    if: github.repository == 'lsevmos-gpt/ls-vk' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 52
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - name: Install video tools and Google Drive downloader
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y ffmpeg
+          python3 -m pip install --break-system-packages --quiet 'gdown==5.2.0' 'Pillow==11.3.0'
+      - name: Download precisely approved public Google Drive source and PNG cover
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/second-floor-20261022 media results/verification
+          jq -e '.id == "second-floor-reel-20261022" and .approved == true and .publicContent == true and .googleDriveFileId == "1G7CvPTEmxeRNhyCXCj_Jv1ZhHYnlYHBg"' reel-prep/second-floor-20261022-source.json >/dev/null
+          gdown --id '1G7CvPTEmxeRNhyCXCj_Jv1ZhHYnlYHBg' -O /tmp/second-floor-20261022/original.mp4 --quiet
+          test "$(stat -c%s /tmp/second-floor-20261022/original.mp4)" = '535389636'
+          python3 - <<'PY'
+          from pathlib import Path
+          with open('/tmp/second-floor-20261022/original.mp4','rb') as f:
+              assert f.read(32)[4:8]==b'ftyp', 'Downloaded Google Drive file is not an MP4'
+          print('APPROVED_GOOGLE_DRIVE_535MB_SOURCE_OK')
+          PY
+          curl -fLSs --retry 3 --connect-timeout 20 --max-time 180 \
+            'https://at.adobe.com/TxAJGtTefNrmWWtL' \
+            -o media/second-floor-20261022-cover-original.png
+          printf '%s  %s\n' \
+            '96d00095cc4bfd8af7b6182f783fe95140c378619582af5233d6ce7c35b085ef' \
+            media/second-floor-20261022-cover-original.png | sha256sum -c -
+          python3 - <<'PY'
+          from PIL import Image
+          from pathlib import Path
+          src=Path('media/second-floor-20261022-cover-original.png')
+          im=Image.open(src)
+          assert im.size == (1080,1920)
+          assert im.getchannel('A').getextrema()==(255,255)
+          im.convert('RGB').save('media/second-floor-20261022-cover-meta.jpg',quality=98,subsampling=0,optimize=True)
+          print('ORIGINAL_COVER_UNALTERED; JPEG_Q98_444_1080x1920')
+          PY
+          ffprobe -v error -show_entries stream=codec_type,codec_name,width,height,r_frame_rate,bit_rate,sample_rate,channels -show_entries format=duration,size,bit_rate -of json \
+            /tmp/second-floor-20261022/original.mp4 > /tmp/second-floor-20261022/source-probe.json
+      - name: Encode maximum viable Meta/VK-compatible 1080x1920 Reel, preserve fps, sound and framing
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          d=json.load(open('/tmp/second-floor-20261022/source-probe.json'))
+          v=next(x for x in d['streams'] if x['codec_type']=='video')
+          assert int(d['format']['size'])==535389636
+          assert v['codec_name'] in ('h264','hevc')
+          assert v['height']>v['width'],v
+          assert 3<float(d['format']['duration'])<180,d['format']
+          print('SOURCE_PROBE=',json.dumps(d,ensure_ascii=False),flush=True)
+          PY
+          # No crop. Lanczos downsample only if original width is above 1080.
+          # CRF 14 quality ceiling, VBV 20 Mbps cap. Reserve <=95MB for GitHub raw public file URL.
+          ffmpeg -hide_banner -nostdin -loglevel error -stats \
+            -i /tmp/second-floor-20261022/original.mp4 \
+            -map 0:v:0 -map 0:a:0 -dn -sn \
+            -vf 'scale=1080:1920:flags=lanczos,setsar=1,format=yuv420p' \
+            -c:v libx264 -preset medium -crf 14 -maxrate 19000k -bufsize 38000k \
+            -c:a aac -b:a 128k -ar 48000 -ac 2 \
+            -movflags +faststart -y /tmp/second-floor-20261022/highquality.mp4
+          cp /tmp/second-floor-20261022/highquality.mp4 media/second-floor-20261022-reel-meta-vk.mp4
+          size=$(stat -c%s media/second-floor-20261022-reel-meta-vk.mp4)
+          if test "$size" -gt 94000000; then
+            echo "HIGH_QUALITY_CR14_OUTPUT_TOO_LARGE_FOR_GITHUB_RAW; encode tuned to exact 92MB budget"
+            duration=$(ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 /tmp/second-floor-20261022/original.mp4)
+            target=$(python3 -c 'import sys; print(max(2500000,min(16000000,int(90_000_000*8/float(sys.argv[1])-160000))))' "$duration")
+            ffmpeg -hide_banner -nostdin -loglevel error -stats \
+              -i /tmp/second-floor-20261022/original.mp4 \
+              -map 0:v:0 -map 0:a:0 -dn -sn \
+              -vf 'scale=1080:1920:flags=lanczos,setsar=1,format=yuv420p' \
+              -c:v libx264 -preset slow -b:v "${target}" -maxrate "${target}" -bufsize "$((target*2))" \
+              -c:a aac -b:a 128k -ar 48000 -ac 2 -movflags +faststart \
+              -y media/second-floor-20261022-reel-meta-vk.mp4
+          fi
+          ffprobe -v error -show_entries stream=codec_type,codec_name,width,height,r_frame_rate,bit_rate,sample_rate,channels -show_entries format=duration,size,bit_rate -of json \
+            media/second-floor-20261022-reel-meta-vk.mp4 > /tmp/second-floor-20261022/output-probe.json
+          python3 - <<'PY'
+          from pathlib import Path
+          import json,hashlib,datetime
+          p=Path('media/second-floor-20261022-reel-meta-vk.mp4')
+          source=json.loads(Path('/tmp/second-floor-20261022/source-probe.json').read_text())
+          ready=json.loads(Path('/tmp/second-floor-20261022/output-probe.json').read_text())
+          sv=next(x for x in source['streams'] if x['codec_type']=='video')
+          v=next(x for x in ready['streams'] if x['codec_type']=='video')
+          a=next(x for x in ready['streams'] if x['codec_type']=='audio')
+          assert v['codec_name']=='h264' and (v['width'],v['height'])==(1080,1920)
+          assert sv['r_frame_rate']==v['r_frame_rate']
+          assert a['codec_name']=='aac' and a['sample_rate']=='48000'
+          assert abs(float(source['format']['duration'])-float(ready['format']['duration']))<0.2
+          assert 1000000 < p.stat().st_size < 95000000
+          assert float(ready['format']['bit_rate'])<25000000
+          cover=Path('media/second-floor-20261022-cover-meta.jpg')
+          png=Path('media/second-floor-20261022-cover-original.png')
+          with p.open('rb') as f: sha=hashlib.file_digest(f,'sha256').hexdigest()
+          with cover.open('rb') as f: cover_sha=hashlib.file_digest(f,'sha256').hexdigest()
+          with png.open('rb') as f: png_sha=hashlib.file_digest(f,'sha256').hexdigest()
+          original=Path('/tmp/second-floor-20261022/original.mp4')
+          with original.open('rb') as f: source_sha=hashlib.file_digest(f,'sha256').hexdigest()
+          rec={'ok':True,'id':'second-floor-reel-20261022','sourceGoogleDriveFileId':'1G7CvPTEmxeRNhyCXCj_Jv1ZhHYnlYHBg',
+           'originalSizeBytes':int(source['format']['size']),'originalSHA256':source_sha,'originalProbe':source,
+           'videoFile':str(p),'videoSHA256':sha,'videoSizeBytes':p.stat().st_size,'readyProbe':ready,
+           'coverPNG':str(png),'coverPNG_SHA256':png_sha,
+           'coverJPEG':str(cover),'coverJPEG_SHA256':cover_sha,
+           'cropped':False,'alteredLogoOrFace':False,
+           'scheduledTime':'2026-10-22T18:30:00+03:00',
+           'doesNotPublish':True,'timestampUTC':datetime.datetime.now(datetime.timezone.utc).isoformat()}
+          Path('results/verification/second-floor-reel-20261022-prepared.json').write_text(json.dumps(rec,ensure_ascii=False,indent=2)+'\n')
+          print('SECOND_FLOOR_MEDIA_PREP_SUCCESS',json.dumps({'sha256':sha,'sizeBytes':p.stat().st_size,'sourceSha256':source_sha,'duration':ready['format']['duration'],'coverSha256':cover_sha}),flush=True)
+          PY
+      - name: Commit prepared MP4, original PNG, Meta cover JPEG and signed QA receipt; NO SOCIAL API CALLS
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name ls-social-media-bot
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add media/second-floor-20261022-reel-meta-vk.mp4 media/second-floor-20261022-cover-original.png media/second-floor-20261022-cover-meta.jpg results/verification/second-floor-reel-20261022-prepared.json
+          git diff --cached --quiet && exit 0
+          git commit -m 'Stage second floor high-quality Reel with exact user cover for scheduled publish [skip ci]'
+          git pull --rebase origin main
+          git push origin HEAD:main
