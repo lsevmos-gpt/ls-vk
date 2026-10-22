@@ -1,0 +1,81 @@
+{
+  "ok": true,
+  "id": "second-floor-reel-20261022",
+  "sourceGoogleDriveFileId": "1G7CvPTEmxeRNhyCXCj_Jv1ZhHYnlYHBg",
+  "originalSizeBytes": 535389636,
+  "originalSHA256": "89380c5655a36468e57de8c8d644a2a478ad852fb73cef04f6ee6b86e32b9476",
+  "originalProbe": {
+    "programs": [],
+    "stream_groups": [],
+    "streams": [
+      {
+        "codec_name": "h264",
+        "codec_type": "video",
+        "width": 2160,
+        "height": 3840,
+        "r_frame_rate": "50/1",
+        "bit_rate": "77013075"
+      },
+      {
+        "codec_name": "aac",
+        "codec_type": "audio",
+        "sample_rate": "48000",
+        "channels": 2,
+        "r_frame_rate": "0/0",
+        "bit_rate": "319989"
+      },
+      {
+        "codec_type": "data",
+        "r_frame_rate": "0/0"
+      }
+    ],
+    "format": {
+      "duration": "55.445333",
+      "size": "535389636",
+      "bit_rate": "77249370"
+    }
+  },
+  "videoFile": "media/second-floor-20261022-reel-meta-vk.mp4",
+  "videoSHA256": "d0e8dae4d57b57f634ba324f94f4ec38a7766cfeea40469c91712a0d856e30a8",
+  "videoSizeBytes": 87469013,
+  "readyProbe": {
+    "programs": [],
+    "stream_groups": [],
+    "streams": [
+      {
+        "codec_name": "h264",
+        "codec_type": "video",
+        "width": 1080,
+        "height": 1920,
+        "r_frame_rate": "50/1",
+        "bit_rate": "12495240"
+      },
+      {
+        "codec_name": "aac",
+        "codec_type": "audio",
+        "sample_rate": "48000",
+        "channels": 2,
+        "r_frame_rate": "0/0",
+        "bit_rate": "130106"
+      },
+      {
+        "codec_type": "data",
+        "r_frame_rate": "0/0"
+      }
+    ],
+    "format": {
+      "duration": "55.401000",
+      "size": "87469013",
+      "bit_rate": "12630676"
+    }
+  },
+  "coverPNG": "media/second-floor-20261022-cover-original.png",
+  "coverPNG_SHA256": "96d00095cc4bfd8af7b6182f783fe95140c378619582af5233d6ce7c35b085ef",
+  "coverJPEG": "media/second-floor-20261022-cover-meta.jpg",
+  "coverJPEG_SHA256": "7b5471a549955db2fa1f925607625974b8c5711db8af31b53837ee72901f80d2",
+  "cropped": false,
+  "alteredLogoOrFace": false,
+  "scheduledTime": "2026-10-22T18:30:00+03:00",
+  "doesNotPublish": true,
+  "timestampUTC": "2026-10-22T13:43:39.221554+00:00"
+}
