@@ -104,7 +104,7 @@ async function main(){
       record.readbackConfirmed=list.some(x=>Number(x?.id)===postId && Number(x?.owner_id)===-48198173);
     } catch (error){record.readbackConfirmed=false;}
     await checkpoint(record);
-    console.log("SECOND_FLOOR_VK_CLIP_PUBLISHED",JSON.stringify({postId:record.postId,videoId:record.videoId,readbackConfirmed:record.readbackConfirmed}),flush=true);
+    console.log("SECOND_FLOOR_VK_CLIP_PUBLISHED",JSON.stringify({postId:record.postId,videoId:record.videoId,readbackConfirmed:record.readbackConfirmed}));
   } catch(error) {
     if(record.status!=="published"){
       record.status="manual_review_required";
