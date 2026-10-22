@@ -32,6 +32,8 @@ jobs:
         run: |
           test -n "$META_IG_ACCESS_TOKEN" || { echo "::error::META_IG_ACCESS_TOKEN is not configured"; exit 1; }
           test -n "$META_IG_USER_ID" || { echo "::error::META_IG_USER_ID is not configured"; exit 1; }
+          test -n "$META_APP_ID" || { echo "::error::META_APP_ID is not configured; expiry monitoring unavailable"; exit 1; }
+          test -n "$META_APP_SECRET" || { echo "::error::META_APP_SECRET is not configured; expiry monitoring unavailable"; exit 1; }
       - name: Test safe token diagnostics and verify Meta account (GET only; never publish)
         run: |
           python -m unittest discover -s tests -p test_meta_ig_token_health.py -v
