@@ -2,13 +2,14 @@
   "id": "second-floor-20261022-1830-nadir",
   "platform": "instagram-meta",
   "account": "liniya__sporta",
-  "status": "container_created",
+  "status": "container_ready",
   "runId": "39806972173",
   "invitedCollaborator": "kurtvafov_nadir",
   "scheduledFor": "2026-10-22T18:30:00+03:00",
   "createdAt": "2026-10-22T18:40:15.913106+03:00",
   "mediaId": null,
   "note": "Do not repeat after any provider API mutation.",
-  "lastUpdatedAt": "2026-10-22T18:40:18.422040+03:00",
-  "creationId": "18020562812949669"
+  "lastUpdatedAt": "2026-10-22T18:41:12.257513+03:00",
+  "creationId": "18020562812949669",
+  "readyAt": "2026-10-22T18:41:12.257492+03:00"
 }
