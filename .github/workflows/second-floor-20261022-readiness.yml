@@ -1,0 +1,91 @@
+name: Preflight 18:30 Second Floor Reel Meta/VK permissions and media (GET ONLY)
+on:
+  push:
+    branches: [main]
+    paths: ['reel-prep/second-floor-20261022-check.json']
+permissions:
+  contents: read
+jobs:
+  readiness:
+    if: github.repository == 'lsevmos-gpt/ls-vk'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      META_IG_ACCESS_TOKEN: ${{ secrets.META_IG_ACCESS_TOKEN }}
+      META_IG_USER_ID: ${{ secrets.META_IG_USER_ID }}
+      META_GRAPH_VERSION: v26.0
+      VK_API_VERSION: '5.199'
+      VK_GROUP_ID: '48198173'
+      VK_GROUP_SCREEN_NAME: 'liniya__sporta'
+      VK_GROUP_TOKEN: ${{ secrets.VK_GROUP_TOKEN }}
+      VK_USER_TOKEN: ${{ secrets.VK_USER_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Check authentic video and cover files with strict SHA-256 (no posting)
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json,hashlib
+          from pathlib import Path
+          d=json.loads(Path('results/verification/second-floor-reel-20261022-prepared.json').read_text())
+          assert d['ok'] and d['videoSizeBytes']==87469013 and d['scheduledTime']=='2026-10-22T18:30:00+03:00'
+          for name,sha in [(d['videoFile'],d['videoSHA256']),(d['coverJPEG'],d['coverJPEG_SHA256']),(d['coverPNG'],d['coverPNG_SHA256'])]:
+              with open(name,'rb') as f: actual=hashlib.file_digest(f,'sha256').hexdigest()
+              assert sha==actual
+          print('VIDEO_50_FPS_1080x1920_AND_ORIGINAL_COVER_VERIFIED')
+          PY
+      - name: Read-only Meta account and approved collaborator payload validation
+        shell: bash
+        run: |
+          set +e
+          python -m scripts.instagram_collab validate requests/instagram-meta/second-floor-20261022-1830-nadir.json
+          python -m scripts.instagram_collab check -
+          echo "META_READY_CHECK_EXIT_CODE=$?"
+          exit 0
+      - name: Read-only VK video permission and exact group check
+        shell: bash
+        run: |
+          set +e
+          npm install --omit=dev --ignore-scripts --no-package-lock --no-audit --no-fund
+          node --input-type=module - <<'JS'
+          import {getGroupId,vkCall} from './src/vk.js';
+          try {
+            if(!process.env.VK_USER_TOKEN)throw Error('VK_USER_TOKEN is not configured');
+            if(!process.env.VK_GROUP_TOKEN)throw Error('VK_GROUP_TOKEN is not configured');
+            const id=await getGroupId();
+            if(Number(id)!==48198173)throw Error('Wrong VK group');
+            const users=await vkCall('users.get',{},process.env.VK_USER_TOKEN);
+            if(!Array.isArray(users)||!users.length)throw Error('VK user token denied');
+            console.log('VK_VIDEO_UPLOAD_USER_TOKEN_AND_GROUP_READ_OK');
+          }catch(e){console.error('::error::VK_READINESS '+String(e?.message||e).slice(0,180));process.exitCode=1;}
+          JS
+          echo "VK_READY_CHECK_EXIT_CODE=$?"
+          exit 0
+      - name: Verify video and cover public media URLs are actually fetchable by Meta
+        shell: bash
+        run: |
+          set +e
+          curl --fail --location --silent --show-error --max-time 180 \
+            'https://raw.githubusercontent.com/lsevmos-gpt/ls-vk/main/media/second-floor-20261022-reel-meta-vk.mp4' -o /tmp/second-floor-video-check.mp4
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('/tmp/second-floor-video-check.mp4')
+          assert p.is_file() and p.stat().st_size==87469013
+          print('PUBLIC_META_VIDEO_OK')
+          PY
+          curl --fail --location --silent --show-error --max-time 45 \
+            'https://raw.githubusercontent.com/lsevmos-gpt/ls-vk/main/media/second-floor-20261022-cover-meta.jpg' -o /tmp/second-floor-cover-check.jpg
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('/tmp/second-floor-cover-check.jpg')
+          assert p.is_file() and p.stat().st_size>100000
+          assert p.read_bytes()[:3]==b'\xff\xd8\xff'
+          print('PUBLIC_META_COVER_OK')
+          PY
