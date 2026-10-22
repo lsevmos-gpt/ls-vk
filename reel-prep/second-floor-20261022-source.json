@@ -1,0 +1,21 @@
+{
+  "id": "second-floor-reel-20261022",
+  "googleDriveFileId": "1G7CvPTEmxeRNhyCXCj_Jv1ZhHYnlYHBg",
+  "googleDriveSourceName": "рилс-второй-этаж.mp4",
+  "originalSizeBytes": 535389636,
+  "sourceAccess": "public-read (confirmed Drive anyone permission)",
+  "coverFileFromUser": "LS_Vtoroy_Etazh_COVER_1080x1920.png",
+  "coverSourceSha256": "96d00095cc4bfd8af7b6182f783fe95140c378619582af5233d6ce7c35b085ef",
+  "coverStagingUrl": "https://at.adobe.com/TxAJGtTefNrmWWtL",
+  "videoReady": "media/second-floor-20261022-reel-meta-vk.mp4",
+  "coverReady": "media/second-floor-20261022-cover-meta.jpg",
+  "approved": true,
+  "publicContent": true,
+  "stageOnly": true,
+  "publishAtMSK": "2026-10-22T18:30:00+03:00",
+  "channel": [
+    "instagram",
+    "vk"
+  ],
+  "note": "Prepare and validate only. Publisher must check fixed time and one-time receipt."
+}
