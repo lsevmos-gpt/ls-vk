@@ -1,0 +1,58 @@
+{
+  "ok": true,
+  "id": "bar-stories-20261023",
+  "publishAt": "2026-10-23T18:30:00+03:00",
+  "sequence": [
+    {
+      "id": "intro-bar",
+      "sourceDriveSHA256": "1158b8e13b776740476522512843bf3b24bf4a78a764fcdcc693dadf85af1d7b",
+      "vkPath": "media/bar-20261023-intro-vk.mp4",
+      "vkSHA256": "1158b8e13b776740476522512843bf3b24bf4a78a764fcdcc693dadf85af1d7b",
+      "vkBytes": 3017051,
+      "metaPath": "media/bar-20261023-intro-meta.mp4",
+      "metaSHA256": "1f326ce42b33bc147db003d5d0215511b6a9230fd617044269b64605833420e1",
+      "metaBytes": 2915917,
+      "videoStreamSHA256": "SHA256=40808e48a3ca8e2d48e25f9bf5eb18214132b9cd630ca31c6903e925c4831707",
+      "duration": 5.05,
+      "dimensions": "1080x1920",
+      "fps": 24,
+      "metaAudioBitrate": 114846
+    },
+    {
+      "id": "fresh-orange-grapefruit",
+      "sourceDriveSHA256": "940fded02356f53e95284dc2e202fc1bad12d911d2e43104b0956e35972ee7ce",
+      "vkPath": "media/bar-20261023-fresh-vk.mp4",
+      "vkSHA256": "940fded02356f53e95284dc2e202fc1bad12d911d2e43104b0956e35972ee7ce",
+      "vkBytes": 10339746,
+      "metaPath": "media/bar-20261023-fresh-meta.mp4",
+      "metaSHA256": "8a74bcb3d9781f92312a7469d739e4998a63a54a598f742e5ae78581becab3a6",
+      "metaBytes": 9953584,
+      "videoStreamSHA256": "SHA256=e5c75f6fa15ac22fc0d38e30414f2b0594a7df125eee38fdbbab416cc58205ed",
+      "duration": 15.0,
+      "dimensions": "1080x1920",
+      "fps": 24,
+      "metaAudioBitrate": 115051
+    },
+    {
+      "id": "protein",
+      "sourceDriveSHA256": "15ba704e46108b16cf2a1aa32055f5cfed2c20de74bd492033083624f4131e99",
+      "vkPath": "media/bar-20261023-protein-vk-hq.mp4",
+      "vkSHA256": "4808977eae8d2a93664457495bd9ef9a0994ecc7efeed62a9cb6b04f1841c1eb",
+      "vkBytes": 16978447,
+      "metaPath": "media/bar-20261023-protein-meta.mp4",
+      "metaSHA256": "89f71cb2a81b13f4beae419c3c726dc1d2b17ea1f35a37421d71aa05e76c8c73",
+      "metaBytes": 16898381,
+      "videoStreamSHA256": "SHA256=1dda81bcfd03bddc9f3a4011166c2777973295d328dbccaa59a804716bf53624",
+      "duration": 8.042,
+      "dimensions": "1080x1920",
+      "fps": 24,
+      "metaAudioBitrate": 112401
+    }
+  ],
+  "sourceOriginalsVerified": true,
+  "videoStreamsUnchangedInMeta": true,
+  "vkIntroAndFreshOriginalBytes": true,
+  "proteinDownscaledFrom4KForStoryCompatibility": true,
+  "doesNotPublish": true,
+  "createdAtUTC": "2026-10-23T11:20:12.281005+00:00"
+}
