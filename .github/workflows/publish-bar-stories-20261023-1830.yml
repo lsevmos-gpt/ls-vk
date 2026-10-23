@@ -1,5 +1,9 @@
 name: Publish 3 ordered Bar Stories Instagram via Meta + VK at 18:30 MSK on 23 Oct 2026 (ONCE)
 on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/publish-bar-stories-20261023-1830.yml'
   schedule:
     # GitHub cron can start late; multiple early entry points share one concurrency group.
     # Moscow 18:30 = 15:30 UTC. The live worker waits until the exact target.
@@ -11,6 +15,69 @@ concurrency:
   group: bar-stories-20261023-1830-instagram-meta-and-vk-once
   cancel-in-progress: false
 jobs:
+  readiness:
+    name: Dry-run validate 3 approved media, Meta and VK (never publish)
+    if: github.repository == 'lsevmos-gpt/ls-vk' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      META_IG_ACCESS_TOKEN: ${{ secrets.META_IG_ACCESS_TOKEN }}
+      META_IG_USER_ID: ${{ secrets.META_IG_USER_ID }}
+      META_GRAPH_VERSION: v26.0
+      VK_API_VERSION: '5.199'
+      VK_GROUP_ID: '48198173'
+      VK_GROUP_SCREEN_NAME: 'liniya__sporta'
+      VK_GROUP_TOKEN: ${{ secrets.VK_GROUP_TOKEN }}
+      SOCIAL_PLATFORM: vk
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Validate both publishers and authorized assets offline
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m py_compile scripts/publish_bar_stories_20261023_ig.py
+          node --check scripts/publish_bar_stories_20261023_vk.mjs
+          python3 - <<'PY'
+          from pathlib import Path
+          import json,hashlib
+          prep=json.loads(Path('results/verification/bar-stories-20261023-stage.json').read_text())
+          manifest=json.loads(Path('media-prep/bar-stories-20261023.json').read_text())
+          assert prep['ok'] and prep['sourceOriginalsVerified'] and prep['videoStreamsUnchangedInMeta']
+          assert prep['vkIntroAndFreshOriginalBytes'] and manifest['approved'] and manifest['publicContent']
+          assert len(prep['sequence'])==len(manifest['sequence'])==3
+          for prepared,src in zip(prep['sequence'],manifest['sequence']):
+              assert prepared['id']==src['id'] and prepared['sourceDriveSHA256']==src['sha256']
+              for prefix in ('meta','vk'):
+                  file=Path(prepared[prefix+'Path'])
+                  assert file.is_file() and file.stat().st_size==prepared[prefix+'Bytes']
+                  with file.open('rb') as f: actual=hashlib.file_digest(f,'sha256').hexdigest()
+                  assert actual==prepared[prefix+'SHA256']
+          print('PUBLISH_20261023_DRYRUN_QA_OK; ZERO_PROVIDER_MUTATIONS')
+          PY
+      - name: Read-only check of Meta credential and VK community (never publish)
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$META_IG_ACCESS_TOKEN" && test -n "$META_IG_USER_ID" && test -n "$VK_GROUP_TOKEN"
+          npm install --omit=dev --ignore-scripts --no-package-lock --no-audit --no-fund
+          python -m scripts.instagram_collab check -
+          node scripts/check_social_targets.mjs
+      - name: Check unauthenticated access to three exact HQ Meta source URLs
+        run: |
+          set -euo pipefail
+          for name in intro fresh protein; do
+            curl --silent --show-error --fail --location --head --max-time 30 \
+              "https://raw.githubusercontent.com/lsevmos-gpt/ls-vk/main/media/bar-20261023-${name}-meta.mp4" >/dev/null
+          done
+          echo 'THREE_META_HQ_URLS_PUBLICLY_ACCESSIBLE'
   instagram_meta:
     name: Direct Meta @liniya__sporta, 3 ordered Stories, one shot
     if: github.repository == 'lsevmos-gpt/ls-vk' && github.ref == 'refs/heads/main' && github.event_name == 'schedule'
