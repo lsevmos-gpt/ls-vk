@@ -1,0 +1,35 @@
+{
+  "id": "bar-stories-20261023",
+  "approved": true,
+  "publicContent": true,
+  "publishAt": "2026-10-23T18:30:00+03:00",
+  "instagram": "liniya__sporta",
+  "vkGroupId": 48198173,
+  "sequence": [
+    {
+      "id": "intro-bar",
+      "driveId": "1SoexOQPc8MA_gIZQQ1iUF9FjNppA-cqy",
+      "originalName": "интро бар.mp4",
+      "url": "https://at.adobe.com/zFYxesUOyB5quxQa",
+      "sha256": "1158b8e13b776740476522512843bf3b24bf4a78a764fcdcc693dadf85af1d7b",
+      "bytes": 3017051
+    },
+    {
+      "id": "fresh-orange-grapefruit",
+      "driveId": "1HA_FtQlYGsyVWHSvYCkuaSiXUBlgmTyc",
+      "originalName": "фреш апельсин и грейпфрукт.mp4",
+      "url": "https://at.adobe.com/4LGB9knojk2nUB6h",
+      "sha256": "940fded02356f53e95284dc2e202fc1bad12d911d2e43104b0956e35972ee7ce",
+      "bytes": 10339746
+    },
+    {
+      "id": "protein",
+      "driveId": "1zLN7sTESlUqiWi3VotOuStWM2PESifXo",
+      "originalName": "Прот.mp4",
+      "url": "https://at.adobe.com/NPF2Ar92xddFjf8u",
+      "sha256": "15ba704e46108b16cf2a1aa32055f5cfed2c20de74bd492033083624f4131e99",
+      "bytes": 119366334
+    }
+  ],
+  "note": "Read-only media staging: exact originals for first two; best compatible 1080p for protein 4K; Meta AAC-only compatibility, no video alterations. Do not publish in staging. Public social content explicitly approved by owner."
+}
