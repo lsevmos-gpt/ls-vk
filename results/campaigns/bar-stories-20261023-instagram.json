@@ -3,7 +3,7 @@
   "provider": "meta",
   "account": "liniya__sporta",
   "scheduledFor": "2026-10-23T18:30:00+03:00",
-  "status": "partial_published",
+  "status": "submission_started",
   "runId": "39970826996",
   "createdAtUTC": "2026-10-23T15:30:00.399325+00:00",
   "published": [
@@ -17,5 +17,7 @@
     }
   ],
   "note": "Only three explicitly approved Stories. No provider mutation retries.",
-  "updatedAtUTC": "2026-10-23T15:30:40.207330+00:00"
+  "updatedAtUTC": "2026-10-23T15:30:47.714065+00:00",
+  "attemptingIndex": 2,
+  "attemptingItem": "fresh-orange-grapefruit"
 }
