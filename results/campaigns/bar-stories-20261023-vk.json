@@ -5,7 +5,7 @@
   "scheduledFor": "2026-10-23T18:30:00+03:00",
   "runId": "39970826996",
   "createdAtUTC": "2026-10-23T15:30:00.489Z",
-  "status": "submission_started",
+  "status": "submitted_to_vk",
   "published": [
     {
       "index": 1,
@@ -20,10 +20,15 @@
       "vkStoryId": 456240682,
       "ownerId": -48198173,
       "publishedAtUTC": "2026-10-23T15:30:27.022Z"
+    },
+    {
+      "index": 3,
+      "name": "protein",
+      "vkStoryId": 456240683,
+      "ownerId": -48198173,
+      "publishedAtUTC": "2026-10-23T15:30:37.680Z"
     }
   ],
   "note": "Exactly three approved stories; never retry provider save after uncertainty.",
-  "updatedAtUTC": "2026-10-23T15:30:31.504Z",
-  "attemptingIndex": 3,
-  "attemptingItem": "protein"
+  "updatedAtUTC": "2026-10-23T15:30:37.680Z"
 }
