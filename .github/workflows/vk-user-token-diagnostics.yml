@@ -2,22 +2,13 @@ name: Diagnose VK user token (READ-ONLY, no uploads)
 
 on:
   workflow_dispatch:
-  push:
-    branches: [main]
-    paths:
-      - '.github/workflows/vk-user-token-diagnostics.yml'
 
 permissions:
   contents: read
 
 jobs:
   diagnose:
-    if: >-
-      github.repository == 'lsevmos-gpt/ls-vk' &&
-      (
-        (github.event_name == 'workflow_dispatch' && github.actor == 'lsevmos-gpt') ||
-        (github.event_name == 'push' && contains(github.event.head_commit.message, '[run-vk-token-diagnostic]'))
-      )
+    if: github.repository == 'lsevmos-gpt/ls-vk' && github.actor == 'lsevmos-gpt'
     runs-on: ubuntu-latest
     timeout-minutes: 8
     env:
