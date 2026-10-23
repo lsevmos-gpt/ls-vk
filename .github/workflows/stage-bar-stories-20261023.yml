@@ -1,0 +1,140 @@
+name: Stage 23 Oct Bar Instagram and VK Stories in maximum compatible quality (NO PUBLISH)
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'media-prep/bar-stories-20261023.json'
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: stage-bar-stories-20261023
+  cancel-in-progress: false
+jobs:
+  stage:
+    if: github.repository == 'lsevmos-gpt/ls-vk' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 50
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - name: Validate approved sources and download exact originals from Adobe staging (NO SOCIAL API)
+        shell: bash
+        run: |
+          set -euo pipefail
+          test ! -f results/verification/bar-stories-20261023-stage.json || { echo 'Already staged, no changes'; exit 0; }
+          command -v ffmpeg && command -v ffprobe
+          mkdir -p media results/verification /tmp/bar20261023
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          j=json.loads(Path('media-prep/bar-stories-20261023.json').read_text())
+          assert j['id']=='bar-stories-20261023' and j['approved'] is True and j['publicContent'] is True
+          assert j['publishAt']=='2026-10-23T18:30:00+03:00'
+          assert [x['id'] for x in j['sequence']]==['intro-bar','fresh-orange-grapefruit','protein']
+          assert all(x['url'].startswith('https://at.adobe.com/') for x in j['sequence'])
+          assert [x['sha256'] for x in j['sequence']]==[
+            '1158b8e13b776740476522512843bf3b24bf4a78a764fcdcc693dadf85af1d7b',
+            '940fded02356f53e95284dc2e202fc1bad12d911d2e43104b0956e35972ee7ce',
+            '15ba704e46108b16cf2a1aa32055f5cfed2c20de74bd492033083624f4131e99']
+          print('ORIGINAL_VIDEO_IDENTITIES_APPROVED')
+          PY
+          curl -fL --retry 2 --connect-timeout 20 --max-time 180 'https://at.adobe.com/zFYxesUOyB5quxQa' -o /tmp/bar20261023/intro.mp4
+          curl -fL --retry 2 --connect-timeout 20 --max-time 180 'https://at.adobe.com/4LGB9knojk2nUB6h' -o /tmp/bar20261023/fresh.mp4
+          curl -fL --retry 2 --connect-timeout 20 --max-time 600 'https://at.adobe.com/NPF2Ar92xddFjf8u' -o /tmp/bar20261023/protein.mp4
+          printf '%s  %s\n' \
+            '1158b8e13b776740476522512843bf3b24bf4a78a764fcdcc693dadf85af1d7b' /tmp/bar20261023/intro.mp4 \
+            '940fded02356f53e95284dc2e202fc1bad12d911d2e43104b0956e35972ee7ce' /tmp/bar20261023/fresh.mp4 \
+            '15ba704e46108b16cf2a1aa32055f5cfed2c20de74bd492033083624f4131e99' /tmp/bar20261023/protein.mp4 | sha256sum --check
+      - name: Prepare VK originals and best compatible HQ 1080p protein version
+        shell: bash
+        run: |
+          set -euo pipefail
+          cp /tmp/bar20261023/intro.mp4 media/bar-20261023-intro-vk.mp4
+          cp /tmp/bar20261023/fresh.mp4 media/bar-20261023-fresh-vk.mp4
+          ffmpeg -hide_banner -nostdin -loglevel error -stats -i /tmp/bar20261023/protein.mp4 \
+            -map 0:v:0 -map 0:a:0 -dn -sn \
+            -vf 'scale=1080:1920:flags=lanczos,format=yuv420p' \
+            -c:v libx264 -preset slow -crf 13 -maxrate 20000k -bufsize 40000k \
+            -g 48 -keyint_min 48 -sc_threshold 0 \
+            -c:a aac -b:a 192k -ar 48000 -ac 2 -movflags +faststart \
+            -y media/bar-20261023-protein-vk-hq.mp4
+      - name: Prepare Meta-compatible AAC (all H264 frames copied without reencoding)
+        shell: bash
+        run: |
+          set -euo pipefail
+          for name in intro fresh protein; do
+            source="media/bar-20261023-\${name}-vk.mp4"
+            if [ "$name" = protein ]; then source='media/bar-20261023-protein-vk-hq.mp4'; fi
+            ffmpeg -hide_banner -nostdin -loglevel error \
+              -i "$source" \
+              -map 0:v:0 -map 0:a:0 \
+              -c:v copy -c:a aac -b:a 112k -ar 48000 -ac 2 \
+              -movflags +faststart -y "media/bar-20261023-${name}-meta.mp4"
+          done
+      - name: Inspect source and staged technical parameters; write immutable QA receipts
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json,hashlib,subprocess
+          from pathlib import Path
+          from datetime import datetime,timezone
+          root=Path('media')
+          cases=[
+            ('intro-bar','intro',5.05,'1158b8e13b776740476522512843bf3b24bf4a78a764fcdcc693dadf85af1d7b'),
+            ('fresh-orange-grapefruit','fresh',15.0,'940fded02356f53e95284dc2e202fc1bad12d911d2e43104b0956e35972ee7ce'),
+            ('protein','protein',8.042667,'15ba704e46108b16cf2a1aa32055f5cfed2c20de74bd492033083624f4131e99'),
+          ]
+          def probe(p):
+            a=subprocess.check_output(['ffprobe','-v','error','-show_entries','format=size,duration,bit_rate:stream=codec_type,codec_name,bit_rate,width,height,r_frame_rate,sample_rate','-of','json',str(p)],timeout=60)
+            return json.loads(a)
+          def streamhash(p):
+            a=subprocess.check_output(['ffmpeg','-v','error','-i',str(p),'-map','0:v:0','-c:v','copy','-f','hash','-hash','SHA256','-'],timeout=90)
+            return a.decode().strip()
+          seq=[]
+          for title,short,duration,orig_sha in cases:
+            vk=root/f'bar-20261023-{short}-vk.mp4'
+            if short=='protein': vk=root/'bar-20261023-protein-vk-hq.mp4'
+            meta=root/f'bar-20261023-{short}-meta.mp4'
+            assert vk.is_file() and meta.is_file()
+            d,e=probe(vk),probe(meta)
+            v=next(x for x in d['streams'] if x['codec_type']=='video')
+            a=next(x for x in d['streams'] if x['codec_type']=='audio')
+            vm=next(x for x in e['streams'] if x['codec_type']=='video')
+            am=next(x for x in e['streams'] if x['codec_type']=='audio')
+            assert (v['codec_name'],v['width'],v['height'],v['r_frame_rate'])==('h264',1080,1920,'24/1')
+            assert (vm['codec_name'],vm['width'],vm['height'],vm['r_frame_rate'])==('h264',1080,1920,'24/1')
+            assert (a['codec_name'],am['codec_name'],am['sample_rate'])==('aac','aac','48000')
+            assert 0<int(am['bit_rate'])<=128000
+            assert abs(float(d['format']['duration'])-duration)<0.30 and abs(float(e['format']['duration'])-duration)<0.30
+            assert streamhash(vk)==streamhash(meta),'Meta video stream was re-encoded'
+            assert vk.stat().st_size<95_000_000 and meta.stat().st_size<95_000_000
+            with vk.open('rb') as f: vksha=hashlib.file_digest(f,'sha256').hexdigest()
+            with meta.open('rb') as f: metasha=hashlib.file_digest(f,'sha256').hexdigest()
+            if short in {'intro','fresh'}: assert vksha==orig_sha, 'Original VK bytes changed'
+            seq.append({'id':title,'sourceDriveSHA256':orig_sha,'vkPath':str(vk),'vkSHA256':vksha,'vkBytes':vk.stat().st_size,
+               'metaPath':str(meta),'metaSHA256':metasha,'metaBytes':meta.stat().st_size,'videoStreamSHA256':streamhash(vk),
+               'duration':float(d['format']['duration']),'dimensions':'1080x1920','fps':24,'metaAudioBitrate':int(am['bit_rate'])})
+          payload={'ok':True,'id':'bar-stories-20261023','publishAt':'2026-10-23T18:30:00+03:00',
+            'sequence':seq,'sourceOriginalsVerified':True,'videoStreamsUnchangedInMeta':True,
+            'vkIntroAndFreshOriginalBytes':True,'proteinDownscaledFrom4KForStoryCompatibility':True,
+            'doesNotPublish':True,'createdAtUTC':datetime.now(timezone.utc).isoformat()}
+          dest=Path('results/verification/bar-stories-20261023-stage.json')
+          dest.parent.mkdir(parents=True,exist_ok=True)
+          dest.write_text(json.dumps(payload,ensure_ascii=False,indent=2)+'\n')
+          print('BAR_20261023_VERIFIED_STAGED',json.dumps([{k:x[k] for k in ['id','vkBytes','metaBytes','duration']} for x in seq]))
+          PY
+      - name: Save six verified MP4 files and report without publishing
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name ls-social-media-bot
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add media/bar-20261023-*.mp4 results/verification/bar-stories-20261023-stage.json
+          git diff --cached --quiet && exit 0
+          git commit -m 'Stage 23 Oct Bar Stories verified original/HQ assets [skip ci]'
+          git pull --rebase origin main
+          git push origin HEAD:main
