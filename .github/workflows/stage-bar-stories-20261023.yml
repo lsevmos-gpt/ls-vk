@@ -4,6 +4,7 @@ on:
     branches: [main]
     paths:
       - 'media-prep/bar-stories-20261023.json'
+      - '.github/workflows/stage-bar-stories-20261023.yml'
   workflow_dispatch:
 permissions:
   contents: write
@@ -25,6 +26,10 @@ jobs:
         run: |
           set -euo pipefail
           test ! -f results/verification/bar-stories-20261023-stage.json || { echo 'Already staged, no changes'; exit 0; }
+          if ! command -v ffmpeg >/dev/null 2>&1 || ! command -v ffprobe >/dev/null 2>&1; then
+            sudo apt-get update -qq
+            sudo apt-get install -y ffmpeg
+          fi
           command -v ffmpeg && command -v ffprobe
           mkdir -p media results/verification /tmp/bar20261023
           python3 - <<'PY'
