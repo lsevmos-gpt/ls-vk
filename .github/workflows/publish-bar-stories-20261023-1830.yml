@@ -1,0 +1,70 @@
+name: Publish 3 ordered Bar Stories Instagram via Meta + VK at 18:30 MSK on 23 Oct 2026 (ONCE)
+on:
+  schedule:
+    # GitHub cron can start late; multiple early entry points share one concurrency group.
+    # Moscow 18:30 = 15:30 UTC. The live worker waits until the exact target.
+    - cron: '0,30 14 23 10 *'
+    - cron: '0,15 15 23 10 *'
+permissions:
+  contents: write
+concurrency:
+  group: bar-stories-20261023-1830-instagram-meta-and-vk-once
+  cancel-in-progress: false
+jobs:
+  instagram_meta:
+    name: Direct Meta @liniya__sporta, 3 ordered Stories, one shot
+    if: github.repository == 'lsevmos-gpt/ls-vk' && github.ref == 'refs/heads/main' && github.event_name == 'schedule'
+    runs-on: ubuntu-latest
+    timeout-minutes: 115
+    env:
+      META_IG_ACCESS_TOKEN: ${{ secrets.META_IG_ACCESS_TOKEN }}
+      META_IG_USER_ID: ${{ secrets.META_IG_USER_ID }}
+      META_GRAPH_VERSION: v26.0
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Validate offline script (NO PUBLICATION)
+        run: |
+          set -euo pipefail
+          python -m py_compile scripts/publish_bar_stories_20261023_ig.py
+          python -m unittest discover -s tests -p test_instagram_collab.py -v
+      - name: Check Meta token and media; wait for 18:30 Moscow; publish exactly 3 with receipts
+        run: |
+          set -euo pipefail
+          test -n "$META_IG_ACCESS_TOKEN" && test -n "$META_IG_USER_ID" || { echo "::error::Meta credentials missing"; exit 1; }
+          python -m scripts.publish_bar_stories_20261023_ig
+
+  vk:
+    name: VK community -48198173, 3 ordered Stories, one shot
+    if: github.repository == 'lsevmos-gpt/ls-vk' && github.ref == 'refs/heads/main' && github.event_name == 'schedule'
+    runs-on: ubuntu-latest
+    timeout-minutes: 115
+    env:
+      VK_API_VERSION: '5.199'
+      VK_GROUP_ID: '48198173'
+      VK_GROUP_SCREEN_NAME: 'liniya__sporta'
+      VK_GROUP_TOKEN: ${{ secrets.VK_GROUP_TOKEN }}
+      SOCIAL_PLATFORM: vk
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Validate offline script and install fixed VK uploader dependencies
+        run: |
+          set -euo pipefail
+          test -n "$VK_GROUP_TOKEN" || { echo "::error::VK_GROUP_TOKEN missing"; exit 1; }
+          npm install --omit=dev --ignore-scripts --no-package-lock --no-audit --no-fund
+          node --check scripts/publish_bar_stories_20261023_vk.mjs
+      - name: Check target group and media; wait for 18:30 Moscow; submit exactly 3 VK Stories
+        run: |
+          set -euo pipefail
+          node scripts/publish_bar_stories_20261023_vk.mjs
