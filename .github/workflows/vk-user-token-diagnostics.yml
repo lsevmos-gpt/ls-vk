@@ -1,0 +1,28 @@
+name: Diagnose VK user token (READ-ONLY, no uploads)
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  diagnose:
+    if: github.repository == 'lsevmos-gpt/ls-vk' && github.actor == 'lsevmos-gpt'
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    env:
+      VK_API_VERSION: '5.199'
+      VK_GROUP_ID: '48198173'
+      VK_USER_TOKEN: ${{ secrets.VK_USER_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install dependencies without lifecycle scripts
+        run: npm install --omit=dev --ignore-scripts --no-package-lock --no-audit --no-fund
+      - name: Validate diagnostic code
+        run: node --check scripts/vk-user-token-diagnostics.mjs
+      - name: Inspect token using read-only VK API calls (never print secrets)
+        run: node scripts/vk-user-token-diagnostics.mjs
