@@ -1,0 +1,42 @@
+name: VK ID one-shot refresh verification (owner only)
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/vk-refresh-one-shot.yml'
+permissions:
+  contents: read
+concurrency:
+  group: ls-vk-refresh-token-manual-serial
+  cancel-in-progress: false
+jobs:
+  verify:
+    if: >-
+      github.repository == 'lsevmos-gpt/ls-vk' &&
+      github.ref == 'refs/heads/main' &&
+      github.actor == 'lsevmos-gpt' &&
+      contains(github.event.head_commit.message, '[vk-refresh-one-shot-approved]')
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    env:
+      VK_REFRESH_CONFIRM: ROTATE_REFRESH_TOKEN
+      VK_REFRESH_ONE_SHOT: LS_VK_20261024
+      VK_REFRESH_TOKEN: ${{ secrets.VK_REFRESH_TOKEN }}
+      VK_DEVICE_ID: ${{ secrets.VK_DEVICE_ID }}
+      VK_SECRETS_WRITE_PAT: ${{ secrets.VK_SECRETS_WRITE_PAT }}
+      VK_REDIRECT_URI: 'https://vk.liniyasporta.ru/oauth/callback'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Run offline tests before touching tokens
+        run: |
+          set -euo pipefail
+          node --check scripts/vk-refresh-lib.mjs
+          node --check scripts/vk-refresh-probe.mjs
+          node --test tests/vk-refresh.test.mjs
+      - name: Rotate VK ID refresh token only after proving GitHub secret write, then read-only verify
+        run: |
+          set -euo pipefail
+          node scripts/vk-refresh-probe.mjs live
