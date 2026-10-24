@@ -1,0 +1,34 @@
+name: VK refresh offline tests (no tokens, no provider calls)
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/vk-refresh-lib.mjs'
+      - 'scripts/vk-refresh-probe.mjs'
+      - 'tests/vk-refresh.test.mjs'
+      - '.github/workflows/vk-refresh-offline-tests.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  safe-unit-tests:
+    if: github.repository == 'lsevmos-gpt/ls-vk' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Verify Node syntax
+        run: |
+          node --check scripts/vk-refresh-lib.mjs
+          node --check scripts/vk-refresh-probe.mjs
+          node --check tests/vk-refresh.test.mjs
+      - name: Run offline tests (no network or secrets)
+        run: node --test tests/vk-refresh.test.mjs
+      - name: Synthetic dry run (no network or secrets)
+        run: node scripts/vk-refresh-probe.mjs dry-run
