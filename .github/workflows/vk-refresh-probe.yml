@@ -1,0 +1,67 @@
+name: VK ID refresh probe (manual only, no video uploads)
+
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: 'offline = safe without secrets; refresh_and_check = rotate refresh token and check VK API'
+        required: true
+        type: choice
+        default: offline
+        options:
+          - offline
+          - refresh_and_check
+      confirm:
+        description: 'For live mode only, type ROTATE_REFRESH_TOKEN (rotation will update GitHub secret)'
+        required: false
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ls-vk-refresh-token-manual-serial
+  cancel-in-progress: false
+
+jobs:
+  offline:
+    if: github.repository == 'lsevmos-gpt/ls-vk' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Validate scripts and run completely offline tests
+        run: |
+          node --check scripts/vk-refresh-lib.mjs
+          node --check scripts/vk-refresh-probe.mjs
+          node --test tests/vk-refresh.test.mjs
+      - name: Synthetic refresh request without secrets or network
+        run: node scripts/vk-refresh-probe.mjs dry-run
+
+  live:
+    name: Rotate secret and test refreshed token (NO video.save, NO publication)
+    needs: offline
+    if: >-
+      github.repository == 'lsevmos-gpt/ls-vk' &&
+      github.ref == 'refs/heads/main' &&
+      github.actor == 'lsevmos-gpt' &&
+      github.event.inputs.mode == 'refresh_and_check' &&
+      github.event.inputs.confirm == 'ROTATE_REFRESH_TOKEN'
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Refresh token on this runner, persist rotation, check read-only VK API
+        env:
+          VK_REFRESH_CONFIRM: ${{ inputs.confirm }}
+          VK_REFRESH_TOKEN: ${{ secrets.VK_REFRESH_TOKEN }}
+          VK_DEVICE_ID: ${{ secrets.VK_DEVICE_ID }}
+          VK_SECRETS_WRITE_PAT: ${{ secrets.VK_SECRETS_WRITE_PAT }}
+          VK_REDIRECT_URI: 'https://vk.liniyasporta.ru/oauth/callback'
+        run: node scripts/vk-refresh-probe.mjs live
