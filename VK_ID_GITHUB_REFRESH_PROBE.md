@@ -2,6 +2,22 @@
 
 Статус: **подготовлено; реальная загрузка видео не включена**.
 
+### Диагностика от 24 октября 2026
+
+Владелец добавил все три GitHub Secret, однако безопасная проверка записи
+вернула `GH_SECRETS_PUBLIC_KEY_HTTP=403`. GitHub отклонил доступ токена
+`VK_SECRETS_WRITE_PAT` к public-key API для Actions Secrets. До вызова
+VK ID refresh проверка не дошла — refresh_token не использовался и не
+ротировался. Убедиться, что fine-grained PAT выбран для владельца
+`lsevmos-gpt`, репозитория `ls-vk` и имеет **Repository permissions →
+Secrets → Read and write**; после изменения PAT обновить значение
+`VK_SECRETS_WRITE_PAT` в Actions Secrets. Одноразовые push workflows удалены.
+Сохранён ручной workflow `vk-refresh-probe.yml`.
+
+Ссылки: [запуск refresh](https://github.com/lsevmos-gpt/ls-vk/actions/runs/40095956716),
+[подробная PAT-проверка](https://github.com/lsevmos-gpt/ls-vk/actions/runs/40096157617).
+
+
 ## Проверенные факты
 
 - VK ID приложение: 54806879; сообщество «Линия спорта»: 48198173.
