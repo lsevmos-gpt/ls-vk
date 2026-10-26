@@ -5,7 +5,7 @@
   "scheduledFor": "2026-10-26T18:30:00+03:00",
   "runId": "40349146278",
   "createdAtUTC": "2026-10-26T15:30:00.390Z",
-  "status": "submission_started",
+  "status": "submitted_to_vk",
   "published": [
     {
       "index": 1,
@@ -20,10 +20,15 @@
       "vkStoryId": 456240685,
       "ownerId": -48198173,
       "publishedAtUTC": "2026-10-26T15:30:39.890Z"
+    },
+    {
+      "index": 3,
+      "name": "isotonic-bar",
+      "vkStoryId": 456240686,
+      "ownerId": -48198173,
+      "publishedAtUTC": "2026-10-26T15:30:49.319Z"
     }
   ],
   "note": "Exactly three approved stories; never retry provider save after uncertainty.",
-  "updatedAtUTC": "2026-10-26T15:30:43.893Z",
-  "attemptingIndex": 3,
-  "attemptingItem": "isotonic-bar"
+  "updatedAtUTC": "2026-10-26T15:30:49.319Z"
 }
