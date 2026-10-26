@@ -19,3 +19,13 @@ These are **reusable AI instruction skills**, not three independently executing 
 
 ## Quality and permissions
 Preserve the user's exact brief, real identities and approved assets. For «Линия спорта», original logo only; real faces, skin, anatomy, equipment and source video must remain authentic. Prefer exact logos/prices/Cyrillic copy as post-production elements. Supply one paste-ready prompt per generation, settings only where verified, and brief QC. Never generate paid video, publish, spend credits, or upload personal assets without a separate request. Apply this Seedance workflow only to relevant prompts; other tasks follow existing social policies.
+
+## MANDATORY Wan3 / Prime trigger (Evmos integration)
+For any prompt, storyboard, rewrite, audit or repair for **Wan 3.0**, **Wan 3.0 Prime**, or obvious spellings **Van 3.0 / Ван 3.0**:
+1. BEFORE drafting, read `.agents/skills/wan3-studio/SKILL.md`, `references/model-settings.md`, `references/prompt-template.md`, `references/quality-check.md` in that skill.
+2. When local Evmos is installed, also read its eight roles and Wan3 model-specific `wan3-method.md`, `wan-30.md` or `wan-30-prime.md`; otherwise state those files unavailable and use the repo's self-contained Wan skill without claiming full Evmos installation.
+3. Apply shot-direction, prompt-compilation and independent physics/continuity checks; subagent execution can only be claimed when agents actually ran.
+4. Never mix Seedance UI syntax or unverified parameter ranges into Wan. Preserve original assets, brand-specific routing and EVS-RCG-01; user approval required for any credit-consuming generation.
+5. Return one complete copy-ready prompt, separately validated Higgsfield settings and references. Standard ID `wan3_0`, Prime ID `wan3_0_prime`.
+
+The official Alibaba `wan3-pe` download was not copied into this repository; this studio skill is our independently authored adaptation from public official docs.
