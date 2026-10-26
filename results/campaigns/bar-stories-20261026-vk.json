@@ -5,8 +5,10 @@
   "scheduledFor": "2026-10-26T18:30:00+03:00",
   "runId": "40349146278",
   "createdAtUTC": "2026-10-26T15:30:00.390Z",
-  "status": "reserved_before_provider_call",
+  "status": "submission_started",
   "published": [],
   "note": "Exactly three approved stories; never retry provider save after uncertainty.",
-  "updatedAtUTC": "2026-10-26T15:30:00.390Z"
+  "updatedAtUTC": "2026-10-26T15:30:07.086Z",
+  "attemptingIndex": 1,
+  "attemptingItem": "intro-bar"
 }
