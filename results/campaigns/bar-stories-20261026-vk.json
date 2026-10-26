@@ -5,10 +5,16 @@
   "scheduledFor": "2026-10-26T18:30:00+03:00",
   "runId": "40349146278",
   "createdAtUTC": "2026-10-26T15:30:00.390Z",
-  "status": "submission_started",
-  "published": [],
+  "status": "partial_submitted_to_vk",
+  "published": [
+    {
+      "index": 1,
+      "name": "intro-bar",
+      "vkStoryId": 456240684,
+      "ownerId": -48198173,
+      "publishedAtUTC": "2026-10-26T15:30:13.021Z"
+    }
+  ],
   "note": "Exactly three approved stories; never retry provider save after uncertainty.",
-  "updatedAtUTC": "2026-10-26T15:30:07.086Z",
-  "attemptingIndex": 1,
-  "attemptingItem": "intro-bar"
+  "updatedAtUTC": "2026-10-26T15:30:13.021Z"
 }
