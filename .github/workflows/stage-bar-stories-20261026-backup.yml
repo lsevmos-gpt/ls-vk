@@ -1,4 +1,4 @@
-name: Backup transfer / stage 26 Oct Bar Story media (NO PUBLISH)
+name: Backup original-download / stage 26 Oct Bar Story HQ media (NO PUBLISH)
 on:
   push:
     branches: [main]
@@ -44,9 +44,9 @@ jobs:
           assert all(x['url'].startswith('https://at.adobe.com/') for x in j['sequence'])
           print('APPROVED_26_OCT_SOURCE_IDENTITIES')
           PY
-          curl --fail --show-error --location --retry 1 --connect-timeout 15 --max-time 90 'https://at.adobe.com/uKokDIWpZvK49nb1' -o /tmp/bar20261026/intro.mp4
-          curl --fail --show-error --location --retry 1 --connect-timeout 15 --max-time 90 'https://at.adobe.com/QPDZCVx9mXTLSAlw' -o /tmp/bar20261026/bumble.mp4
-          curl --fail --show-error --location --retry 1 --connect-timeout 15 --max-time 180 'https://at.adobe.com/FsOdpuwcdKBd74pw' -o /tmp/bar20261026/isotonic.mp4
+          curl --fail --show-error --location --retry 1 --connect-timeout 15 --max-time 90 'https://at.adobe.com/oBmGDAnlJyOSPvWZ' -o /tmp/bar20261026/intro.mp4
+          curl --fail --show-error --location --retry 1 --connect-timeout 15 --max-time 90 'https://at.adobe.com/RRcwHqGR4zqiEchW' -o /tmp/bar20261026/bumble.mp4
+          curl --fail --show-error --location --retry 1 --connect-timeout 15 --max-time 180 'https://at.adobe.com/X89M0fBc41J8IIGr' -o /tmp/bar20261026/isotonic.mp4
           printf '%s  %s\n' \
             '1158b8e13b776740476522512843bf3b24bf4a78a764fcdcc693dadf85af1d7b' /tmp/bar20261026/intro.mp4 \
             'aab1913ea5487e118297c82cc6602275210b12a4d955ac3b1239c39aaa6b5fb4' /tmp/bar20261026/bumble.mp4 \
