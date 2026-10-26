@@ -1,0 +1,35 @@
+{
+  "id": "bar-stories-20261026",
+  "approved": true,
+  "publicContent": true,
+  "publishAt": "2026-10-26T18:30:00+03:00",
+  "instagram": "liniya__sporta",
+  "vkGroupId": 48198173,
+  "sequence": [
+    {
+      "id": "intro-bar",
+      "originalName": "интро бар.mp4",
+      "driveId": "1SoexOQPc8MA_gIZQQ1iUF9FjNppA-cqy",
+      "url": "https://at.adobe.com/d79Pbi1UlYFdZwtc",
+      "sha256": "1158b8e13b776740476522512843bf3b24bf4a78a764fcdcc693dadf85af1d7b",
+      "bytes": 3017051
+    },
+    {
+      "id": "bumble-coffee",
+      "originalName": "бамбл кофе карамель.mp4",
+      "driveId": "17xQ40X54y5f24cwZ1N80bnCZlqeWjn9L",
+      "url": "https://at.adobe.com/wGOOyoy5TWmNr5w7",
+      "sha256": "aab1913ea5487e118297c82cc6602275210b12a4d955ac3b1239c39aaa6b5fb4",
+      "bytes": 12118431
+    },
+    {
+      "id": "isotonic-bar",
+      "originalName": "Изотоник на баре.mp4",
+      "driveId": "1dt10yPuCOMvanJnU8zE6efWfvFWy67T7",
+      "url": "https://at.adobe.com/QEN6UKzwLhRdzmHe",
+      "sha256": "1ed4d276d704ff645fadbc5c32792ea5f666ae053f898d16338c61047a602a20",
+      "bytes": 108648130
+    }
+  ],
+  "note": "Publish exactly three Stories on 26 Oct at 18:30 Moscow. Instagram original video frames and durations; AAC-compatible audio. VK: original Intro, full Bumble accelerated to ~14.7s for one Story, 4K Isotonic to HQ 1080x1920 <=10MB. Three ordered separate stories. No auto retry after ambiguous provider result."
+}
