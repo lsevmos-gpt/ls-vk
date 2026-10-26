@@ -1,0 +1,152 @@
+name: Publish Intro Bar, Bumble Coffee and Isotonic Stories via Meta + VK at 18:30 MSK on 26 Oct 2026 (ONCE)
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/publish-bar-stories-20261026-1830.yml'
+  schedule:
+    # GitHub cron can start late; multiple early entry points share one concurrency group.
+    # Moscow 18:30 = 15:30 UTC. The live worker waits until the exact target.
+    - cron: '0,30 14 26 10 *'
+    - cron: '0,15 15 26 10 *'
+permissions:
+  contents: write
+concurrency:
+  group: bar-stories-20261026-1830-instagram-meta-and-vk-once
+  cancel-in-progress: false
+jobs:
+  readiness:
+    name: Dry-run validate 3 approved media, Meta and VK (never publish)
+    if: github.repository == 'lsevmos-gpt/ls-vk' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      META_IG_ACCESS_TOKEN: ${{ secrets.META_IG_ACCESS_TOKEN }}
+      META_IG_USER_ID: ${{ secrets.META_IG_USER_ID }}
+      META_GRAPH_VERSION: v26.0
+      VK_API_VERSION: '5.199'
+      VK_GROUP_ID: '48198173'
+      VK_GROUP_SCREEN_NAME: 'liniya__sporta'
+      VK_GROUP_TOKEN: ${{ secrets.VK_GROUP_TOKEN }}
+      SOCIAL_PLATFORM: vk
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Check staging readiness; push does not publish
+        id: staged
+        shell: bash
+        run: |
+          if test -f results/verification/bar-stories-20261026-stage.json; then
+            echo 'ready=true' >> "$GITHUB_OUTPUT"
+            echo 'SIX_STORY_FILES_STAGED'
+          else
+            echo 'ready=false' >> "$GITHUB_OUTPUT"
+            echo 'STAGE_PENDING; no live posting allowed until staging QA is saved'
+          fi
+      - name: Validate both publishers and authorized assets offline
+        if: steps.staged.outputs.ready == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m py_compile scripts/publish_bar_stories_20261026_ig.py
+          node --check scripts/publish_bar_stories_20261026_vk.mjs
+          python3 - <<'PY'
+          from pathlib import Path
+          import json,hashlib
+          prep=json.loads(Path('results/verification/bar-stories-20261026-stage.json').read_text())
+          manifest=json.loads(Path('media-prep/bar-stories-20261026.json').read_text())
+          assert prep['ok'] and prep['sourceOriginalsVerified'] and prep['videoStreamsUnchangedInMeta']
+          assert prep['vkIntroOriginalBytes'] and prep['bumbleTimeFitForVK'] and prep['isotonicDownscaledFrom4K']
+          assert manifest['approved'] and manifest['publicContent']
+          assert len(prep['sequence'])==len(manifest['sequence'])==3
+          for prepared,src in zip(prep['sequence'],manifest['sequence']):
+              assert prepared['id']==src['id'] and prepared['sourceDriveSHA256']==src['sha256']
+              for prefix in ('meta','vk'):
+                  file=Path(prepared[prefix+'Path'])
+                  assert file.is_file() and file.stat().st_size==prepared[prefix+'Bytes']
+                  with file.open('rb') as f: actual=hashlib.file_digest(f,'sha256').hexdigest()
+                  assert actual==prepared[prefix+'SHA256']
+          print('PUBLISH_20261026_DRYRUN_QA_OK; ZERO_PROVIDER_MUTATIONS')
+          PY
+      - name: Read-only check of Meta credential and VK community (never publish)
+        if: steps.staged.outputs.ready == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$META_IG_ACCESS_TOKEN" && test -n "$META_IG_USER_ID" && test -n "$VK_GROUP_TOKEN"
+          npm install --omit=dev --ignore-scripts --no-package-lock --no-audit --no-fund
+          python -m scripts.instagram_collab check -
+          node scripts/check_social_targets.mjs
+      - name: Check unauthenticated access to three exact HQ Meta source URLs
+        if: steps.staged.outputs.ready == 'true'
+        run: |
+          set -euo pipefail
+          for name in intro bumble isotonic; do
+            curl --silent --show-error --fail --location --head --max-time 30 \
+              "https://raw.githubusercontent.com/lsevmos-gpt/ls-vk/main/media/bar-20261026-${name}-meta.mp4" >/dev/null
+          done
+          echo 'THREE_META_HQ_URLS_PUBLICLY_ACCESSIBLE'
+  instagram_meta:
+    name: Direct Meta @liniya__sporta, 3 ordered Stories, one shot
+    if: github.repository == 'lsevmos-gpt/ls-vk' && github.ref == 'refs/heads/main' && github.event_name == 'schedule'
+    runs-on: ubuntu-latest
+    timeout-minutes: 115
+    env:
+      META_IG_ACCESS_TOKEN: ${{ secrets.META_IG_ACCESS_TOKEN }}
+      META_IG_USER_ID: ${{ secrets.META_IG_USER_ID }}
+      META_GRAPH_VERSION: v26.0
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Validate offline script (NO PUBLICATION)
+        run: |
+          set -euo pipefail
+          python -m py_compile scripts/publish_bar_stories_20261026_ig.py
+          python -m unittest discover -s tests -p test_instagram_collab.py -v
+      - name: Check Meta token and media; wait for 18:30 Moscow; publish exactly 3 with receipts
+        run: |
+          set -euo pipefail
+          test -n "$META_IG_ACCESS_TOKEN" && test -n "$META_IG_USER_ID" || { echo "::error::Meta credentials missing"; exit 1; }
+          python -m scripts.publish_bar_stories_20261026_ig
+
+  vk:
+    name: VK community -48198173, 3 ordered Stories, one shot
+    if: github.repository == 'lsevmos-gpt/ls-vk' && github.ref == 'refs/heads/main' && github.event_name == 'schedule'
+    runs-on: ubuntu-latest
+    timeout-minutes: 115
+    env:
+      VK_API_VERSION: '5.199'
+      VK_GROUP_ID: '48198173'
+      VK_GROUP_SCREEN_NAME: 'liniya__sporta'
+      VK_GROUP_TOKEN: ${{ secrets.VK_GROUP_TOKEN }}
+      SOCIAL_PLATFORM: vk
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Validate offline script and install fixed VK uploader dependencies
+        run: |
+          set -euo pipefail
+          test -n "$VK_GROUP_TOKEN" || { echo "::error::VK_GROUP_TOKEN missing"; exit 1; }
+          npm install --omit=dev --ignore-scripts --no-package-lock --no-audit --no-fund
+          node --check scripts/publish_bar_stories_20261026_vk.mjs
+      - name: Check target group and media; wait for 18:30 Moscow; submit exactly 3 VK Stories
+        run: |
+          set -euo pipefail
+          node scripts/publish_bar_stories_20261026_vk.mjs
