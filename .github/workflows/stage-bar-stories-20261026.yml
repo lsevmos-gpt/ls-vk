@@ -1,0 +1,165 @@
+name: Stage 26 Oct Bar triple Stories original and HQ files (NO PUBLICATION)
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'media-prep/bar-stories-20261026.json'
+permissions:
+  contents: write
+concurrency:
+  group: stage-bar-stories-20261026-once
+  cancel-in-progress: false
+jobs:
+  stage:
+    if: github.repository == 'lsevmos-gpt/ls-vk' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 65
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - name: Fetch exact approved originals with immutable SHA-256 checks (no social publishing)
+        shell: bash
+        run: |
+          set -euo pipefail
+          test ! -f results/verification/bar-stories-20261026-stage.json || { echo 'Already staged; no rework'; exit 1; }
+          command -v ffmpeg >/dev/null 2>&1 && command -v ffprobe >/dev/null 2>&1 || {
+            sudo apt-get update -qq; sudo apt-get install -y ffmpeg;
+          }
+          mkdir -p media results/verification /tmp/bar20261026
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          j=json.loads(Path('media-prep/bar-stories-20261026.json').read_text())
+          assert j['id']=='bar-stories-20261026'
+          assert j['approved'] is True and j['publicContent'] is True
+          assert j['publishAt']=='2026-10-26T18:30:00+03:00'
+          assert j['instagram']=='liniya__sporta' and j['vkGroupId']==48198173
+          assert [x['id'] for x in j['sequence']]==['intro-bar','bumble-coffee','isotonic-bar']
+          assert [x['sha256'] for x in j['sequence']]==[
+            '1158b8e13b776740476522512843bf3b24bf4a78a764fcdcc693dadf85af1d7b',
+            'aab1913ea5487e118297c82cc6602275210b12a4d955ac3b1239c39aaa6b5fb4',
+            '1ed4d276d704ff645fadbc5c32792ea5f666ae053f898d16338c61047a602a20']
+          assert all(x['url'].startswith('https://at.adobe.com/') for x in j['sequence'])
+          print('APPROVED_26_OCT_SOURCE_IDENTITIES')
+          PY
+          curl --fail --show-error --location --retry 2 --connect-timeout 20 --max-time 180 'https://at.adobe.com/d79Pbi1UlYFdZwtc' -o /tmp/bar20261026/intro.mp4
+          curl --fail --show-error --location --retry 2 --connect-timeout 20 --max-time 240 'https://at.adobe.com/wGOOyoy5TWmNr5w7' -o /tmp/bar20261026/bumble.mp4
+          curl --fail --show-error --location --retry 2 --connect-timeout 20 --max-time 600 'https://at.adobe.com/QEN6UKzwLhRdzmHe' -o /tmp/bar20261026/isotonic.mp4
+          printf '%s  %s\n' \
+            '1158b8e13b776740476522512843bf3b24bf4a78a764fcdcc693dadf85af1d7b' /tmp/bar20261026/intro.mp4 \
+            'aab1913ea5487e118297c82cc6602275210b12a4d955ac3b1239c39aaa6b5fb4' /tmp/bar20261026/bumble.mp4 \
+            '1ed4d276d704ff645fadbc5c32792ea5f666ae053f898d16338c61047a602a20' /tmp/bar20261026/isotonic.mp4 | sha256sum --check
+      - name: Prepare VK Stories — untouched intro; 19s Bumble time-fit 14.7s; 4K isotonic high-quality downscale
+        shell: bash
+        run: |
+          set -euo pipefail
+          cp /tmp/bar20261026/intro.mp4 media/bar-20261026-intro-vk.mp4
+          ffmpeg -hide_banner -nostdin -loglevel error -stats -i /tmp/bar20261026/bumble.mp4 \
+            -map 0:v:0 -map 0:a:0 -dn -sn \
+            -vf 'setpts=PTS/1.2989,format=yuv420p' -af 'atempo=1.2989' -r 24 \
+            -c:v libx264 -preset slow -crf 15 -maxrate 4200k -bufsize 8400k \
+            -g 48 -keyint_min 48 -sc_threshold 0 \
+            -c:a aac -b:a 128k -ar 48000 -ac 2 \
+            -movflags +faststart -y media/bar-20261026-bumble-vk.mp4
+          ffmpeg -hide_banner -nostdin -loglevel error -stats -i /tmp/bar20261026/isotonic.mp4 \
+            -map 0:v:0 -map 0:a:0 -dn -sn \
+            -vf 'scale=1080:1920:flags=lanczos,format=yuv420p' \
+            -c:v libx264 -preset slow -crf 13 -maxrate 10500k -bufsize 21000k \
+            -g 48 -keyint_min 48 -sc_threshold 0 \
+            -c:a aac -b:a 192k -ar 48000 -ac 2 \
+            -movflags +faststart -y media/bar-20261026-isotonic-vk.mp4
+      - name: Prepare Instagram Meta Stories — full original durations and video fidelity; AAC audio only
+        shell: bash
+        run: |
+          set -euo pipefail
+          ffmpeg -hide_banner -nostdin -loglevel error -i /tmp/bar20261026/intro.mp4 \
+            -map 0:v:0 -map 0:a:0 -c:v copy -c:a aac -b:a 112k -ar 48000 -ac 2 \
+            -movflags +faststart -y media/bar-20261026-intro-meta.mp4
+          ffmpeg -hide_banner -nostdin -loglevel error -i /tmp/bar20261026/bumble.mp4 \
+            -map 0:v:0 -map 0:a:0 -c:v copy -c:a aac -b:a 112k -ar 48000 -ac 2 \
+            -movflags +faststart -y media/bar-20261026-bumble-meta.mp4
+          ffmpeg -hide_banner -nostdin -loglevel error -i media/bar-20261026-isotonic-vk.mp4 \
+            -map 0:v:0 -map 0:a:0 -c:v copy -c:a aac -b:a 112k -ar 48000 -ac 2 \
+            -movflags +faststart -y media/bar-20261026-isotonic-meta.mp4
+      - name: Verify original sources, quality, durations, audio and video stream identity; save QA
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          import hashlib,json,subprocess
+          from datetime import datetime,timezone
+          def probe(path):
+              out=subprocess.check_output(['ffprobe','-v','error',
+                  '-show_entries','format=duration,size,bit_rate:stream=codec_type,codec_name,width,height,r_frame_rate,bit_rate,sample_rate',
+                  '-of','json',str(path)],timeout=80)
+              return json.loads(out)
+          def vhash(path):
+              return subprocess.check_output(['ffmpeg','-v','error','-i',str(path),'-map','0:v:0','-c:v','copy','-f','hash','-hash','SHA256','-'],timeout=90).decode().strip()
+          def file_hash(path):
+              with path.open('rb') as f: return hashlib.file_digest(f,'sha256').hexdigest()
+          cases=[
+            ('intro-bar','intro',5.05,'1158b8e13b776740476522512843bf3b24bf4a78a764fcdcc693dadf85af1d7b'),
+            ('bumble-coffee','bumble',19.093,'aab1913ea5487e118297c82cc6602275210b12a4d955ac3b1239c39aaa6b5fb4'),
+            ('isotonic-bar','isotonic',7.061333,'1ed4d276d704ff645fadbc5c32792ea5f666ae053f898d16338c61047a602a20')
+          ]
+          out=[]
+          for name,short,seconds,expected_sha in cases:
+              orig=Path('/tmp/bar20261026')/(short+'.mp4')
+              vk=Path('media')/f'bar-20261026-{short}-vk.mp4'
+              meta=Path('media')/f'bar-20261026-{short}-meta.mp4'
+              assert orig.is_file() and vk.is_file() and meta.is_file()
+              assert file_hash(orig)==expected_sha
+              source=probe(orig)
+              orgv=next(x for x in source['streams'] if x['codec_type']=='video')
+              orga=next(x for x in source['streams'] if x['codec_type']=='audio')
+              assert orgv['codec_name']=='h264' and orga['codec_name']=='aac'
+              assert orgv['r_frame_rate']=='24/1' and abs(float(source['format']['duration'])-seconds)<0.1
+              assert (orgv['width'],orgv['height'])==((2160,3840) if short=='isotonic' else (1080,1920))
+              pv,pm=probe(vk),probe(meta)
+              for prepared in (pv,pm):
+                  v=next(x for x in prepared['streams'] if x['codec_type']=='video')
+                  a=next(x for x in prepared['streams'] if x['codec_type']=='audio')
+                  assert (v['codec_name'],v['width'],v['height'],v['r_frame_rate'])==('h264',1080,1920,'24/1')
+                  assert a['codec_name']=='aac' and a['sample_rate']=='48000'
+                  assert int(prepared['format']['size']) < 95_000_000
+              assert int(pv['format']['size']) < 10_000_000, 'VK 10 MB max exceeds'
+              assert 0 < int(next(x for x in pm['streams'] if x['codec_type']=='audio')['bit_rate']) <= 128000
+              assert 3.0 < float(pv['format']['duration']) < 15.0
+              assert abs(float(pm['format']['duration'])-seconds)<0.25
+              assert vhash(meta)==(vhash(vk) if short=='isotonic' else vhash(orig)), 'Video frame alteration in Meta'
+              if short=='intro': assert file_hash(vk)==expected_sha
+              if short=='bumble':
+                  assert 14.3 < float(pv['format']['duration']) < 15.0
+                  assert abs(float(pm['format']['duration'])-19.093)<0.25
+              out.append({
+                  'id':name,'sourceDriveSHA256':expected_sha,'originalDuration':seconds,
+                  'vkPath':str(vk),'vkSHA256':file_hash(vk),'vkBytes':vk.stat().st_size,'vkDuration':float(pv['format']['duration']),
+                  'metaPath':str(meta),'metaSHA256':file_hash(meta),'metaBytes':meta.stat().st_size,
+                  'metaDuration':float(pm['format']['duration']),'videoStreamSHA256':vhash(meta),
+                  'dimensions':'1080x1920','fps':24,
+                  'metaAudioBitrate':int(next(x for x in pm['streams'] if x['codec_type']=='audio')['bit_rate'])
+              })
+          receipt={
+              'ok':True,'id':'bar-stories-20261026','publishAt':'2026-10-26T18:30:00+03:00',
+              'sequence':out,'sourceOriginalsVerified':True,'videoStreamsUnchangedInMeta':True,
+              'vkIntroOriginalBytes':True,'bumbleTimeFitForVK':True,'isotonicDownscaledFrom4K':True,
+              'doesNotPublish':True,'createdAtUTC':datetime.now(timezone.utc).isoformat()
+          }
+          out_file=Path('results/verification/bar-stories-20261026-stage.json')
+          out_file.write_text(json.dumps(receipt,ensure_ascii=False,indent=2)+'\n')
+          print('26_OCT_STORY_QA_PASSED',json.dumps([{k:x[k] for k in ('id','vkBytes','vkDuration','metaBytes','metaDuration')} for x in out],ensure_ascii=False))
+          PY
+      - name: Commit checked HQ story files and staging QA only; never publish social content
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name ls-social-media-bot
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add media/bar-20261026-*.mp4 results/verification/bar-stories-20261026-stage.json
+          git diff --cached --quiet && exit 0
+          git commit -m 'Stage checked 26 Oct Bar IG and VK Stories [skip ci]'
+          git pull --rebase origin main
+          git push origin HEAD:main
