@@ -5,7 +5,7 @@
   "scheduledFor": "2026-10-26T18:30:00+03:00",
   "runId": "40349146278",
   "createdAtUTC": "2026-10-26T15:30:00.390Z",
-  "status": "partial_submitted_to_vk",
+  "status": "submission_started",
   "published": [
     {
       "index": 1,
@@ -23,5 +23,7 @@
     }
   ],
   "note": "Exactly three approved stories; never retry provider save after uncertainty.",
-  "updatedAtUTC": "2026-10-26T15:30:39.890Z"
+  "updatedAtUTC": "2026-10-26T15:30:43.893Z",
+  "attemptingIndex": 3,
+  "attemptingItem": "isotonic-bar"
 }
