@@ -4,6 +4,7 @@ on:
     branches: [main]
     paths:
       - 'media-prep/bar-stories-20261026.json'
+      - '.github/workflows/stage-bar-stories-20261026.yml'
 permissions:
   contents: write
 concurrency:
@@ -66,7 +67,7 @@ jobs:
           ffmpeg -hide_banner -nostdin -loglevel error -stats -i /tmp/bar20261026/isotonic.mp4 \
             -map 0:v:0 -map 0:a:0 -dn -sn \
             -vf 'scale=1080:1920:flags=lanczos,format=yuv420p' \
-            -c:v libx264 -preset slow -crf 13 -maxrate 10500k -bufsize 21000k \
+            -c:v libx264 -preset slow -crf 14 -maxrate 9300k -bufsize 18600k \
             -g 48 -keyint_min 48 -sc_threshold 0 \
             -c:a aac -b:a 192k -ar 48000 -ac 2 \
             -movflags +faststart -y media/bar-20261026-isotonic-vk.mp4
