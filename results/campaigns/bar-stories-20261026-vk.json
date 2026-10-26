@@ -5,7 +5,7 @@
   "scheduledFor": "2026-10-26T18:30:00+03:00",
   "runId": "40349146278",
   "createdAtUTC": "2026-10-26T15:30:00.390Z",
-  "status": "submitted_to_vk",
+  "status": "published_verified_by_vk",
   "published": [
     {
       "index": 1,
@@ -30,5 +30,10 @@
     }
   ],
   "note": "Exactly three approved stories; never retry provider save after uncertainty.",
-  "updatedAtUTC": "2026-10-26T15:30:49.319Z"
+  "updatedAtUTC": "2026-10-26T15:30:50.871Z",
+  "liveVerifiedStoryIds": [
+    456240684,
+    456240685,
+    456240686
+  ]
 }
