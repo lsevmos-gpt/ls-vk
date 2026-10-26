@@ -5,7 +5,7 @@
   "scheduledFor": "2026-10-26T18:30:00+03:00",
   "runId": "40349146278",
   "createdAtUTC": "2026-10-26T15:30:00.390Z",
-  "status": "submission_started",
+  "status": "partial_submitted_to_vk",
   "published": [
     {
       "index": 1,
@@ -13,10 +13,15 @@
       "vkStoryId": 456240684,
       "ownerId": -48198173,
       "publishedAtUTC": "2026-10-26T15:30:13.021Z"
+    },
+    {
+      "index": 2,
+      "name": "bumble-coffee",
+      "vkStoryId": 456240685,
+      "ownerId": -48198173,
+      "publishedAtUTC": "2026-10-26T15:30:39.890Z"
     }
   ],
   "note": "Exactly three approved stories; never retry provider save after uncertainty.",
-  "updatedAtUTC": "2026-10-26T15:30:17.207Z",
-  "attemptingIndex": 2,
-  "attemptingItem": "bumble-coffee"
+  "updatedAtUTC": "2026-10-26T15:30:39.890Z"
 }
