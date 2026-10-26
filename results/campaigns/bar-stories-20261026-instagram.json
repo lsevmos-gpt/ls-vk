@@ -3,7 +3,7 @@
   "provider": "meta",
   "account": "liniya__sporta",
   "scheduledFor": "2026-10-26T18:30:00+03:00",
-  "status": "submission_started",
+  "status": "partial_published",
   "runId": "40349146278",
   "createdAtUTC": "2026-10-26T15:30:00.216284+00:00",
   "published": [
@@ -14,10 +14,16 @@
       "publishedAtUTC": "2026-10-26T15:30:37.455791+00:00",
       "permalink": "https://www.instagram.com/stories/liniya__sporta/4016537540349429671",
       "metaReadbackConfirmed": true
+    },
+    {
+      "index": 2,
+      "name": "bumble-coffee",
+      "instagramMediaId": "18119552299781840",
+      "publishedAtUTC": "2026-10-26T15:31:15.953795+00:00",
+      "permalink": "https://www.instagram.com/stories/liniya__sporta/4016537864452024622",
+      "metaReadbackConfirmed": true
     }
   ],
   "note": "Only three explicitly approved Stories. No provider mutation retries.",
-  "updatedAtUTC": "2026-10-26T15:30:41.879048+00:00",
-  "attemptingIndex": 2,
-  "attemptingItem": "bumble-coffee"
+  "updatedAtUTC": "2026-10-26T15:31:15.953814+00:00"
 }
