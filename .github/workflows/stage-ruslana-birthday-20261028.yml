@@ -1,0 +1,78 @@
+name: Stage approved Ruslana birthday assets (28 Oct, one-time, no publishing)
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'requests/staging/ruslana-birthday-20261028-stage.json'
+permissions:
+  contents: write
+concurrency:
+  group: ruslana-20261028-stage-media-only
+  cancel-in-progress: false
+jobs:
+  stage:
+    if: github.repository == 'lsevmos-gpt/ls-vk' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - name: Verify approved source, media hashes, and prevent duplicate staging
+        shell: bash
+        run: |
+          set -euo pipefail
+          test ! -e results/verification/ruslana-birthday-20261028-stage.json
+          echo '252e9ff5f1029c499e2d63c1aca1b12a6b5974333d6cca07c694f620a9402718  media/ruslana-20261028-birthday-vk.png' | sha256sum -c
+          echo '6d521ff85441e22c5ab8248d733422f3695601b3ac778540764eecbaf872f0d6  media/ruslana-20261028-birthday-meta.jpg' | sha256sum -c
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path('requests/staging/ruslana-birthday-20261028-stage.json')
+          j=json.loads(p.read_text(encoding='utf-8'))
+          assert j['id']=='ruslana-birthday-20261028-stage' and j['approved'] is True and j['publicContent'] is True
+          assert j['sourceDriveFileId']=='1w9gRCDosTNllkMeckuYyDpVxLvngg2pr'
+          assert j['sourceVideoSha256']=='3ca7cde5ca132b59e9e825e31c9a39b3a94b454c231572bd15b598b51e0a9434'
+          assert j['sourceVideoUrl']=='https://d2ol7oe51mr4n9.cloudfront.net/user_3DGFj8YOvQgbPvppr50r6fgfGAi/987a02ab-0218-488b-a769-71622a7e7ed8.mp4'
+          assert j['storyOrder']==['intro-girls','ruslana-birthday']
+          print('APPROVED_SOURCE_AND_IMAGES_VERIFIED_NO_PUBLICATION')
+          PY
+      - name: Download byte-identical 4-second VK intro
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --fail --show-error --location --retry 2 --connect-timeout 15 --max-time 140 'https://d2ol7oe51mr4n9.cloudfront.net/user_3DGFj8YOvQgbPvppr50r6fgfGAi/987a02ab-0218-488b-a769-71622a7e7ed8.mp4' -o media/ruslana-20261028-intro-vk.mp4
+          echo '3ca7cde5ca132b59e9e825e31c9a39b3a94b454c231572bd15b598b51e0a9434  media/ruslana-20261028-intro-vk.mp4' | sha256sum -c
+      - name: Prepare maximum-compatible Meta version; video stream untouched
+        shell: bash
+        run: |
+          set -euo pipefail
+          ffmpeg -hide_banner -nostdin -loglevel error -i media/ruslana-20261028-intro-vk.mp4 -map 0:v:0 -map 0:a:0 -c:v copy -c:a aac -b:a 128k -ar 48000 -ac 2 -movflags +faststart -y media/ruslana-20261028-intro-meta.mp4
+          test "$(ffprobe -v error -select_streams v:0 -show_entries stream=width,height -of csv=p=0:s=x media/ruslana-20261028-intro-meta.mp4)" = '1080x1920'
+          test "$(ffprobe -v error -select_streams v:0 -show_entries stream=codec_name -of csv=p=0 media/ruslana-20261028-intro-meta.mp4)" = 'h264'
+          test "$(ffprobe -v error -select_streams a:0 -show_entries stream=codec_name -of csv=p=0 media/ruslana-20261028-intro-meta.mp4)" = 'aac'
+          test "$(stat -c%s media/ruslana-20261028-intro-meta.mp4)" -lt 10000000
+          python3 - <<'PY'
+          import hashlib,json
+          from pathlib import Path
+          paths=('media/ruslana-20261028-intro-vk.mp4','media/ruslana-20261028-intro-meta.mp4','media/ruslana-20261028-birthday-vk.png','media/ruslana-20261028-birthday-meta.jpg')
+          files={}
+          for rel in paths:
+            p=Path(rel)
+            files[rel]={'bytes':p.stat().st_size,'sha256':hashlib.sha256(p.read_bytes()).hexdigest()}
+          result={'id':'ruslana-birthday-20261028-stage','status':'files_verified','approved':True,'storyOrder':['intro-girls','ruslana-birthday'],'media':files,'providerCalls':0}
+          p=Path('results/verification/ruslana-birthday-20261028-stage.json');p.parent.mkdir(parents=True,exist_ok=True)
+          p.write_text(json.dumps(result,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+          print('FOUR_MEDIA_FILES_QA_PASS_NO_PROVIDER_REQUESTS')
+          PY
+      - name: Commit both verified videos to main without publishing
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'ls-ruslana-stage-bot'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -- media/ruslana-20261028-intro-vk.mp4 media/ruslana-20261028-intro-meta.mp4 results/verification/ruslana-birthday-20261028-stage.json
+          git commit -m 'Stage approved Ruslana intro videos [skip ci]'
+          git pull --rebase origin main
+          git push origin HEAD:main
