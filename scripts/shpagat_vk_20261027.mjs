@@ -16,6 +16,7 @@ const START=Date.parse('2026-10-27T18:51:00+03:00');
 const RELEASE=Date.parse('2026-10-27T19:00:00+03:00');
 const DEADLINE=Date.parse('2026-10-27T19:15:00+03:00');
 const VIDEO_URL='https://static.metricool.com/planner/202610/7014498-file-3201710570030047514.mp4';
+// ffprobe is installed by the locked workflow before this one-shot executes.
 const FILE='/tmp/ls-shpagat-reel-20261027.mp4';
 
 function now(){return Date.now()}
