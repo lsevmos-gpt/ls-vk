@@ -7,10 +7,12 @@
   "approvedImage": "media/2026-10-27-katya-birthday-approved-meta-1080x1920.jpg",
   "approvedImageGitBlobSHA": "45f7408d7629aad1026141529d5b6d9f55eca15f",
   "account": "liniya__sporta",
-  "status": "verified_rejected_9007_no_story_at_readback",
-  "providerAttempts": 0,
+  "status": "provider_call_started",
+  "providerAttempts": 1,
   "reconciliationRunId": "40470569214",
   "reconciliationObservedAfterMsk1000": 0,
   "allowedUntilUTC": "2026-10-27T09:00:00Z",
-  "note": "Single additional user-requested late publication recovery, ONLY after read-only Meta check observed no Story since 10:00 MSK. Atomic reserve BEFORE any Meta mutation. Never repeat if second provider call fails."
+  "note": "Second attempt after direct Meta reconciliation. Exactly one new container and one publish POST. No retries.",
+  "runId": "40471196589",
+  "attemptAtUTC": "2026-10-27T08:06:12+00:00"
 }
