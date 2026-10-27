@@ -1,12 +1,13 @@
 {
   "id": "20261027-shpagat-1900-sir-ena06",
-  "status": "container_created",
+  "status": "container_ready",
   "platform": "instagram-meta",
   "scheduledFor": "2026-10-27T19:00:00+03:00",
   "runId": "40534305660",
   "invitedCollaborator": "sir_ena06",
   "source": "requests/instagram-meta/20261027-shpagat-exact-1900.json",
   "note": "Authorised direct Meta Collab, one-shot. This receipt blocks calendar duplicate.",
-  "updatedAtUtc": "2026-10-27T15:52:02.276274+00:00",
-  "containerId": "18021391244949669"
+  "updatedAtUtc": "2026-10-27T15:52:30.779986+00:00",
+  "containerId": "18021391244949669",
+  "readyAtUtc": "2026-10-27T15:52:30.779965+00:00"
 }
