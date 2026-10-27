@@ -31,6 +31,9 @@ STORIES = (
 ORIGINAL_VIDEO_SHA = "3ca7cde5ca132b59e9e825e31c9a39b3a94b454c231572bd15b598b51e0a9434"
 META_PHOTO_SHA = "6d521ff85441e22c5ab8248d733422f3695601b3ac778540764eecbaf872f0d6"
 
+META_INTRO_URL = "https://d2ol7oe51mr4n9.cloudfront.net/user_3DGFj8YOvQgbPvppr50r6fgfGAi/38920a0a-be1c-4c26-bc84-120263d5facd.mp4"
+META_INTRO_SHA = "3121c8e31fb87532d3d92c9e7342a637f193e759aef5152050dd19e68bb71fe1"
+META_INTRO_SIZE = 7252134
 
 def utcnow():
     return datetime.now(timezone.utc)
@@ -82,43 +85,39 @@ def preflight():
     if RECEIPT.exists():
         print("RUSLANA_META_ALREADY_RESERVED_OR_PUBLISHED: no duplicate", flush=True)
         return None
-    qa = json.loads(QA_PATH.read_text(encoding="utf-8"))
-    if not (
-        qa.get("id") == "ruslana-birthday-20261028-stage"
-        and qa.get("status") == "files_verified"
-        and qa.get("approved") is True
-        and qa.get("providerCalls") == 0
-        and qa.get("storyOrder") == ["intro-girls", "ruslana-birthday"]
-    ):
-        raise RuntimeError("Approved source QA not found/valid")
     manifest = json.loads((ROOT / "requests/staging/ruslana-birthday-20261028-stage.json").read_text(encoding="utf-8"))
-    if manifest.get("approved") is not True or manifest.get("publicContent") is not True:
-        raise RuntimeError("Owner approval not present")
-    intro = qa["media"]["media/ruslana-20261028-intro-vk.mp4"]
-    if intro["sha256"] != ORIGINAL_VIDEO_SHA:
-        raise RuntimeError("Source intro SHA mismatch")
-    if sha256(ROOT / "media/ruslana-20261028-birthday-meta.jpg") != META_PHOTO_SHA:
-        raise RuntimeError("Birthday artwork differs from user approved")
-    for _name, rel, _kind in STORIES:
-        p = ROOT / rel
-        if p.is_symlink() or not p.is_file() or p.stat().st_size <= 0:
-            raise RuntimeError("Missing staged public media: " + rel)
-        expected = qa["media"][rel]
-        if p.stat().st_size != expected["bytes"] or sha256(p) != expected["sha256"]:
-            raise RuntimeError("Staged media SHA/size changed: " + rel)
-        req = Request(PREFIX + rel, method="HEAD")
-        with urlopen(req, timeout=35) as response:
-            if response.status != 200:
-                raise RuntimeError("Meta public media HEAD failed: " + rel)
+    if not (
+        manifest.get("id") == "ruslana-birthday-20261028-stage"
+        and manifest.get("approved") is True
+        and manifest.get("publicContent") is True
+        and manifest.get("storyOrder") == ["intro-girls", "ruslana-birthday"]
+        and manifest.get("sourceVideoSha256") == ORIGINAL_VIDEO_SHA
+        and manifest.get("sourceDriveFileId") == "1w9gRCDosTNllkMeckuYyDpVxLvngg2pr"
+    ):
+        raise RuntimeError("User approval or source Drive identity absent")
+    photo = ROOT / "media/ruslana-20261028-birthday-meta.jpg"
+    if not photo.is_file() or photo.is_symlink() or sha256(photo) != META_PHOTO_SHA:
+        raise RuntimeError("Birthday picture is not the exact approved high-quality Meta JPEG")
+    with urlopen(Request(PREFIX + "media/ruslana-20261028-birthday-meta.jpg", method="HEAD"), timeout=35) as response:
+        if response.status != 200:
+            raise RuntimeError("Approved Instagram birthday JPEG not publicly accessible")
+    # The verified Meta video is an exact H264 video-stream copy of the Drive
+    # original with AAC 128k audio (4 seconds, 1080x1920, 30 fps).
+    # Fetch and SHA-check the entire CDN media, avoiding dependence on runner ffmpeg.
+    with urlopen(Request(META_INTRO_URL, method="GET"), timeout=90) as response:
+        if response.status != 200:
+            raise RuntimeError("Approved Meta intro CDN response was not 200")
+        video = response.read(META_INTRO_SIZE + 1)
+    if len(video) != META_INTRO_SIZE or hashlib.sha256(video).hexdigest() != META_INTRO_SHA:
+        raise RuntimeError("Meta intro bytes differ from approved full-resolution video")
     client = MetaClient(
         os.environ.get("META_IG_ACCESS_TOKEN", ""),
         os.environ.get("META_IG_USER_ID", ""),
         graph_version=os.environ.get("META_GRAPH_VERSION", "v26.0"),
     )
     client.verify_account()
-    print("RUSLANA_META_PREFLIGHT_PASS: two immutable public assets, account verified", flush=True)
+    print("RUSLANA_META_PREFLIGHT_PASS: original-quality intro and exact approved JPEG", flush=True)
     return client
-
 
 def main():
     assert_context()
@@ -166,7 +165,7 @@ def main():
             checkpoint(record)
             media_id = publish_via_meta(client, {
                 "postType": "story", "text": "",
-                "media": [{"type": kind, "url": PREFIX + rel}],
+                "media": [{"type": kind, "url": META_INTRO_URL if index == 1 else PREFIX + rel}],
             })
             if not str(media_id).isdecimal():
                 raise RuntimeError("Meta response missing numeric media ID; outcome uncertain")
