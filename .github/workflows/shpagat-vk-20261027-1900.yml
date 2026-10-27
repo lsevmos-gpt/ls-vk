@@ -4,6 +4,7 @@ on:
     branches: [main]
     paths:
       - 'requests/vk/20261027-shpagat-1900.json'
+      - 'scripts/shpagat_vk_20261027.mjs'
 permissions:
   contents: write
 concurrency:
@@ -38,5 +39,13 @@ jobs:
           node --check scripts/vk-refresh-lib.mjs
           npm install --omit=dev --ignore-scripts --no-package-lock --no-audit --no-fund
           test -n "$VK_GROUP_TOKEN" && test -n "$VK_REFRESH_TOKEN" && test -n "$VK_DEVICE_ID" && test -n "$VK_SECRETS_WRITE_PAT"
+      - name: Ensure ffprobe is available for exact video stream dimensions
+        run: |
+          set -euo pipefail
+          if ! command -v ffprobe; then
+            sudo apt-get update -qq
+            sudo apt-get install -y -qq ffmpeg
+          fi
+          ffprobe -version | head -1
       - name: One approved 19:00 VK Clip plus community wall post; no blind retries
         run: node scripts/shpagat_vk_20261027.mjs
