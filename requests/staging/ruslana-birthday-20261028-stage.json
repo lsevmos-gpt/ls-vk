@@ -12,5 +12,7 @@
   "vkTarget": "liniya__sporta",
   "instagramTarget": "liniya__sporta",
   "note": "Preparation only; no social provider calls. Preserve approved video and image.",
-  "trigger": "approved-assets-stage-ffmpeg-fix-v2"
+  "trigger": "approved-assets-direct-media-v3",
+  "metaVideoUrl": "https://d2ol7oe51mr4n9.cloudfront.net/user_3DGFj8YOvQgbPvppr50r6fgfGAi/38920a0a-be1c-4c26-bc84-120263d5facd.mp4",
+  "metaVideoSHA256": "3121c8e31fb87532d3d92c9e7342a637f193e759aef5152050dd19e68bb71fe1"
 }
