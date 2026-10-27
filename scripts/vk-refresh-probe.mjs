@@ -13,16 +13,10 @@ const DEFAULT_REDIRECT = 'https://vk.liniyasporta.ru/oauth/callback';
 const CANARY_SECRET = 'VK_REFRESH_WRITE_PROBE';
 
 function requireLiveRunner() {
-  const isManual = process.env.GITHUB_EVENT_NAME === 'workflow_dispatch';
-  const isOneShot =
-    process.env.GITHUB_EVENT_NAME === 'push' &&
-    process.env.VK_REFRESH_ONE_SHOT === 'LS_VK_20261027' &&
-    process.env.GITHUB_WORKFLOW_REF ===
-      'lsevmos-gpt/ls-vk/.github/workflows/vk-refresh-retry-once-20261027.yml@refs/heads/main';
   if (process.env.GITHUB_REPOSITORY !== REPO ||
       process.env.GITHUB_REF !== 'refs/heads/main' ||
+      process.env.GITHUB_EVENT_NAME !== 'workflow_dispatch' ||
       process.env.GITHUB_ACTOR !== 'lsevmos-gpt' ||
-      !(isManual || isOneShot) ||
       process.env.VK_REFRESH_CONFIRM !== 'ROTATE_REFRESH_TOKEN') {
     throw new Error('UNAUTHORIZED_RUN_CONTEXT');
   }
