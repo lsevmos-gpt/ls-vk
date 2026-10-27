@@ -18,6 +18,28 @@ Secrets → Read and write**; после изменения PAT обновить
 [подробная PAT-проверка](https://github.com/lsevmos-gpt/ls-vk/actions/runs/40096157617).
 
 
+### Дополнительная диагностика от 27 октября 2026
+
+Новый одноразовый запуск №40457090019 снова вернул HTTP 403 при
+`GET /repos/lsevmos-gpt/ls-vk/actions/secrets/public-key`;
+проверка VK ID refresh была **пропущена**, VK-токен не ротировался.
+
+Изолированная read-only проверка №40457451791 установила:
+- `GH_PAT_USER_HTTP=200`, `GH_PAT_OWNER_MATCH=YES`
+- `GH_PAT_REPO_HTTP=200`, `GH_PAT_REPO_ADMIN=YES`
+- `GH_PAT_SECRETS_KEY_HTTP=403`
+- `GH_PAT_SECRETS_KEY_REASON=RESOURCE_NOT_ACCESSIBLE_BY_PAT`
+- Ответ GitHub API: `X-Accepted-GitHub-Permissions: secrets=read`.
+
+Таким образом, **хранящийся в `VK_SECRETS_WRITE_PAT` токен не имеет
+Repository permissions → Secrets → Read**, а для записи требуется **Read
+and write**. Это не проблема VK, device_id или refresh_token. Убедиться,
+что на PAT настроено именно *Repository permissions → Secrets: Read and
+write* (не Codespaces secrets, Dependabot secrets, Agent secrets или
+Organization secrets). Если создан новый PAT, нужно заменить его значение
+в Actions Secret `VK_SECRETS_WRITE_PAT`. Временные workflows удалены,
+остался ручной `vk-refresh-probe.yml`.
+
 ## Проверенные факты
 
 - VK ID приложение: 54806879; сообщество «Линия спорта»: 48198173.
