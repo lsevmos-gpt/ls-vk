@@ -7,10 +7,12 @@
   "media": "media/2026-10-27-katya-birthday-approved-meta-1080x1920.jpg",
   "mediaBlobSHA": "45f7408d7629aad1026141529d5b6d9f55eca15f",
   "publishAt": "2026-10-27T10:00:00+03:00",
-  "status": "recovery_authorized_no_meta_call",
-  "attemptCount": 0,
+  "status": "provider_call_started",
+  "attemptCount": 1,
   "recoveryApproved": true,
   "recoveryAuthorizedOn": "2026-10-27",
   "recoveryDeadlineUTC": "2026-10-27T08:30:00Z",
-  "note": "User authorized one late publication via Meta. Earlier GitHub scheduled workflow missed its time window before any Meta POST. This receipt prevents original calendar job from attempting a duplicate. One-shot recovery requires durable status transition BEFORE any Meta mutation; no retries."
+  "note": "Durably recorded one authorized Meta submission attempt BEFORE API mutation. Never retry if outcome is uncertain.",
+  "attemptRunId": "40470253617",
+  "attemptAtUTC": "2026-10-27T07:57:29+00:00"
 }
