@@ -1,0 +1,20 @@
+{
+  "id": "ruslana-birthday-20261028-1000-vk-pair",
+  "type": "story-batch",
+  "approved": true,
+  "publicContent": true,
+  "publishAt": "2026-10-28T10:00:00+03:00",
+  "stories": [
+    {
+      "storyType": "video",
+      "mediaUrl": "https://d2ol7oe51mr4n9.cloudfront.net/user_3DGFj8YOvQgbPvppr50r6fgfGAi/987a02ab-0218-488b-a769-71622a7e7ed8.mp4",
+      "fileName": "ruslana-20261028-intro-vk.mp4",
+      "addToNews": true
+    },
+    {
+      "storyType": "photo",
+      "media": "media/ruslana-20261028-birthday-vk.png",
+      "addToNews": true
+    }
+  ]
+}
