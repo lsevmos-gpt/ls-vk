@@ -3,7 +3,7 @@
   "provider": "meta",
   "account": "liniya__sporta",
   "releaseMode": "immediate",
-  "status": "partial_published",
+  "status": "submission_started",
   "runId": "40481178911",
   "createdAtUTC": "2026-10-27T09:30:19.870671+00:00",
   "published": [
@@ -17,5 +17,7 @@
     }
   ],
   "note": "Only three explicitly approved Stories. No provider mutation retries.",
-  "updatedAtUTC": "2026-10-27T09:31:00.184040+00:00"
+  "updatedAtUTC": "2026-10-27T09:31:04.787903+00:00",
+  "attemptingIndex": 2,
+  "attemptingItem": "smoothie-breakfast"
 }
