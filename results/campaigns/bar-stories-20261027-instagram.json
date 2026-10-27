@@ -1,0 +1,12 @@
+{
+  "id": "bar-stories-20261027-instagram",
+  "provider": "meta",
+  "account": "liniya__sporta",
+  "releaseMode": "immediate",
+  "status": "reserved_before_provider_call",
+  "runId": "40481178911",
+  "createdAtUTC": "2026-10-27T09:30:19.870671+00:00",
+  "published": [],
+  "note": "Only three explicitly approved Stories. No provider mutation retries.",
+  "updatedAtUTC": "2026-10-27T09:30:19.870690+00:00"
+}
