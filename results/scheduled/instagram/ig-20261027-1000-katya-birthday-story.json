@@ -7,12 +7,14 @@
   "media": "media/2026-10-27-katya-birthday-approved-meta-1080x1920.jpg",
   "mediaBlobSHA": "45f7408d7629aad1026141529d5b6d9f55eca15f",
   "publishAt": "2026-10-27T10:00:00+03:00",
-  "status": "provider_call_started",
+  "status": "manual_review_required",
   "attemptCount": 1,
   "recoveryApproved": true,
   "recoveryAuthorizedOn": "2026-10-27",
   "recoveryDeadlineUTC": "2026-10-27T08:30:00Z",
-  "note": "Durably recorded one authorized Meta submission attempt BEFORE API mutation. Never retry if outcome is uncertain.",
+  "note": "One attempt made; potential provider side effect. DO NOT REPLAY.",
   "attemptRunId": "40470253617",
-  "attemptAtUTC": "2026-10-27T07:57:29+00:00"
+  "attemptAtUTC": "2026-10-27T07:57:29+00:00",
+  "error": "Meta API HTTP 400 code=9007: Media ID is not available",
+  "updatedAtUTC": "2026-10-27T07:57:35+00:00"
 }
