@@ -1,6 +1,6 @@
 {
   "id": "20261027-shpagat-1900",
-  "status": "video_uploaded",
+  "status": "wall_post_call_started",
   "platform": "vk",
   "groupId": 48198173,
   "runId": "40533696242",
@@ -8,7 +8,7 @@
   "sourceUrl": "https://static.metricool.com/planner/202610/7014498-file-3201710570030047514.mp4",
   "videoSha256": "82bd0b1cb3f71694a2e667d2074bbb33ed18f92ddcac0082c0ff73464b2cf9e6",
   "note": "Only one approved video upload and wall submission. No automatic retries",
-  "updatedAt": "2026-10-27T15:51:17.652Z",
+  "updatedAt": "2026-10-27T15:51:19.353Z",
   "videoId": 456240834,
   "videoOwnerId": -48198173,
   "attachment": "video-48198173_456240834"
