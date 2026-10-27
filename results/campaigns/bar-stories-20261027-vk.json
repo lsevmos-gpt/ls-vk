@@ -5,7 +5,7 @@
   "releaseMode": "immediate",
   "runId": "40481178911",
   "createdAtUTC": "2026-10-27T09:30:26.141Z",
-  "status": "partial_submitted_to_vk",
+  "status": "submission_started",
   "published": [
     {
       "index": 1,
@@ -16,5 +16,7 @@
     }
   ],
   "note": "Exactly three approved stories; never retry provider save after uncertainty.",
-  "updatedAtUTC": "2026-10-27T09:30:34.292Z"
+  "updatedAtUTC": "2026-10-27T09:30:38.253Z",
+  "attemptingIndex": 2,
+  "attemptingItem": "smoothie-breakfast"
 }
