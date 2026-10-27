@@ -44,6 +44,13 @@ jobs:
           set -euo pipefail
           curl --fail --show-error --location --retry 2 --connect-timeout 15 --max-time 140 'https://d2ol7oe51mr4n9.cloudfront.net/user_3DGFj8YOvQgbPvppr50r6fgfGAi/987a02ab-0218-488b-a769-71622a7e7ed8.mp4' -o media/ruslana-20261028-intro-vk.mp4
           echo '3ca7cde5ca132b59e9e825e31c9a39b3a94b454c231572bd15b598b51e0a9434  media/ruslana-20261028-intro-vk.mp4' | sha256sum -c
+      - name: Ensure ffmpeg and ffprobe are installed
+        shell: bash
+        run: |
+          if ! command -v ffmpeg >/dev/null 2>&1 || ! command -v ffprobe >/dev/null 2>&1; then
+            sudo apt-get update -qq
+            sudo apt-get install -y ffmpeg
+          fi
       - name: Prepare maximum-compatible Meta version; video stream untouched
         shell: bash
         run: |
