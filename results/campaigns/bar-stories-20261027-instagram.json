@@ -3,7 +3,7 @@
   "provider": "meta",
   "account": "liniya__sporta",
   "releaseMode": "immediate",
-  "status": "submission_started",
+  "status": "published",
   "runId": "40481178911",
   "createdAtUTC": "2026-10-27T09:30:19.870671+00:00",
   "published": [
@@ -22,10 +22,16 @@
       "publishedAtUTC": "2026-10-27T09:31:41.131423+00:00",
       "permalink": "https://www.instagram.com/stories/liniya__sporta/4017081644371473396",
       "metaReadbackConfirmed": true
+    },
+    {
+      "index": 3,
+      "name": "pretrain",
+      "instagramMediaId": "17934308439184631",
+      "publishedAtUTC": "2026-10-27T09:32:34.580101+00:00",
+      "permalink": "https://www.instagram.com/stories/liniya__sporta/4017082057620792008",
+      "metaReadbackConfirmed": true
     }
   ],
   "note": "Only three explicitly approved Stories. No provider mutation retries.",
-  "updatedAtUTC": "2026-10-27T09:31:45.712183+00:00",
-  "attemptingIndex": 3,
-  "attemptingItem": "pretrain"
+  "updatedAtUTC": "2026-10-27T09:32:34.580121+00:00"
 }
