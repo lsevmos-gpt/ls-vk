@@ -1,0 +1,39 @@
+name: "One-shot authorized Instagram Meta Story rescue - Ekaterina 27 Oct 2026"
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/recover-katya-instagram-20261027.yml'
+permissions:
+  contents: write
+concurrency:
+  group: ls-social-single-approved-provider-submission
+  cancel-in-progress: false
+jobs:
+  post_only_once:
+    name: "Validate unchanged approved image, durably reserve, send one Meta Story, verify ID"
+    if: github.repository == 'lsevmos-gpt/ls-vk' && github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    timeout-minutes: 19
+    env:
+      GITHUB_TOKEN: ${{ github.token }}
+      META_IG_ACCESS_TOKEN: ${{ secrets.META_IG_ACCESS_TOKEN }}
+      META_IG_USER_ID: ${{ secrets.META_IG_USER_ID }}
+      META_GRAPH_VERSION: v26.0
+    steps:
+      - name: Checkout approved files
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: "One authorized provider submission; do not replay on error"
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "${META_IG_ACCESS_TOKEN:-}" && test -n "${META_IG_USER_ID:-}" && test -n "${GITHUB_TOKEN:-}"
+          python -m scripts.recover_katya_instagram_20261027
