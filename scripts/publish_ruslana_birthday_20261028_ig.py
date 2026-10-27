@@ -1,6 +1,6 @@
-"""28 Oct 2026 — user-approved two-Story Meta Instagram campaign, one time.
+"""28 Oct 2026 — user-approved ONE Meta Instagram birthday Story for Ruslana.
 
-Order is strictly intro-girls VIDEO, then Ruslana birthday PHOTO.
+Intro Girls video CANCELLED by the owner on 27 Oct. Publish ONLY Ruslana PHOTO.
 Date-bound, scheduled-only, reserve-before-provider, fail-closed; no retries.
 """
 from __future__ import annotations
@@ -25,15 +25,9 @@ PREFIX = "https://raw.githubusercontent.com/lsevmos-gpt/ls-vk/main/"
 DUE = datetime(2026, 10, 28, 7, 0, 0, tzinfo=timezone.utc)  # 10:00 Moscow
 MAX_LATE = timedelta(minutes=7)
 STORIES = (
-    ("intro-girls", "media/ruslana-20261028-intro-meta.mp4", "video"),
     ("ruslana-birthday", "media/ruslana-20261028-birthday-meta.jpg", "image"),
 )
-ORIGINAL_VIDEO_SHA = "3ca7cde5ca132b59e9e825e31c9a39b3a94b454c231572bd15b598b51e0a9434"
 META_PHOTO_SHA = "6d521ff85441e22c5ab8248d733422f3695601b3ac778540764eecbaf872f0d6"
-
-META_INTRO_URL = PREFIX + "media/ruslana-20261028-intro-meta.mp4"
-META_INTRO_SHA = "3121c8e31fb87532d3d92c9e7342a637f193e759aef5152050dd19e68bb71fe1"
-META_INTRO_SIZE = 7252134
 
 def utcnow():
     return datetime.now(timezone.utc)
@@ -90,33 +84,29 @@ def preflight():
         manifest.get("id") == "ruslana-birthday-20261028-stage"
         and manifest.get("approved") is True
         and manifest.get("publicContent") is True
-        and manifest.get("storyOrder") == ["intro-girls", "ruslana-birthday"]
-        and manifest.get("sourceVideoSha256") == ORIGINAL_VIDEO_SHA
-        and manifest.get("sourceDriveFileId") == "1w9gRCDosTNllkMeckuYyDpVxLvngg2pr"
+        and manifest.get("introCancelled") is True
+        and manifest.get("storyOrder") == ["ruslana-birthday"]
     ):
-        raise RuntimeError("User approval or source Drive identity absent")
+        raise RuntimeError("Single Ruslana birthday photo only: approval or intro cancellation missing")
+    qa = json.loads(QA_PATH.read_text(encoding="utf-8"))
+    if (
+        qa.get("media", {}).get("media/ruslana-20261028-birthday-meta.jpg", {}).get("sha256")
+        != META_PHOTO_SHA
+    ):
+        raise RuntimeError("Original approved birthday JPEG digest not verified in staging receipt")
     photo = ROOT / "media/ruslana-20261028-birthday-meta.jpg"
     if not photo.is_file() or photo.is_symlink() or sha256(photo) != META_PHOTO_SHA:
         raise RuntimeError("Birthday picture is not the exact approved high-quality Meta JPEG")
     with urlopen(Request(PREFIX + "media/ruslana-20261028-birthday-meta.jpg", method="HEAD"), timeout=35) as response:
         if response.status != 200:
             raise RuntimeError("Approved Instagram birthday JPEG not publicly accessible")
-    # The verified Meta video is an exact H264 video-stream copy of the Drive
-    # original with AAC 128k audio (4 seconds, 1080x1920, 30 fps).
-    # Fetch and SHA-check the entire CDN media, avoiding dependence on runner ffmpeg.
-    with urlopen(Request(META_INTRO_URL, method="GET"), timeout=90) as response:
-        if response.status != 200:
-            raise RuntimeError("Approved Meta intro CDN response was not 200")
-        video = response.read(META_INTRO_SIZE + 1)
-    if len(video) != META_INTRO_SIZE or hashlib.sha256(video).hexdigest() != META_INTRO_SHA:
-        raise RuntimeError("Meta intro bytes differ from approved full-resolution video")
     client = MetaClient(
         os.environ.get("META_IG_ACCESS_TOKEN", ""),
         os.environ.get("META_IG_USER_ID", ""),
         graph_version=os.environ.get("META_GRAPH_VERSION", "v26.0"),
     )
     client.verify_account()
-    print("RUSLANA_META_PREFLIGHT_PASS: original-quality intro and exact approved JPEG", flush=True)
+    print("RUSLANA_META_PREFLIGHT_PASS: ONLY exact approved JPEG; INTRO CANCELLED", flush=True)
     return client
 
 def main():
@@ -149,12 +139,12 @@ def main():
         "provider": "meta",
         "account": "liniya__sporta",
         "scheduledAtMoscow": "2026-10-28T10:00:00+03:00",
-        "stories": ["intro-girls", "ruslana-birthday"],
+        "stories": ["ruslana-birthday"],
         "runId": os.environ["GITHUB_RUN_ID"],
         "status": "reserved_before_provider_call",
         "createdAtUTC": utcnow().isoformat(),
         "published": [],
-        "note": "Exactly two owner-approved Stories. One attempt per item, no retries after uncertain Meta response.",
+        "note": "Only one owner-approved birthday photo Story. Intro Girls is cancelled. Single attempt; no retries after uncertain Meta response.",
     }
     checkpoint(record, first=True)
     for index, (name, rel, kind) in enumerate(STORIES, start=1):
@@ -165,7 +155,7 @@ def main():
             checkpoint(record)
             media_id = publish_via_meta(client, {
                 "postType": "story", "text": "",
-                "media": [{"type": kind, "url": META_INTRO_URL if index == 1 else PREFIX + rel}],
+                "media": [{"type": kind, "url": PREFIX + rel}],
             })
             if not str(media_id).isdecimal():
                 raise RuntimeError("Meta response missing numeric media ID; outcome uncertain")
@@ -185,11 +175,9 @@ def main():
             })
             del record["attemptingIndex"]
             del record["attemptingItem"]
-            record["status"] = "published" if index == 2 else "partial_published"
+            record["status"] = "published"
             checkpoint(record)
             print("RUSLANA_INSTAGRAM_STORY_PUBLISHED", index, name, media_id, flush=True)
-            if index == 1:
-                time.sleep(3)
         except Exception as exc:
             record["status"] = "manual_review_required"
             record["error"] = str(exc)[:400]
@@ -199,7 +187,7 @@ def main():
             except Exception as secondary:
                 print("Reservation already saved; final checkpoint error", secondary, file=sys.stderr)
             raise
-    print("RUSLANA_INSTAGRAM_TWO_STORIES_PUBLISHED_IN_ORDER", flush=True)
+    print("RUSLANA_INSTAGRAM_ONLY_BIRTHDAY_STORY_PUBLISHED", flush=True)
 
 
 if __name__ == "__main__":
