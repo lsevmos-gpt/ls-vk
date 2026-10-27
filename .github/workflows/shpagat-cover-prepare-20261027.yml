@@ -1,0 +1,56 @@
+name: Prepare approved Shpagat Reels cover JPEG (no publication)
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'media-prep/shpagat-cover-20261027.json'
+permissions:
+  contents: write
+concurrency:
+  group: shpagat-cover-stage-20261027
+  cancel-in-progress: false
+jobs:
+  convert:
+    if: github.repository == 'lsevmos-gpt/ls-vk' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Verify exact approved PNG and convert without redrawing anything
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check 'Pillow>=11,<13'
+          python - <<'PY'
+          from PIL import Image
+          from pathlib import Path
+          import subprocess,hashlib,json,datetime
+          src=Path('media/2026-10-27-shpagat-approved-cover.png')
+          out=Path('media/2026-10-27-shpagat-approved-cover-meta.jpg')
+          assert src.is_file() and subprocess.check_output(['git','hash-object',str(src)],text=True).strip()=='5433d21880d57d128a09d90be11a631e20b65e01','Not the exact approved PNG'
+          with Image.open(src) as im:
+            assert im.size[0]>700 and im.size[1]>1200
+            im.convert('RGB').save(out,'JPEG',quality=97,subsampling=0,optimize=True,progressive=False)
+          with Image.open(out) as im: assert im.format=='JPEG' and im.size==Image.open(src).size
+          assert out.stat().st_size<8*1024*1024
+          rec={'ok':True,'source':str(src),'gitBlobSha':'5433d21880d57d128a09d90be11a631e20b65e01','jpeg':str(out),'bytes':out.stat().st_size,'sha256':hashlib.sha256(out.read_bytes()).hexdigest(),'doesNotPublish':True,'verifiedAtUtc':datetime.datetime.now(datetime.timezone.utc).isoformat()}
+          target=Path('results/verification/shpagat-20261027-approved-cover.json')
+          target.parent.mkdir(parents=True,exist_ok=True)
+          target.write_text(json.dumps(rec,ensure_ascii=False,indent=2)+'\n')
+          print('SHPAGAT_APPROVED_COVER_JPEG_QA_OK',out.stat().st_size)
+          PY
+      - name: Commit exact JPEG and verification metadata to public media folder
+        run: |
+          set -euo pipefail
+          git config user.name ls-social-media-bot
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add media/2026-10-27-shpagat-approved-cover-meta.jpg results/verification/shpagat-20261027-approved-cover.json
+          git diff --cached --quiet && exit 0
+          git commit -m 'Prepare authentic Shpagat approved cover JPEG for direct Meta [skip ci]'
+          git pull --rebase origin main
+          git push origin HEAD:main
