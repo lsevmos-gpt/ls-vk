@@ -11,8 +11,6 @@ const ROOT=process.cwd();
 const VERIFY="results/verification/bar-stories-20261027-stage.json";
 const MANIFEST="media-prep/bar-stories-20261027.json";
 const RECEIPT="results/campaigns/bar-stories-20261027-vk.json";
-const DUE=Date.parse("2026-10-27T18:30:00+03:00");
-const LATE_MS=180000;
 const MEDIA=[
   {id:"intro-bar",file:"media/bar-20261027-intro-vk.mp4"},
   {id:"smoothie-breakfast",file:"media/bar-20261027-smoothie-vk.mp4"},
@@ -33,7 +31,7 @@ function preflight() {
      process.env.GITHUB_EVENT_NAME!=="push" ||
      process.env.GITHUB_ACTOR!=="lsevmos-gpt" ||
      !/^\d+$/.test(process.env.GITHUB_RUN_ID||""))
-       throw Error("Unauthorized scheduled workflow context");
+       throw Error("Unauthorized approved release context");
   if(!process.env.VK_GROUP_TOKEN)throw Error("VK_GROUP_TOKEN not configured");
   git("pull","--ff-only","origin","main");
   if(fs.existsSync(RECEIPT))throw Error("VK sequence already attempted; DO NOT duplicate");
@@ -46,7 +44,7 @@ function preflight() {
   const doc=JSON.parse(fs.readFileSync(MANIFEST,"utf8"));
   const qa=JSON.parse(fs.readFileSync(VERIFY,"utf8"));
   if(doc.id!=="bar-stories-20261027" || doc.approved!==true || doc.publicContent!==true ||
-     doc.publishAt!=="2026-10-27T18:30:00+03:00" || doc.vkGroupId!==48198173 ||
+     doc.publishMode!=="immediate" || doc.vkGroupId!==48198173 ||
      !qa.ok || !qa.sourceOriginalsVerified || !qa.introOriginalVKBytes || !qa.smoothieVKTimeFit || !qa.pretrain4KDownscaledForPlatform ||
      qa.id!==doc.id || qa.sequence.length!==3 ||
      JSON.stringify(doc.sequence.map(o=>o.id))!==JSON.stringify(MEDIA.map(o=>o.id)) ||
@@ -101,14 +99,6 @@ async function pushCheckpoint(rec,first=false) {
     }
   }
 }
-async function waitTarget() {
-  const seconds=DUE-Date.now();
-  if(seconds>0){
-    console.log("WAIT_FOR_MSK_1830",Math.round(seconds/1000));
-    await pause(seconds);
-  }
-  if(Date.now()-DUE>LATE_MS)throw Error("Missed VK posting time; do not publish late");
-}
 async function main() {
   if(fs.existsSync(RECEIPT)){console.log("27 Oct VK attempt already has receipt; no duplicate execution");return;}
   preflight();
@@ -119,7 +109,7 @@ async function main() {
   git("config","user.name","ls-vk-story-bot");
   git("config","user.email","41898282+github-actions[bot]@users.noreply.github.com");
   const rec={id:"bar-stories-20261027-vk",provider:"vk",groupId:48198173,
-    scheduledFor:"2026-10-27T18:30:00+03:00",runId:process.env.GITHUB_RUN_ID,
+    releaseMode:"immediate",runId:process.env.GITHUB_RUN_ID,
     createdAtUTC:stamp(),status:"reserved_before_provider_call",published:[],
     note:"Exactly three approved stories; never retry provider save after uncertainty."};
   await pushCheckpoint(rec,true);
