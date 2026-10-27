@@ -1,0 +1,133 @@
+name: Publish 27 Oct Bar Story trilogy via direct Meta and VK (ONE TIME)
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'requests/campaigns/bar-stories-20261027-release.json'
+permissions:
+  contents: write
+concurrency:
+  group: bar-20261027-trilogy-final-release
+  cancel-in-progress: false
+jobs:
+  readiness:
+    name: Read-only identity and SHA-256 preflight of 3 source videos and 6 outputs
+    if: github.repository == 'lsevmos-gpt/ls-vk' && github.ref == 'refs/heads/main' && github.actor == 'lsevmos-gpt'
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    env:
+      META_IG_ACCESS_TOKEN: ${{ secrets.META_IG_ACCESS_TOKEN }}
+      META_IG_USER_ID: ${{ secrets.META_IG_USER_ID }}
+      META_GRAPH_VERSION: v26.0
+      VK_GROUP_TOKEN: ${{ secrets.VK_GROUP_TOKEN }}
+      VK_GROUP_ID: '48198173'
+      VK_GROUP_SCREEN_NAME: 'liniya__sporta'
+      VK_API_VERSION: '5.199'
+      SOCIAL_PLATFORM: vk
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Verify exact release order, authorizations and all 6 immutable media files — no publishing
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$META_IG_ACCESS_TOKEN" && test -n "$META_IG_USER_ID" && test -n "$VK_GROUP_TOKEN"
+          test ! -e results/campaigns/bar-stories-20261027-instagram.json
+          test ! -e results/campaigns/bar-stories-20261027-vk.json
+          python -m py_compile scripts/publish_bar_stories_20261027_ig.py
+          node --check scripts/publish_bar_stories_20261027_vk.mjs
+          python3 - <<'PY'
+          import json,hashlib
+          from pathlib import Path
+          doc=json.loads(Path('media-prep/bar-stories-20261027.json').read_text())
+          release=json.loads(Path('requests/campaigns/bar-stories-20261027-release.json').read_text())
+          qa=json.loads(Path('results/verification/bar-stories-20261027-stage.json').read_text())
+          order=['intro-bar','smoothie-breakfast','pretrain']
+          assert release['id']=='bar-stories-20261027-release'
+          assert release['approved'] and release['publicContent'] and release['submitNow']
+          assert release['instagram']=='liniya__sporta' and release['vkGroupId']==48198173
+          assert doc['approved'] and doc['publicContent'] and doc['publishMode']=='immediate'
+          assert doc['instagram']=='liniya__sporta' and doc['vkGroupId']==48198173
+          assert qa['id']==doc['id']=='bar-stories-20261027' and qa['ok'] and qa['sourceOriginalsVerified']
+          assert qa['videoStreamsUnchangedInMeta'] and qa['introOriginalVKBytes']
+          assert qa['smoothieVKTimeFit'] and qa['pretrain4KDownscaledForPlatform']
+          assert release['stories']==[s['id'] for s in doc['sequence']]==[s['id'] for s in qa['sequence']]==order
+          for s,q in zip(doc['sequence'],qa['sequence']):
+            assert s['sha256']==q['sourceDriveSHA256']
+            for prefix in ('vk','meta'):
+              p=Path(q[prefix+'Path'])
+              assert str(p).startswith('media/bar-20261027-') and p.suffix=='.mp4'
+              assert p.is_file() and not p.is_symlink() and p.stat().st_size==q[prefix+'Bytes']
+              with p.open('rb') as f: h=hashlib.file_digest(f,'sha256').hexdigest()
+              assert h==q[prefix+'SHA256']
+          print('SIX_STORY_FILES_QA_PASSED; NO_PROVIDER_MUTATIONS')
+          PY
+      - name: Read-only Meta/VK identity checks and unauthenticated file availability
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm install --omit=dev --ignore-scripts --no-package-lock --no-audit --no-fund
+          python -m scripts.instagram_collab check -
+          node scripts/check_social_targets.mjs
+          curl -fLsSI --max-time 30 https://raw.githubusercontent.com/lsevmos-gpt/ls-vk/main/media/bar-20261027-intro-meta.mp4 >/dev/null
+          curl -fLsSI --max-time 30 https://raw.githubusercontent.com/lsevmos-gpt/ls-vk/main/media/bar-20261027-smoothie-meta.mp4 >/dev/null
+          curl -fLsSI --max-time 30 https://raw.githubusercontent.com/lsevmos-gpt/ls-vk/main/media/bar-20261027-pretrain-meta.mp4 >/dev/null
+          echo THREE_META_HQ_VIDEO_URLS_PUBLIC_AND_TARGETS_VERIFIED
+  instagram_meta:
+    name: Publish three Instagram Stories through Meta — once
+    needs: readiness
+    if: github.repository == 'lsevmos-gpt/ls-vk' && github.ref == 'refs/heads/main' && github.actor == 'lsevmos-gpt'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      META_IG_ACCESS_TOKEN: ${{ secrets.META_IG_ACCESS_TOKEN }}
+      META_IG_USER_ID: ${{ secrets.META_IG_USER_ID }}
+      META_GRAPH_VERSION: v26.0
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Publish 3 Stories sequentially, save Meta IDs and readback; no retry
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m scripts.publish_bar_stories_20261027_ig
+  vk:
+    name: Publish three VK community video Stories — once
+    needs: readiness
+    if: github.repository == 'lsevmos-gpt/ls-vk' && github.ref == 'refs/heads/main' && github.actor == 'lsevmos-gpt'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      VK_GROUP_TOKEN: ${{ secrets.VK_GROUP_TOKEN }}
+      VK_GROUP_ID: '48198173'
+      VK_GROUP_SCREEN_NAME: 'liniya__sporta'
+      VK_API_VERSION: '5.199'
+      SOCIAL_PLATFORM: vk
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install uploader dependencies
+        run: npm install --omit=dev --ignore-scripts --no-package-lock --no-audit --no-fund
+      - name: Publish 3 Stories sequentially; verify Story IDs through stories.get; no retry
+        shell: bash
+        run: |
+          set -euo pipefail
+          node scripts/publish_bar_stories_20261027_vk.mjs
