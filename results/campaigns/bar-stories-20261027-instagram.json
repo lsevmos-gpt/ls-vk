@@ -3,7 +3,7 @@
   "provider": "meta",
   "account": "liniya__sporta",
   "releaseMode": "immediate",
-  "status": "submission_started",
+  "status": "partial_published",
   "runId": "40481178911",
   "createdAtUTC": "2026-10-27T09:30:19.870671+00:00",
   "published": [
@@ -14,10 +14,16 @@
       "publishedAtUTC": "2026-10-27T09:31:00.184021+00:00",
       "permalink": "https://www.instagram.com/stories/liniya__sporta/4017081287226441726",
       "metaReadbackConfirmed": true
+    },
+    {
+      "index": 2,
+      "name": "smoothie-breakfast",
+      "instagramMediaId": "18092369372673680",
+      "publishedAtUTC": "2026-10-27T09:31:41.131423+00:00",
+      "permalink": "https://www.instagram.com/stories/liniya__sporta/4017081644371473396",
+      "metaReadbackConfirmed": true
     }
   ],
   "note": "Only three explicitly approved Stories. No provider mutation retries.",
-  "updatedAtUTC": "2026-10-27T09:31:04.787903+00:00",
-  "attemptingIndex": 2,
-  "attemptingItem": "smoothie-breakfast"
+  "updatedAtUTC": "2026-10-27T09:31:41.131444+00:00"
 }
