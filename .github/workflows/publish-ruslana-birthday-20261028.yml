@@ -1,0 +1,64 @@
+name: 28 Oct Ruslana Birthday — Meta ordered Intro then Greeting (ONCE)
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/publish-ruslana-birthday-20261028.yml'
+      - 'scripts/publish_ruslana_birthday_20261028_ig.py'
+  schedule:
+    - cron: '44,54 6 28 10 *'
+permissions:
+  contents: write
+concurrency:
+  group: ls-social-single-approved-provider-submission
+  cancel-in-progress: false
+jobs:
+  validate:
+    if: github.repository == 'lsevmos-gpt/ls-vk' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Offline compile, two-Story sequence and no-provider publication guard
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m py_compile scripts/publish_ruslana_birthday_20261028_ig.py
+          python3 - <<'PY'
+          import ast
+          from pathlib import Path
+          p=Path('scripts/publish_ruslana_birthday_20261028_ig.py')
+          tree=ast.parse(p.read_text(encoding='utf-8'))
+          assert any(getattr(n,'name',None)=='main' for n in tree.body)
+          assert not Path('results/campaigns/ruslana-birthday-20261028-instagram.json').exists()
+          print('RUSLANA_20261028_META_OFFLINE_SCRIPT_VALID; NO_PROVIDER_MUTATIONS')
+          PY
+  instagram_meta:
+    needs: validate
+    if: github.repository == 'lsevmos-gpt/ls-vk' && github.ref == 'refs/heads/main' && github.event_name == 'schedule'
+    runs-on: ubuntu-latest
+    timeout-minutes: 50
+    env:
+      META_IG_ACCESS_TOKEN: ${{ secrets.META_IG_ACCESS_TOKEN }}
+      META_IG_USER_ID: ${{ secrets.META_IG_USER_ID }}
+      META_GRAPH_VERSION: v26.0
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Wait until exactly 10:00 MSK and publish exactly two Stories in approved order
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m scripts.publish_ruslana_birthday_20261028_ig
