@@ -1,4 +1,4 @@
-name: 28 Oct Ruslana Birthday — Meta ordered Intro then Greeting (ONCE)
+name: 28 Oct Ruslana Birthday — Meta ONLY approved Greeting photo (ONCE)
 on:
   push:
     branches: [main]
@@ -26,7 +26,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: Offline compile, two-Story sequence and no-provider publication guard
+      - name: Offline compile, single birthday Story and NO intro publication guard
         shell: bash
         run: |
           set -euo pipefail
@@ -37,6 +37,10 @@ jobs:
           p=Path('scripts/publish_ruslana_birthday_20261028_ig.py')
           tree=ast.parse(p.read_text(encoding='utf-8'))
           assert any(getattr(n,'name',None)=='main' for n in tree.body)
+          text=p.read_text(encoding='utf-8')
+          assert 'introCancelled") is True' in text
+          assert '"intro-girls"' not in text and 'intro-meta.mp4' not in text
+          assert text.count('("ruslana-birthday", "media/ruslana-20261028-birthday-meta.jpg", "image")')==1
           assert not Path('results/campaigns/ruslana-birthday-20261028-instagram.json').exists()
           print('RUSLANA_20261028_META_OFFLINE_SCRIPT_VALID; NO_PROVIDER_MUTATIONS')
           PY
@@ -57,7 +61,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: Wait until exactly 10:00 MSK and publish exactly two Stories in approved order
+      - name: Wait until 10:00 MSK and publish ONLY approved Ruslana birthday photo
         shell: bash
         run: |
           set -euo pipefail
