@@ -1,0 +1,16 @@
+{
+  "id": "katya-story-meta-after9007-20261027",
+  "sourceJob": "ig-20261027-1000-katya-birthday-story",
+  "sourceReceipt": "results/scheduled/instagram/ig-20261027-1000-katya-birthday-story.json",
+  "sourceFailedRunId": "40470253617",
+  "sourceErrorCode": 9007,
+  "approvedImage": "media/2026-10-27-katya-birthday-approved-meta-1080x1920.jpg",
+  "approvedImageGitBlobSHA": "45f7408d7629aad1026141529d5b6d9f55eca15f",
+  "account": "liniya__sporta",
+  "status": "verified_rejected_9007_no_story_at_readback",
+  "providerAttempts": 0,
+  "reconciliationRunId": "40470569214",
+  "reconciliationObservedAfterMsk1000": 0,
+  "allowedUntilUTC": "2026-10-27T09:00:00Z",
+  "note": "Single additional user-requested late publication recovery, ONLY after read-only Meta check observed no Story since 10:00 MSK. Atomic reserve BEFORE any Meta mutation. Never repeat if second provider call fails."
+}
