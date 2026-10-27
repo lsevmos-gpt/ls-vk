@@ -37,3 +37,4 @@ jobs:
           set -euo pipefail
           test -n "${META_IG_ACCESS_TOKEN:-}" && test -n "${META_IG_USER_ID:-}" && test -n "${GITHUB_TOKEN:-}"
           python -m scripts.recover_katya_instagram_20261027
+# approved recovery wake after ignored skip-ci commit
