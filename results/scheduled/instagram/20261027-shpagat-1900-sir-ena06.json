@@ -1,14 +1,19 @@
 {
   "id": "20261027-shpagat-1900-sir-ena06",
-  "status": "publish_call_started",
+  "status": "published",
   "platform": "instagram-meta",
   "scheduledFor": "2026-10-27T19:00:00+03:00",
   "runId": "40534305660",
   "invitedCollaborator": "sir_ena06",
   "source": "requests/instagram-meta/20261027-shpagat-exact-1900.json",
   "note": "Authorised direct Meta Collab, one-shot. This receipt blocks calendar duplicate.",
-  "updatedAtUtc": "2026-10-27T16:00:00.000157+00:00",
+  "updatedAtUtc": "2026-10-27T16:00:17.535122+00:00",
   "containerId": "18021391244949669",
   "readyAtUtc": "2026-10-27T15:52:30.779965+00:00",
-  "publishAttemptAtUtc": "2026-10-27T16:00:00.000121+00:00"
+  "publishAttemptAtUtc": "2026-10-27T16:00:00.000121+00:00",
+  "instagramMediaId": "18101693507376049",
+  "publishedAtUtc": "2026-10-27T16:00:17.264264+00:00",
+  "invitationStatus": "requested; collaborator acceptance not verified",
+  "permalink": "https://www.instagram.com/reel/DfAONlPAbQz/",
+  "metaReadbackConfirmed": true
 }
