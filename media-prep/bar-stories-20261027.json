@@ -1,0 +1,35 @@
+{
+  "id": "bar-stories-20261027",
+  "approved": true,
+  "publicContent": true,
+  "publishMode": "immediate",
+  "instagram": "liniya__sporta",
+  "vkGroupId": 48198173,
+  "sequence": [
+    {
+      "id": "intro-bar",
+      "originalName": "интро бар.mp4",
+      "driveId": "1SoexOQPc8MA_gIZQQ1iUF9FjNppA-cqy",
+      "url": "https://at.adobe.com/702gAoiyzE10shkN",
+      "bytes": 3017051,
+      "sha256": "1158b8e13b776740476522512843bf3b24bf4a78a764fcdcc693dadf85af1d7b"
+    },
+    {
+      "id": "smoothie-breakfast",
+      "originalName": "смузи завтрак.mp4",
+      "driveId": "1C-0j_Dv8Vcgmp2miVcEq2a5FxOw3Zqy6",
+      "url": "https://at.adobe.com/KLMOFei8HU9CbJH6",
+      "bytes": 21915925,
+      "sha256": "b72b78bc45f2250962982635022ce3c686ce5dbe5ddad2e23fc526e33dbafb88"
+    },
+    {
+      "id": "pretrain",
+      "originalName": "Предтрен.mp4",
+      "driveId": "1oW1-vgO8HiafSI9Oljyq9GO0-GP-OE_v",
+      "url": "https://at.adobe.com/QdlEpridQymDr4Tn",
+      "bytes": 138369135,
+      "sha256": "b806eb2dee9f96b8f9d09d9b1dae1846323aaa623ff853e41e9de31b486672c8"
+    }
+  ],
+  "note": "Prepare three distinct video Stories in exact order Intro Bar -> Smoothie Breakfast -> Pretrain. Instagram full original duration and video streams of Intro/Smoothie, high-quality 1080p 4K-derived Pretrain; VK one Story per original video, time-fit Smoothie to <=15 seconds and 4K Pretrain to <=10 MB. Release only via separately approved release file after verified QA. No provider retries after uncertain result."
+}
