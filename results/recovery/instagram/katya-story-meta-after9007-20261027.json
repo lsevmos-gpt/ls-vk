@@ -7,12 +7,17 @@
   "approvedImage": "media/2026-10-27-katya-birthday-approved-meta-1080x1920.jpg",
   "approvedImageGitBlobSHA": "45f7408d7629aad1026141529d5b6d9f55eca15f",
   "account": "liniya__sporta",
-  "status": "provider_call_started",
+  "status": "published",
   "providerAttempts": 1,
   "reconciliationRunId": "40470569214",
   "reconciliationObservedAfterMsk1000": 0,
   "allowedUntilUTC": "2026-10-27T09:00:00Z",
-  "note": "Second attempt after direct Meta reconciliation. Exactly one new container and one publish POST. No retries.",
+  "note": "Meta /media_publish returned published media id. No retries.",
   "runId": "40471196589",
-  "attemptAtUTC": "2026-10-27T08:06:12+00:00"
+  "attemptAtUTC": "2026-10-27T08:06:12+00:00",
+  "instagramMediaId": "18096770057433739",
+  "publishedAtUTC": "2026-10-27T08:07:06+00:00",
+  "containerId": "18021331844949669",
+  "permalink": "https://www.instagram.com/stories/liniya__sporta/4017038897553139791",
+  "metaReadbackConfirmed": true
 }
