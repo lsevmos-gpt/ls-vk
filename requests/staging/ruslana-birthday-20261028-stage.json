@@ -12,5 +12,5 @@
   "vkTarget": "liniya__sporta",
   "instagramTarget": "liniya__sporta",
   "note": "Preparation only; no social provider calls. Preserve approved video and image.",
-  "trigger": "approved-assets-stage-v1"
+  "trigger": "approved-assets-stage-ffmpeg-fix-v2"
 }
