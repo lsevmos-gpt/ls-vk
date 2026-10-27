@@ -1,5 +1,5 @@
 """Publish exactly three approved 27 Oct Bar Instagram Stories, once, via Meta.
-Do not run before 18:30 Moscow. Durable pre-provider and per-item receipts; no API posting retries.
+Immediate owner-approved release, durable pre-provider and per-item receipts; no API posting retries.
 """
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ import os
 import subprocess
 import sys
 import time
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timezone
 from pathlib import Path
 from urllib.request import Request, urlopen
 
@@ -21,8 +21,6 @@ QA = ROOT / "results/verification/bar-stories-20261027-stage.json"
 MANIFEST = ROOT / "media-prep/bar-stories-20261027.json"
 RECEIPT = ROOT / "results/campaigns/bar-stories-20261027-instagram.json"
 PREFIX = "https://raw.githubusercontent.com/lsevmos-gpt/ls-vk/main/"
-DUE = datetime(2026, 10, 26, 15, 30, tzinfo=timezone.utc)
-LATE = timedelta(seconds=180)
 ORDER = ("intro-bar", "smoothie-breakfast", "pretrain")
 URL_PATHS = ("media/bar-20261027-intro-meta.mp4", "media/bar-20261027-smoothie-meta.mp4", "media/bar-20261027-pretrain-meta.mp4")
 
@@ -66,7 +64,7 @@ def preflight() -> MetaClient:
     qa = json.loads(QA.read_text())
     if not (job["id"] == "bar-stories-20261027"
             and job["approved"] is True and job["publicContent"] is True
-            and job["publishAt"] == "2026-10-27T18:30:00+03:00"
+            and job["publishMode"] == "immediate"
             and job["instagram"] == "liniya__sporta"
             and qa["id"] == job["id"] and qa["ok"] is True
             and qa["sourceOriginalsVerified"] is True
@@ -97,15 +95,6 @@ def preflight() -> MetaClient:
                         graph_version=os.environ.get("META_GRAPH_VERSION", "v26.0"))
     client.verify_account()
     return client
-
-
-def wait_target() -> None:
-    offset = (DUE - now()).total_seconds()
-    if offset > 0:
-        print("WAIT_FOR_MSK_1830", round(offset), flush=True)
-        time.sleep(offset)
-    if now() - DUE > LATE:
-        raise RuntimeError("Missed approved posting window; NOT publishing late")
 
 
 def checkpoint(record: dict, first: bool = False) -> None:
@@ -143,7 +132,7 @@ def main() -> None:
     git("config", "user.email", "41898282+github-actions[bot]@users.noreply.github.com")
     record = {
         "id": "bar-stories-20261027-instagram", "provider": "meta",
-        "account": "liniya__sporta", "scheduledFor": "2026-10-27T18:30:00+03:00",
+        "account": "liniya__sporta", "releaseMode": "immediate",
         "status": "reserved_before_provider_call",
         "runId": os.environ["GITHUB_RUN_ID"], "createdAtUTC": iso(), "published": [],
         "note": "Only three explicitly approved Stories. No provider mutation retries."
