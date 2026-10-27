@@ -1,0 +1,51 @@
+name: "READ ONLY - check Instagram Stories after Katya Meta 9007 (27 Oct)"
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/read-only-verify-katya-ig-20261027.yml'
+permissions:
+  contents: read
+jobs:
+  verify:
+    if: github.repository == 'lsevmos-gpt/ls-vk' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    env:
+      META_IG_ACCESS_TOKEN: ${{ secrets.META_IG_ACCESS_TOKEN }}
+      META_IG_USER_ID: ${{ secrets.META_IG_USER_ID }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: "READ ONLY Meta account and current 24h Stories, no mutations"
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import os
+          from datetime import datetime, timezone
+          from scripts.instagram_collab import MetaClient
+          c = MetaClient(os.environ["META_IG_ACCESS_TOKEN"],os.environ["META_IG_USER_ID"],graph_version="v26.0")
+          c.verify_account()
+          try:
+              r=c._api("GET",c.ig_user_id+"/stories",{"fields":"id,timestamp,media_type,permalink","limit":"40"})
+          except Exception as exc:
+              print("STORIES_FIELDS_FALLBACK_READ_ONLY",type(exc).__name__, flush=True)
+              r=c._api("GET",c.ig_user_id+"/stories",{"fields":"id,timestamp,media_type","limit":"40"})
+          data=r.get("data",[])
+          if not isinstance(data,list):
+              raise RuntimeError("Unrecognized Instagram Stories API response")
+          recent=[]
+          for x in data:
+              t=x.get("timestamp")
+              if not isinstance(t,str):continue
+              try: dt=datetime.fromisoformat(t.replace("Z","+00:00"))
+              except ValueError:continue
+              if dt.astimezone(timezone.utc)>=datetime(2026,10,27,7,0,tzinfo=timezone.utc):
+                  recent.append({"id":x.get("id"),"utc":dt.astimezone(timezone.utc).isoformat(),"type":x.get("media_type"),"permalink":x.get("permalink")})
+          print("META_CURRENT_ACTIVE_STORIES",len(data),"AFTER_20261027_1000_MSK",len(recent))
+          for x in recent: print("STORY_READ_ONLY",x,flush=True)
+          print("NO_POST_REQUESTS_EXECUTED")
+          PY
