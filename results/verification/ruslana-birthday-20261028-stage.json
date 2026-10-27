@@ -1,0 +1,28 @@
+{
+  "id": "ruslana-birthday-20261028-stage",
+  "status": "files_verified",
+  "approved": true,
+  "storyOrder": [
+    "intro-girls",
+    "ruslana-birthday"
+  ],
+  "media": {
+    "media/ruslana-20261028-intro-vk.mp4": {
+      "bytes": 7347858,
+      "sha256": "3ca7cde5ca132b59e9e825e31c9a39b3a94b454c231572bd15b598b51e0a9434"
+    },
+    "media/ruslana-20261028-intro-meta.mp4": {
+      "bytes": 7252134,
+      "sha256": "3121c8e31fb87532d3d92c9e7342a637f193e759aef5152050dd19e68bb71fe1"
+    },
+    "media/ruslana-20261028-birthday-vk.png": {
+      "bytes": 2523968,
+      "sha256": "252e9ff5f1029c499e2d63c1aca1b12a6b5974333d6cca07c694f620a9402718"
+    },
+    "media/ruslana-20261028-birthday-meta.jpg": {
+      "bytes": 817636,
+      "sha256": "6d521ff85441e22c5ab8248d733422f3695601b3ac778540764eecbaf872f0d6"
+    }
+  },
+  "providerCalls": 0
+}
