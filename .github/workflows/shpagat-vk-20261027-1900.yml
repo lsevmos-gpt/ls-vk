@@ -1,0 +1,42 @@
+name: Approved Shpagat VK Clip one time at 19:00 MSK (27 Oct)
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'requests/vk/20261027-shpagat-1900.json'
+permissions:
+  contents: write
+concurrency:
+  group: vk-shpagat-reel-20261027-1900-one-attempt
+  cancel-in-progress: false
+jobs:
+  vk:
+    if: github.repository == 'lsevmos-gpt/ls-vk' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 55
+    env:
+      VK_API_VERSION: '5.199'
+      VK_GROUP_ID: '48198173'
+      VK_GROUP_SCREEN_NAME: 'liniya__sporta'
+      VK_GROUP_TOKEN: ${{ secrets.VK_GROUP_TOKEN }}
+      VK_REFRESH_TOKEN: ${{ secrets.VK_REFRESH_TOKEN }}
+      VK_DEVICE_ID: ${{ secrets.VK_DEVICE_ID }}
+      VK_SECRETS_WRITE_PAT: ${{ secrets.VK_SECRETS_WRITE_PAT }}
+      SOCIAL_PLATFORM: vk
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Strict syntax checks and install existing VK gateway dependencies
+        run: |
+          set -euo pipefail
+          node --check scripts/shpagat_vk_20261027.mjs
+          node --check scripts/vk-refresh-lib.mjs
+          npm install --omit=dev --ignore-scripts --no-package-lock --no-audit --no-fund
+          test -n "$VK_GROUP_TOKEN" && test -n "$VK_REFRESH_TOKEN" && test -n "$VK_DEVICE_ID" && test -n "$VK_SECRETS_WRITE_PAT"
+      - name: One approved 19:00 VK Clip plus community wall post; no blind retries
+        run: node scripts/shpagat_vk_20261027.mjs
