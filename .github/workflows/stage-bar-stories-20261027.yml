@@ -1,0 +1,173 @@
+name: PREPARE 27 Oct Bar Story trilogy in maximum compatible quality (NO PUBLICATION)
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'media-prep/bar-stories-20261027.json'
+permissions:
+  contents: write
+concurrency:
+  group: bar-stories-20261027-stage-once
+  cancel-in-progress: false
+jobs:
+  stage:
+    if: github.repository == 'lsevmos-gpt/ls-vk' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 55
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - name: Verify explicit owner-approved source list and fetch exact Adobe originals (no social API)
+        shell: bash
+        run: |
+          set -euo pipefail
+          test ! -e results/verification/bar-stories-20261027-stage.json || { echo 'Already staged; do not overwrite verified media'; exit 1; }
+          command -v ffmpeg >/dev/null 2>&1 && command -v ffprobe >/dev/null 2>&1 || {
+            sudo apt-get update -qq
+            sudo apt-get install -y ffmpeg
+          }
+          mkdir -p media results/verification /tmp/bar-20261027
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          m=json.loads(Path('media-prep/bar-stories-20261027.json').read_text())
+          assert m['id']=='bar-stories-20261027'
+          assert m['approved'] is True and m['publicContent'] is True
+          assert m['instagram']=='liniya__sporta' and m['vkGroupId']==48198173
+          assert [x['id'] for x in m['sequence']]==['intro-bar','smoothie-breakfast','pretrain']
+          assert [x['sha256'] for x in m['sequence']]==[
+            '1158b8e13b776740476522512843bf3b24bf4a78a764fcdcc693dadf85af1d7b',
+            'b72b78bc45f2250962982635022ce3c686ce5dbe5ddad2e23fc526e33dbafb88',
+            'b806eb2dee9f96b8f9d09d9b1dae1846323aaa623ff853e41e9de31b486672c8']
+          assert all(str(x['url']).startswith('https://at.adobe.com/') for x in m['sequence'])
+          print('BAR_20261027_APPROVED_THREE_SOURCE_IDENTITIES')
+          PY
+          curl --fail --show-error --location --retry 2 --connect-timeout 25 --max-time 180 'https://at.adobe.com/702gAoiyzE10shkN' -o /tmp/bar-20261027/intro.mp4
+          curl --fail --show-error --location --retry 2 --connect-timeout 25 --max-time 300 'https://at.adobe.com/KLMOFei8HU9CbJH6' -o /tmp/bar-20261027/smoothie.mp4
+          curl --fail --show-error --location --retry 2 --connect-timeout 25 --max-time 540 'https://at.adobe.com/QdlEpridQymDr4Tn' -o /tmp/bar-20261027/pretrain.mp4
+          printf '%s  %s\n' \
+            '1158b8e13b776740476522512843bf3b24bf4a78a764fcdcc693dadf85af1d7b' /tmp/bar-20261027/intro.mp4 \
+            'b72b78bc45f2250962982635022ce3c686ce5dbe5ddad2e23fc526e33dbafb88' /tmp/bar-20261027/smoothie.mp4 \
+            'b806eb2dee9f96b8f9d09d9b1dae1846323aaa623ff853e41e9de31b486672c8' /tmp/bar-20261027/pretrain.mp4 | sha256sum --check
+      - name: Prepare three VK 1080x1920 video Stories, full chronological content and max supported duration/size
+        shell: bash
+        run: |
+          set -euo pipefail
+          cp /tmp/bar-20261027/intro.mp4 media/bar-20261027-intro-vk.mp4
+          ffmpeg -hide_banner -nostdin -loglevel error -stats -i /tmp/bar-20261027/smoothie.mp4 \
+            -map 0:v:0 -map 0:a:0 -sn -dn -vf 'setpts=PTS/1.194,format=yuv420p' -af 'atempo=1.194' -r 24 \
+            -c:v libx264 -preset slow -crf 16 -maxrate 4300k -bufsize 8600k \
+            -g 48 -keyint_min 48 -sc_threshold 0 \
+            -c:a aac -b:a 128k -ar 48000 -ac 2 -movflags +faststart \
+            -y media/bar-20261027-smoothie-vk.mp4
+          ffmpeg -hide_banner -nostdin -loglevel error -stats -i /tmp/bar-20261027/pretrain.mp4 \
+            -map 0:v:0 -map 0:a:0 -sn -dn -vf 'scale=1080:1920:flags=lanczos,format=yuv420p' \
+            -c:v libx264 -preset slow -crf 15 -maxrate 7600k -bufsize 15200k \
+            -g 48 -keyint_min 48 -sc_threshold 0 \
+            -c:a aac -b:a 160k -ar 48000 -ac 2 -movflags +faststart \
+            -y media/bar-20261027-pretrain-vk.mp4
+          # Safety fallback affects only VK copies, never approved original or full-quality Meta.
+          if [ "$(stat -c%s media/bar-20261027-smoothie-vk.mp4)" -ge 10000000 ]; then
+            ffmpeg -hide_banner -nostdin -loglevel error -i /tmp/bar-20261027/smoothie.mp4 \
+              -map 0:v:0 -map 0:a:0 -vf 'setpts=PTS/1.194,format=yuv420p' -af 'atempo=1.194' -r 24 \
+              -c:v libx264 -preset slow -crf 18 -maxrate 3800k -bufsize 7600k \
+              -c:a aac -b:a 128k -ar 48000 -ac 2 -movflags +faststart \
+              -y media/bar-20261027-smoothie-vk.mp4
+          fi
+          if [ "$(stat -c%s media/bar-20261027-pretrain-vk.mp4)" -ge 10000000 ]; then
+            ffmpeg -hide_banner -nostdin -loglevel error -i /tmp/bar-20261027/pretrain.mp4 \
+              -map 0:v:0 -map 0:a:0 -vf 'scale=1080:1920:flags=lanczos,format=yuv420p' \
+              -c:v libx264 -preset slow -crf 17 -maxrate 6300k -bufsize 12600k \
+              -c:a aac -b:a 160k -ar 48000 -ac 2 -movflags +faststart \
+              -y media/bar-20261027-pretrain-vk.mp4
+          fi
+      - name: Prepare Meta copies, preserve original full-length Intro/Smoothie video bitstreams
+        shell: bash
+        run: |
+          set -euo pipefail
+          ffmpeg -hide_banner -nostdin -loglevel error -i /tmp/bar-20261027/intro.mp4 \
+            -map 0:v:0 -map 0:a:0 -sn -dn -c:v copy -c:a aac -b:a 112k -ar 48000 -ac 2 \
+            -movflags +faststart -y media/bar-20261027-intro-meta.mp4
+          ffmpeg -hide_banner -nostdin -loglevel error -i /tmp/bar-20261027/smoothie.mp4 \
+            -map 0:v:0 -map 0:a:0 -sn -dn -c:v copy -c:a aac -b:a 112k -ar 48000 -ac 2 \
+            -movflags +faststart -y media/bar-20261027-smoothie-meta.mp4
+          ffmpeg -hide_banner -nostdin -loglevel error -stats -i /tmp/bar-20261027/pretrain.mp4 \
+            -map 0:v:0 -map 0:a:0 -sn -dn -vf 'scale=1080:1920:flags=lanczos,format=yuv420p' \
+            -c:v libx264 -preset slow -crf 13 -maxrate 18000k -bufsize 36000k \
+            -g 48 -keyint_min 48 -sc_threshold 0 \
+            -c:a aac -b:a 112k -ar 48000 -ac 2 -movflags +faststart \
+            -y media/bar-20261027-pretrain-meta.mp4
+      - name: Perform ffprobe and SHA-256 QA of all six videos and preserve report
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json,hashlib,subprocess
+          from pathlib import Path
+          from datetime import datetime,timezone
+          original=[
+            ('intro-bar','intro',5.05,'1158b8e13b776740476522512843bf3b24bf4a78a764fcdcc693dadf85af1d7b'),
+            ('smoothie-breakfast','smoothie',17.429,'b72b78bc45f2250962982635022ce3c686ce5dbe5ddad2e23fc526e33dbafb88'),
+            ('pretrain','pretrain',9.130667,'b806eb2dee9f96b8f9d09d9b1dae1846323aaa623ff853e41e9de31b486672c8')]
+          def sha(path):
+            with path.open('rb') as f:return hashlib.file_digest(f,'sha256').hexdigest()
+          def probe(path):
+            return json.loads(subprocess.check_output(['ffprobe','-v','error','-show_entries',
+              'format=duration,size,bit_rate:stream=codec_type,codec_name,width,height,r_frame_rate,bit_rate,sample_rate','-of','json',str(path)],timeout=65))
+          def vhash(path):
+            return subprocess.check_output(['ffmpeg','-v','error','-i',str(path),'-map','0:v:0','-c:v','copy','-f','hash','-hash','SHA256','-'],timeout=65).decode().strip()
+          rows=[]
+          for name,short,expected_duration,expected_sha in original:
+            src=Path('/tmp/bar-20261027')/(short+'.mp4')
+            assert src.is_file() and sha(src)==expected_sha
+            pv=Path(f'media/bar-20261027-{short}-vk.mp4')
+            pm=Path(f'media/bar-20261027-{short}-meta.mp4')
+            assert pv.is_file() and pm.is_file()
+            source,vk,meta=probe(src),probe(pv),probe(pm)
+            original_video=next(x for x in source['streams'] if x['codec_type']=='video')
+            assert original_video['r_frame_rate']=='24/1' and original_video['codec_name']=='h264'
+            assert abs(float(source['format']['duration'])-expected_duration)<0.12
+            assert (original_video['width'],original_video['height'])==((2160,3840) if short=='pretrain' else (1080,1920))
+            for prepared in (vk,meta):
+              v=next(x for x in prepared['streams'] if x['codec_type']=='video')
+              a=next(x for x in prepared['streams'] if x['codec_type']=='audio')
+              assert (v['codec_name'],v['width'],v['height'],v['r_frame_rate'])==('h264',1080,1920,'24/1')
+              assert a['codec_name']=='aac' and a['sample_rate']=='48000'
+            assert int(vk['format']['size'])<10000000
+            assert int(meta['format']['size'])<95000000
+            av=next(x for x in meta['streams'] if x['codec_type']=='audio')
+            assert 0<int(av['bit_rate'])<=128000
+            assert 3.0<float(vk['format']['duration'])<=15.0
+            assert abs(float(meta['format']['duration'])-expected_duration)<0.22
+            if short in ('intro','smoothie'):
+              assert vhash(src)==vhash(pm),'Meta full-quality H264 frames must be unchanged'
+            if short=='intro':
+              assert sha(src)==sha(pv),'Intro must retain exact original bytes in VK'
+            if short=='smoothie':
+              assert 14.35<float(vk['format']['duration'])<15.0,'VK smoothie time-fit unexpected'
+            rows.append({'id':name,'sourceDriveSHA256':expected_sha,'originalDuration':expected_duration,
+              'vkPath':str(pv),'vkSHA256':sha(pv),'vkBytes':pv.stat().st_size,'vkDuration':float(vk['format']['duration']),
+              'metaPath':str(pm),'metaSHA256':sha(pm),'metaBytes':pm.stat().st_size,'metaDuration':float(meta['format']['duration']),
+              'dimensions':'1080x1920','fps':24,'metaAudioBitrate':int(av['bit_rate']),'metaVideoSHA256':vhash(pm)})
+          report={'id':'bar-stories-20261027','ok':True,'sourceOriginalsVerified':True,
+            'videoStreamsUnchangedInMeta':True,'introOriginalVKBytes':True,
+            'smoothieVKTimeFit':True,'pretrain4KDownscaledForPlatform':True,
+            'doesNotPublish':True,'sequence':rows,'checkedAtUTC':datetime.now(timezone.utc).isoformat()}
+          path=Path('results/verification/bar-stories-20261027-stage.json')
+          path.parent.mkdir(parents=True,exist_ok=True)
+          path.write_text(json.dumps(report,ensure_ascii=False,indent=2)+'\n')
+          print('BAR_27OCT_THREE_STORIES_STAGED_AND_VERIFIED',json.dumps([{k:x[k] for k in ('id','vkBytes','metaBytes','vkDuration','metaDuration')} for x in rows],ensure_ascii=False))
+          PY
+      - name: Save six exact verified media assets and QA on main without posting
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name ls-social-media-bot
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add media/bar-20261027-*.mp4 results/verification/bar-stories-20261027-stage.json
+          git diff --cached --quiet && exit 0
+          git commit -m 'Stage approved HQ Bar Stories 27 Oct with QC only [skip ci]'
+          git pull --rebase origin main
+          git push origin HEAD:main
