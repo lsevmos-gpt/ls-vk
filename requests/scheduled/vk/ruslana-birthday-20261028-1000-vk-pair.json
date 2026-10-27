@@ -1,19 +1,10 @@
 {
   "id": "ruslana-birthday-20261028-1000-vk-pair",
-  "type": "story-batch",
+  "type": "story",
   "approved": true,
   "publicContent": true,
   "publishAt": "2026-10-28T10:00:00+03:00",
-  "stories": [
-    {
-      "storyType": "video",
-      "addToNews": true,
-      "media": "media/ruslana-20261028-intro-vk.mp4"
-    },
-    {
-      "storyType": "photo",
-      "media": "media/ruslana-20261028-birthday-vk.png",
-      "addToNews": true
-    }
-  ]
+  "storyType": "photo",
+  "media": "media/ruslana-20261028-birthday-vk.png",
+  "addToNews": true
 }
