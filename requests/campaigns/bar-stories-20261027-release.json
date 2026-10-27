@@ -1,0 +1,16 @@
+{
+  "id": "bar-stories-20261027-release",
+  "platform": "instagram-meta-and-vk",
+  "instagram": "liniya__sporta",
+  "vkGroupId": 48198173,
+  "approved": true,
+  "publicContent": true,
+  "submitNow": true,
+  "stories": [
+    "intro-bar",
+    "smoothie-breakfast",
+    "pretrain"
+  ],
+  "qualityVerification": "results/verification/bar-stories-20261027-stage.json",
+  "note": "Explicit owner-approved immediate release of exactly three independent Stories in this order: Intro Bar -> Smoothie Завтрак -> Pre-train. Direct Instagram Meta and VK community 48198173. No auto retry or duplicate; persist provider ids and verify readback."
+}
