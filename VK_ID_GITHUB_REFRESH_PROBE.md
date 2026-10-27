@@ -1,6 +1,6 @@
 # VK ID — проверка обновления токена через GitHub Actions
 
-Статус: **подготовлено; реальная загрузка видео не включена**.
+Статус: **успешный refresh + read-only VK API из одного GitHub runner; загрузка видео ещё не включена**.
 
 ### Диагностика от 24 октября 2026
 
@@ -17,6 +17,36 @@ Secrets → Read and write**; после изменения PAT обновить
 Ссылки: [запуск refresh](https://github.com/lsevmos-gpt/ls-vk/actions/runs/40095956716),
 [подробная PAT-проверка](https://github.com/lsevmos-gpt/ls-vk/actions/runs/40096157617).
 
+
+### Успешный запуск 27 октября 2026 — подтверждено
+
+Завершающая проверка исправленного PAT:
+[GitHub Actions run #40478590731](https://github.com/lsevmos-gpt/ls-vk/actions/runs/40478590731).
+
+Полученные результаты:
+
+- `VK_PAT_SECRETS_PUBLIC_KEY_HTTP=200`, `VK_PAT_PREFLIGHT=OK`
+- `GITHUB_SECRET_WRITE_PREFLIGHT=OK`
+- `VK_ID_REFRESH=ACCEPTED`
+- `VK_REFRESH_TOKEN_PERSIST=OK` — обновлённый refresh_token сохранён
+  в GitHub Actions Secret `VK_REFRESH_TOKEN`
+- `VK_ID_USER_INFO=OK`
+- `VK_API_USERS_GET=OK`
+- `VK_API_VIDEO_PERMISSION=YES`
+
+**Результат:** обновление VK ID токена **непосредственно внутри** обычного
+GitHub-hosted runner действительно обеспечивает доступ к VK API с этого
+runner. Ошибка 5 / subcode 1130 в успешном запуске не возникла. Для
+публикаций и VK Клипов требуется следующий этап: интеграция
+`refresh → save new refresh secret → video.save → upload → wall.post`
+**в одном и том же job**, с явным одобрением конкретного ролика. В момент
+проверки видеозагрузка/публикация не выполнялись, поэтому не считать
+полный VK Clips publisher уже готовым.
+
+Временный однократный workflow удалён. Постоянный workflow
+`.github/workflows/vk-refresh-probe.yml` остался только ручным.
+
+Предыдущие ошибки PAT `HTTP 403` ниже сохранены как история диагностики.
 
 ### Дополнительная диагностика от 27 октября 2026
 
