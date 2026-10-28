@@ -1,0 +1,9 @@
+{
+  "id": "ruslana-birthday-20261028-1000-vk-pair",
+  "platform": "vk",
+  "status": "reserved_before_provider_call",
+  "publishAtUTC": "2026-10-28T07:00:00Z",
+  "reservedAtUTC": "2026-10-28T06:49:12.060372+00:00",
+  "runId": "40646132468",
+  "note": "One durable attempt marker; never retry without manual reconciliation"
+}
