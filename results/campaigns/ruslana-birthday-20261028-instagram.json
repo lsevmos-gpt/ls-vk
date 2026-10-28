@@ -5,7 +5,7 @@
   "handle": "liniya__sporta",
   "channelId": "6acde74d778b240e2ff489a7",
   "runId": "40665904782",
-  "status": "accepted_by_buffer",
+  "status": "buffer_sent_live_verification_pending",
   "createdAtUTC": "2026-10-28T09:39:25.196Z",
   "introCancelled": true,
   "stories": [
@@ -37,7 +37,9 @@
     "18029827844693261",
     "17964413997217358"
   ],
-  "lastUpdatedUTC": "2026-10-28T09:39:37.130Z",
+  "lastUpdatedUTC": "2026-10-28T09:39:38.375Z",
   "bufferPostId": "6ae1c2d02d290d34867e1f7e",
-  "bufferInitialStatus": "sent"
+  "bufferInitialStatus": "sent",
+  "bufferFinalStatus": "sent",
+  "bufferSentAt": "2026-10-28T09:39:36.881Z"
 }
