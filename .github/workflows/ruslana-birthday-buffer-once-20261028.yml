@@ -1,0 +1,170 @@
+name: Ruslana Birthday 28 Oct 2026 - approved photo Story via Buffer ONCE
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/ruslana-birthday-buffer-once-20261028.yml'
+permissions:
+  contents: write
+concurrency:
+  group: ls-social-single-approved-provider-submission
+  cancel-in-progress: false
+jobs:
+  publish:
+    if: github.repository == 'lsevmos-gpt/ls-vk' && github.ref == 'refs/heads/main' && github.actor == 'lsevmos-gpt'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      BUFFER_API_KEY: ${{ secrets.BUFFER_API_KEY }}
+      META_IG_ACCESS_TOKEN: ${{ secrets.META_IG_ACCESS_TOKEN }}
+      META_IG_USER_ID: ${{ secrets.META_IG_USER_ID }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Publish only immutable approved Ruslana IMAGE Story once via Buffer
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo '6d521ff85441e22c5ab8248d733422f3695601b3ac778540764eecbaf872f0d6  media/ruslana-20261028-birthday-meta.jpg' | sha256sum -c
+          node --input-type=module <<'JS'
+          import fs from 'node:fs';
+          import {execFileSync} from 'node:child_process';
+          import {discoverChannel,createInstagramPost} from './src/buffer.js';
+
+          const repo='lsevmos-gpt/ls-vk';
+          const channelId='6acde74d778b240e2ff489a7';
+          const photo='media/ruslana-20261028-birthday-meta.jpg';
+          const hash='6d521ff85441e22c5ab8248d733422f3695601b3ac778540764eecbaf872f0d6';
+          const receipt='results/campaigns/ruslana-birthday-20261028-instagram.json';
+          const other='results/campaigns/ruslana-birthday-20261028-buffer.json';
+          const start=Date.parse('2026-10-28T07:00:00Z');
+          const end=Date.parse('2026-10-28T21:00:00Z');
+          const now=()=>new Date().toISOString();
+          const sleep=ms=>new Promise(resolve=>setTimeout(resolve,ms));
+          if(process.env.GITHUB_REPOSITORY!==repo ||
+             process.env.GITHUB_REF!=='refs/heads/main' ||
+             process.env.GITHUB_EVENT_NAME!=='push' ||
+             process.env.GITHUB_ACTOR!=='lsevmos-gpt' ||
+             !process.env.GITHUB_RUN_ID ||
+             Date.now()<start || Date.now()>=end) throw Error('Not authorized on birthday date');
+          if(!process.env.BUFFER_API_KEY) throw Error('BUFFER_API_KEY missing');
+          function git(...args){execFileSync('git',args,{stdio:'pipe',timeout:90000});}
+          function persist(rec,note){
+            rec.lastUpdatedUTC=now();
+            fs.writeFileSync(receipt,JSON.stringify(rec,null,2)+'\n');
+            git('add','--',receipt);
+            git('commit','-m',note+' [skip ci]');
+            git('pull','--rebase','origin','main');
+            git('push','origin','HEAD:main');
+            console.log('RECEIPT',rec.status,'BUFFER_ID',rec.bufferPostId||'none');
+          }
+          async function currentStories(){
+            if(!process.env.META_IG_USER_ID || !process.env.META_IG_ACCESS_TOKEN) return null;
+            try {
+              const url=new URL('https://graph.facebook.com/v26.0/'+encodeURIComponent(process.env.META_IG_USER_ID)+'/stories');
+              url.searchParams.set('fields','id,media_type,timestamp,permalink');
+              url.searchParams.set('limit','50');
+              const r=await fetch(url,{headers:{authorization:'Bearer '+process.env.META_IG_ACCESS_TOKEN}});
+              const j=await r.json();
+              if(!r.ok || j.error || !Array.isArray(j.data)) throw Error('Meta stories readback unavailable');
+              return j.data;
+            }catch(e){
+              console.log('META_READ_ONLY_UNAVAILABLE',String(e.message).slice(0,100));
+              return null;
+            }
+          }
+          async function bufferRead(id){
+            const query='query FetchBufferPost($input: PostInput!) { post(input: $input) { id status sentAt dueAt channelId } }';
+            const r=await fetch('https://api.buffer.com',{
+              method:'POST',
+              headers:{'content-type':'application/json',authorization:'Bearer '+process.env.BUFFER_API_KEY},
+              body:JSON.stringify({query,variables:{input:{id}}})
+            });
+            const j=await r.json();
+            if(!r.ok||j.errors?.length||!j.data?.post) throw Error('Buffer readback failed: HTTP '+r.status);
+            if(j.data.post.id!==id || j.data.post.channelId!==channelId) throw Error('Buffer post identity mismatch');
+            return j.data.post;
+          }
+          if(fs.existsSync(receipt)||fs.existsSync(other)) throw Error('Prior Instagram attempt recorded: NEVER DUPLICATE');
+          const target=await discoverChannel({service:'instagram',handle:'liniya__sporta'});
+          if(target.channel.id!==channelId || target.channel.isQueuePaused) throw Error('Wrong or paused Buffer Instagram channel');
+          const baseline=await currentStories();
+          const priorIds=new Set((baseline||[]).map(x=>String(x.id)));
+          git('pull','--ff-only','origin','main');
+          if(fs.existsSync(receipt)||fs.existsSync(other)) throw Error('Duplicate receipt appeared before reservation');
+          git('config','user.name','ls-ruslana-buffer-once-bot');
+          git('config','user.email','41898282+github-actions[bot]@users.noreply.github.com');
+          fs.mkdirSync('results/campaigns',{recursive:true});
+          const rec={
+            id:'ruslana-birthday-20261028-instagram',platform:'instagram',provider:'buffer',
+            handle:'liniya__sporta',channelId,runId:process.env.GITHUB_RUN_ID,
+            status:'reserved_before_provider_call',createdAtUTC:now(),
+            introCancelled:true,stories:['ruslana-birthday'],
+            media:[{type:'image',path:photo,sha256:hash}],providerAttempts:0,
+            baselineMetaStoryIds:[...priorIds]
+          };
+          persist(rec,'Reserve exactly one approved Ruslana photo Story via Buffer');
+          try {
+            rec.status='submitting_to_buffer';
+            rec.providerAttempts=1;
+            persist(rec,'Mark single Buffer provider attempt before submission');
+            const post=await createInstagramPost({
+              channelId,text:'',postType:'story',media:[{
+                type:'image',
+                url:'https://raw.githubusercontent.com/lsevmos-gpt/ls-vk/main/media/ruslana-20261028-birthday-meta.jpg'
+              }],publishNow:true,shouldShareToFeed:false,isAiGenerated:false
+            });
+            if(!post?.id||post.channelId!==channelId) throw Error('Buffer submission missing valid ID/channel');
+            rec.bufferPostId=post.id;
+            rec.bufferInitialStatus=post.status;
+            rec.status='accepted_by_buffer';
+            persist(rec,'Record unique Buffer submission ID for Ruslana Story');
+            let sent=null;
+            for(let i=0;i<30;i++){
+              const current=await bufferRead(post.id);
+              console.log('BUFFER_POLL',i,current.status);
+              if(current.status==='sent'){sent=current;break;}
+              if(['failed','error','rejected','cancelled','canceled'].includes(String(current.status).toLowerCase()))
+                throw Error('Buffer returned terminal '+current.status);
+              await sleep(8000);
+            }
+            if(!sent) throw Error('Buffer did not confirm SENT; manual reconciliation required, no retry');
+            rec.bufferFinalStatus='sent';
+            rec.bufferSentAt=sent.sentAt||now();
+            rec.status='buffer_sent_live_verification_pending';
+            persist(rec,'Record Buffer SENT for Ruslana photo Story');
+            for(let i=0;i<12;i++){
+              const stories=await currentStories();
+              if(stories){
+                const fresh=stories.filter(s=>!priorIds.has(String(s.id)) && String(s.media_type)==='IMAGE'
+                  && Date.parse(s.timestamp||'')>=start);
+                if(fresh.length===1){
+                  rec.metaStoryId=String(fresh[0].id);
+                  rec.metaStoryTimestamp=fresh[0].timestamp;
+                  rec.permalink=fresh[0].permalink||null;
+                  rec.status='published_meta_readback_confirmed';
+                  persist(rec,'Verify new Ruslana image Story through Meta live readback');
+                  console.log('INSTAGRAM_STORY_CONFIRMED',rec.metaStoryId);
+                  break;
+                }
+              }
+              await sleep(6000);
+            }
+            console.log('FINAL_BUFFER',JSON.stringify({
+              status:rec.status,bufferPostId:rec.bufferPostId,
+              bufferFinalStatus:rec.bufferFinalStatus,metaStoryId:rec.metaStoryId||null
+            }));
+          }catch(e){
+            rec.status='manual_reconciliation_required';
+            rec.error=String(e.message).slice(0,300);
+            try{persist(rec,'Record Buffer Ruslana manual reconciliation required');}
+            catch(inner){console.error('RECEIPT_COMMIT_FAILED',String(inner.message).slice(0,150));}
+            console.error('::error::BUFFER_RUSLANA_ONCE',rec.error);
+            process.exitCode=1;
+          }
+          JS
