@@ -1,0 +1,41 @@
+{
+  "id": "ruslana-birthday-20261028-instagram",
+  "platform": "instagram",
+  "provider": "buffer",
+  "handle": "liniya__sporta",
+  "channelId": "6acde74d778b240e2ff489a7",
+  "runId": "40665904782",
+  "status": "reserved_before_provider_call",
+  "createdAtUTC": "2026-10-28T09:39:25.196Z",
+  "introCancelled": true,
+  "stories": [
+    "ruslana-birthday"
+  ],
+  "media": [
+    {
+      "type": "image",
+      "path": "media/ruslana-20261028-birthday-meta.jpg",
+      "sha256": "6d521ff85441e22c5ab8248d733422f3695601b3ac778540764eecbaf872f0d6"
+    }
+  ],
+  "providerAttempts": 0,
+  "baselineMetaStoryIds": [
+    "18133946914664075",
+    "18448563838125365",
+    "18248957731313311",
+    "17920177314461330",
+    "17908875504329255",
+    "17889046224619654",
+    "17970165404964732",
+    "18119043656061672",
+    "18599979946066182",
+    "18441042475199873",
+    "18118678078800748",
+    "18097496807397410",
+    "17984033009905874",
+    "18011679627002749",
+    "18029827844693261",
+    "17964413997217358"
+  ],
+  "lastUpdatedUTC": "2026-10-28T09:39:25.196Z"
+}
