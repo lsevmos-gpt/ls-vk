@@ -4,7 +4,7 @@
   "account": "liniya__sporta",
   "channelId": "6acde74d778b240e2ff489a7",
   "runId": "40907313582",
-  "status": "submitting_to_buffer",
+  "status": "buffer_accepted",
   "createdAtUTC": "2026-10-29T16:01:33.860Z",
   "order": [
     "intro-bar",
@@ -16,7 +16,16 @@
     "7ffe565a9201f92108643e88d55cd23e03424ee6c9c17dc9380739e7b3c6791f",
     "edc6d12b52992e66b730dc4c925906288855822968f2f500a4a63980d1ee48fb"
   ],
-  "posts": [],
+  "posts": [
+    {
+      "index": 1,
+      "name": "intro-bar",
+      "sourceSHA256": "1158b8e13b776740476522512843bf3b24bf4a78a764fcdcc693dadf85af1d7b",
+      "bufferPostId": "6ae36de20471a99f44a8047c",
+      "bufferInitialStatus": "sending",
+      "acceptedAtUTC": "2026-10-29T16:01:49.133Z"
+    }
+  ],
   "baselineMetaStoryIds": [
     "18104550644574986",
     "18100483691389991",
@@ -35,7 +44,5 @@
   ],
   "providerCreateAttempts": 1,
   "note": "Exactly 3 approved Stories through Buffer. No retry of provider submission.",
-  "updatedAtUTC": "2026-10-29T16:01:36.955Z",
-  "attemptingIndex": 1,
-  "attemptingItem": "intro-bar"
+  "updatedAtUTC": "2026-10-29T16:01:49.133Z"
 }
