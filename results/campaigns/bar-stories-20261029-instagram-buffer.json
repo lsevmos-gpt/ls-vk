@@ -4,7 +4,7 @@
   "account": "liniya__sporta",
   "channelId": "6acde74d778b240e2ff489a7",
   "runId": "40907313582",
-  "status": "buffer_sent_partial_live_verified",
+  "status": "submitting_to_buffer",
   "createdAtUTC": "2026-10-29T16:01:33.860Z",
   "order": [
     "intro-bar",
@@ -48,7 +48,9 @@
     "17964477264232826",
     "18147685246583724"
   ],
-  "providerCreateAttempts": 1,
+  "providerCreateAttempts": 2,
   "note": "Exactly 3 approved Stories through Buffer. No retry of provider submission.",
-  "updatedAtUTC": "2026-10-29T16:03:22.534Z"
+  "updatedAtUTC": "2026-10-29T16:03:27.322Z",
+  "attemptingIndex": 2,
+  "attemptingItem": "mojito"
 }
