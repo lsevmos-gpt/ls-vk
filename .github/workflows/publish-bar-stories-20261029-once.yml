@@ -1,0 +1,136 @@
+name: Publish 29 Oct Bar Intro Mojito Berry Stories — Buffer Instagram and VK ONCE
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'requests/campaigns/bar-stories-20261029-release.json'
+permissions:
+  contents: write
+concurrency:
+  group: bar-stories-20261029-one-shot-buffer-ig-vk
+  cancel-in-progress: false
+jobs:
+  readiness:
+    name: Read-only 3 original SHA, public URLs, Buffer IG and VK target check
+    if: github.repository == 'lsevmos-gpt/ls-vk' && github.ref == 'refs/heads/main' && github.actor == 'lsevmos-gpt'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      BUFFER_API_KEY: ${{ secrets.BUFFER_API_KEY }}
+      META_IG_ACCESS_TOKEN: ${{ secrets.META_IG_ACCESS_TOKEN }}
+      META_IG_USER_ID: ${{ secrets.META_IG_USER_ID }}
+      VK_GROUP_TOKEN: ${{ secrets.VK_GROUP_TOKEN }}
+      VK_GROUP_ID: '48198173'
+      VK_GROUP_SCREEN_NAME: liniya__sporta
+      VK_API_VERSION: '5.199'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Validate source hashes, exact order, video params and guard receipts
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$BUFFER_API_KEY" && test -n "$VK_GROUP_TOKEN" || {
+            echo "::error::Buffer or VK credential missing"; exit 1;
+          }
+          test ! -e results/campaigns/bar-stories-20261029-instagram-buffer.json || {
+            echo "::error::Buffer Instagram attempt already recorded — NEVER DUPLICATE"; exit 1;
+          }
+          test ! -e results/campaigns/bar-stories-20261029-vk.json || {
+            echo "::error::VK attempt already recorded — NEVER DUPLICATE"; exit 1;
+          }
+          node --check scripts/publish_bar_stories_20261029_buffer.mjs
+          node --check scripts/publish_bar_stories_20261029_vk.mjs
+          python3 - <<'PY'
+          import hashlib,json
+          from pathlib import Path
+          manifest=json.loads(Path('media-prep/bar-stories-20261029.json').read_text())
+          qa=json.loads(Path('results/verification/bar-stories-20261029-stage.json').read_text())
+          release=json.loads(Path('requests/campaigns/bar-stories-20261029-release.json').read_text())
+          order=['intro-bar','mojito','berry-smoothie']
+          assert release['id']=='bar-stories-20261029-release' and release['approved'] and release['publicContent'] and release['publishNow']
+          assert release['instagram']=='liniya__sporta' and release['instagramProvider']=='buffer' and release['vkGroupId']==48198173
+          assert release['stories']==qa['order']==[x['id'] for x in manifest['sequence']]==order
+          assert manifest['approved'] and manifest['publicContent'] and manifest['instagramProvider']=='buffer'
+          assert qa['ok'] and qa['sourceOriginalsVerified'] and qa['videoAndAudioNotReencoded']
+          assert qa['instagramChannelId']=='6acde74d778b240e2ff489a7'
+          for row,source in zip(qa['files'],manifest['sequence']):
+            path=Path(row['media'])
+            assert row['sha256']==source['sha256'] and row['sizeBytes']==source['bytes']
+            assert path.as_posix()==source['file'] and path.as_posix().startswith('media/')
+            assert path.is_file() and not path.is_symlink()
+            assert path.stat().st_size==row['sizeBytes'] and row['sizeBytes']<10000000
+            with path.open('rb') as f: assert hashlib.file_digest(f,'sha256').hexdigest()==row['sha256']
+            assert row['resolution']=='1080x1920' and row['fps']==24 and row['audioCodec']=='aac'
+            assert 3<row['durationSeconds']<15
+          print('ALL_THREE_ORIGINAL_VIDEO_SHA_VERIFIED; NO_MUTATIONS')
+          PY
+      - name: Verify Buffer channel and VK community read-only; verify public media HEADs
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm install --omit=dev --ignore-scripts --no-package-lock --no-audit --no-fund
+          SOCIAL_PLATFORM=buffer node scripts/check_social_targets.mjs
+          SOCIAL_PLATFORM=vk node scripts/check_social_targets.mjs
+          curl --fail --silent --show-error --head --location --max-time 30 \
+            https://raw.githubusercontent.com/lsevmos-gpt/ls-vk/main/media/bar-20261027-intro-vk.mp4 >/dev/null
+          curl --fail --silent --show-error --head --location --max-time 30 \
+            https://raw.githubusercontent.com/lsevmos-gpt/ls-vk/main/media/bar-20261029-mojito-original.mp4 >/dev/null
+          curl --fail --silent --show-error --head --location --max-time 30 \
+            https://raw.githubusercontent.com/lsevmos-gpt/ls-vk/main/media/bar-20261021-berry-v2-original.mp4 >/dev/null
+          echo 'BUFFER_IG_AND_VK_TARGETS_PUBLIC_VIDEO_URLS_VERIFIED_NO_PUBLISH'
+  instagram_buffer:
+    name: Buffer only — Instagram three Story originals exactly once in order
+    needs: readiness
+    if: github.repository == 'lsevmos-gpt/ls-vk' && github.ref == 'refs/heads/main' && github.actor == 'lsevmos-gpt'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      BUFFER_API_KEY: ${{ secrets.BUFFER_API_KEY }}
+      META_IG_ACCESS_TOKEN: ${{ secrets.META_IG_ACCESS_TOKEN }}
+      META_IG_USER_ID: ${{ secrets.META_IG_USER_ID }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Submit Intro then Mojito then Berry via BUFFER, one provider call each
+        shell: bash
+        run: |
+          set -euo pipefail
+          node scripts/publish_bar_stories_20261029_buffer.mjs
+  vk:
+    name: VK community 48198173 — three original 1080p Story videos exactly once
+    needs: readiness
+    if: github.repository == 'lsevmos-gpt/ls-vk' && github.ref == 'refs/heads/main' && github.actor == 'lsevmos-gpt'
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    env:
+      VK_GROUP_TOKEN: ${{ secrets.VK_GROUP_TOKEN }}
+      VK_GROUP_ID: '48198173'
+      VK_GROUP_SCREEN_NAME: liniya__sporta
+      VK_API_VERSION: '5.199'
+      SOCIAL_PLATFORM: vk
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install VK media uploader dependency without hooks
+        run: npm install --omit=dev --ignore-scripts --no-package-lock --no-audit --no-fund
+      - name: Publish Intro then Mojito then Berry via VK and verify stories.get
+        shell: bash
+        run: |
+          set -euo pipefail
+          node scripts/publish_bar_stories_20261029_vk.mjs
