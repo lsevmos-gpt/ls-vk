@@ -1,0 +1,39 @@
+{
+  "id": "bar-stories-20261029",
+  "instagram": "liniya__sporta",
+  "instagramProvider": "buffer",
+  "vkGroupId": 48198173,
+  "vkProvider": "vk",
+  "approved": true,
+  "publicContent": true,
+  "sequence": [
+    {
+      "id": "intro-bar",
+      "file": "media/bar-20261027-intro-vk.mp4",
+      "sourceDriveId": "1SoexOQPc8MA_gIZQQ1iUF9FjNppA-cqy",
+      "originalName": "интро бар.mp4",
+      "bytes": 3017051,
+      "sha256": "1158b8e13b776740476522512843bf3b24bf4a78a764fcdcc693dadf85af1d7b",
+      "lastKnownPublicationDate": "2026-10-27"
+    },
+    {
+      "id": "mojito",
+      "file": "media/bar-20261029-mojito-original.mp4",
+      "sourceDriveId": "1VPRf2igmapWy2VpGfxlfS_vRiEcE1KrL",
+      "originalName": "Мохито_Instagram_исправлено.mp4",
+      "bytes": 5369675,
+      "sha256": "7ffe565a9201f92108643e88d55cd23e03424ee6c9c17dc9380739e7b3c6791f",
+      "lastKnownPublicationDate": null
+    },
+    {
+      "id": "berry-smoothie",
+      "file": "media/bar-20261021-berry-v2-original.mp4",
+      "sourceDriveId": "1gvrJJNjfKPz5g_zmDM_HI5GW3NhoJi5h",
+      "originalName": "смузи ягоды.mp4",
+      "bytes": 8088261,
+      "sha256": "edc6d12b52992e66b730dc4c925906288855822968f2f500a4a63980d1ee48fb",
+      "lastKnownPublicationDate": "2026-10-21"
+    }
+  ],
+  "note": "User approved immediate publishing. All three independent vertical Stories, in exact order. No reencoding of video or audio, use exact approved source bytes. Buffer for Instagram, direct VK API for VK. One time only, durable receipts before any provider write. No automatic retries of uncertain provider calls."
+}
