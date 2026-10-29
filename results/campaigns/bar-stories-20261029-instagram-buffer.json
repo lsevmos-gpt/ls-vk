@@ -4,7 +4,7 @@
   "account": "liniya__sporta",
   "channelId": "6acde74d778b240e2ff489a7",
   "runId": "40907313582",
-  "status": "buffer_accepted",
+  "status": "buffer_sent_partial",
   "createdAtUTC": "2026-10-29T16:01:33.860Z",
   "order": [
     "intro-bar",
@@ -37,7 +37,9 @@
       "sourceSHA256": "7ffe565a9201f92108643e88d55cd23e03424ee6c9c17dc9380739e7b3c6791f",
       "bufferPostId": "6ae36e50041e128612bbaf9d",
       "bufferInitialStatus": "sending",
-      "acceptedAtUTC": "2026-10-29T16:03:39.316Z"
+      "acceptedAtUTC": "2026-10-29T16:03:39.316Z",
+      "bufferFinalStatus": "sent",
+      "sentAtUTC": "2026-10-29T16:04:44.931Z"
     }
   ],
   "baselineMetaStoryIds": [
@@ -58,5 +60,5 @@
   ],
   "providerCreateAttempts": 2,
   "note": "Exactly 3 approved Stories through Buffer. No retry of provider submission.",
-  "updatedAtUTC": "2026-10-29T16:03:39.316Z"
+  "updatedAtUTC": "2026-10-29T16:04:45.445Z"
 }
