@@ -4,7 +4,7 @@
   "account": "liniya__sporta",
   "channelId": "6acde74d778b240e2ff489a7",
   "runId": "40907313582",
-  "status": "buffer_sent_all_three",
+  "status": "buffer_sent_all_three_live_verified",
   "createdAtUTC": "2026-10-29T16:01:33.860Z",
   "order": [
     "intro-bar",
@@ -53,7 +53,11 @@
       "bufferInitialStatus": "sending",
       "acceptedAtUTC": "2026-10-29T16:05:03.525Z",
       "bufferFinalStatus": "sent",
-      "sentAtUTC": "2026-10-29T16:06:26.640Z"
+      "sentAtUTC": "2026-10-29T16:06:26.640Z",
+      "metaStoryId": "18107095958203758",
+      "permalink": "https://www.instagram.com/stories/liniya__sporta/4018729698477786638",
+      "metaReadbackConfirmed": true,
+      "metaTimestamp": "2026-10-29T16:06:21+0000"
     }
   ],
   "baselineMetaStoryIds": [
@@ -74,5 +78,5 @@
   ],
   "providerCreateAttempts": 3,
   "note": "Exactly 3 approved Stories through Buffer. No retry of provider submission.",
-  "updatedAtUTC": "2026-10-29T16:06:34.253Z"
+  "updatedAtUTC": "2026-10-29T16:06:37.054Z"
 }
