@@ -4,7 +4,7 @@
   "account": "liniya__sporta",
   "channelId": "6acde74d778b240e2ff489a7",
   "runId": "40907313582",
-  "status": "submitting_to_buffer",
+  "status": "buffer_accepted",
   "createdAtUTC": "2026-10-29T16:01:33.860Z",
   "order": [
     "intro-bar",
@@ -44,6 +44,14 @@
       "permalink": "https://www.instagram.com/stories/liniya__sporta/4018728948467813935",
       "metaReadbackConfirmed": true,
       "metaTimestamp": "2026-10-29T16:04:39+0000"
+    },
+    {
+      "index": 3,
+      "name": "berry-smoothie",
+      "sourceSHA256": "edc6d12b52992e66b730dc4c925906288855822968f2f500a4a63980d1ee48fb",
+      "bufferPostId": "6ae36ea5263de3337340e2a2",
+      "bufferInitialStatus": "sending",
+      "acceptedAtUTC": "2026-10-29T16:05:03.525Z"
     }
   ],
   "baselineMetaStoryIds": [
@@ -64,7 +72,5 @@
   ],
   "providerCreateAttempts": 3,
   "note": "Exactly 3 approved Stories through Buffer. No retry of provider submission.",
-  "updatedAtUTC": "2026-10-29T16:04:51.600Z",
-  "attemptingIndex": 3,
-  "attemptingItem": "berry-smoothie"
+  "updatedAtUTC": "2026-10-29T16:05:03.525Z"
 }
