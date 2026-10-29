@@ -5,10 +5,16 @@
   "releaseMode": "immediate",
   "runId": "40907313582",
   "createdAtUTC": "2026-10-29T16:01:39.235Z",
-  "status": "submission_started",
-  "published": [],
+  "status": "partial_submitted_to_vk",
+  "published": [
+    {
+      "index": 1,
+      "name": "intro-bar",
+      "vkStoryId": 456240692,
+      "ownerId": -48198173,
+      "publishedAtUTC": "2026-10-29T16:01:46.716Z"
+    }
+  ],
   "note": "Exactly three approved stories; never retry provider save after uncertainty.",
-  "updatedAtUTC": "2026-10-29T16:01:41.044Z",
-  "attemptingIndex": 1,
-  "attemptingItem": "intro-bar"
+  "updatedAtUTC": "2026-10-29T16:01:46.716Z"
 }
