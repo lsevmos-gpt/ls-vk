@@ -1,0 +1,55 @@
+{
+  "id": "bar-stories-20261029",
+  "ok": true,
+  "order": [
+    "intro-bar",
+    "mojito",
+    "berry-smoothie"
+  ],
+  "sourceOriginalsVerified": true,
+  "videoAndAudioNotReencoded": true,
+  "files": [
+    {
+      "id": "intro-bar",
+      "media": "media/bar-20261027-intro-vk.mp4",
+      "sha256": "1158b8e13b776740476522512843bf3b24bf4a78a764fcdcc693dadf85af1d7b",
+      "sizeBytes": 3017051,
+      "durationSeconds": 5.05,
+      "resolution": "1080x1920",
+      "fps": 24,
+      "audioCodec": "aac",
+      "audioSampleRate": 48000,
+      "audioBitrate": 274506
+    },
+    {
+      "id": "mojito",
+      "media": "media/bar-20261029-mojito-original.mp4",
+      "sha256": "7ffe565a9201f92108643e88d55cd23e03424ee6c9c17dc9380739e7b3c6791f",
+      "sizeBytes": 5369675,
+      "durationSeconds": 7.060998,
+      "resolution": "1080x1920",
+      "fps": 24,
+      "audioCodec": "aac",
+      "audioSampleRate": 44100,
+      "audioBitrate": 162747
+    },
+    {
+      "id": "berry-smoothie",
+      "media": "media/bar-20261021-berry-v2-original.mp4",
+      "sha256": "edc6d12b52992e66b730dc4c925906288855822968f2f500a4a63980d1ee48fb",
+      "sizeBytes": 8088261,
+      "durationSeconds": 12.0,
+      "resolution": "1080x1920",
+      "fps": 24,
+      "audioCodec": "aac",
+      "audioSampleRate": 48000,
+      "audioBitrate": 313199
+    }
+  ],
+  "instagramProvider": "buffer",
+  "vkProvider": "vk",
+  "instagramChannelId": "6acde74d778b240e2ff489a7",
+  "vkGroupId": 48198173,
+  "doesNotPublish": true,
+  "checkedAtUTC": "2026-10-29T15:57:41.945657+00:00"
+}
