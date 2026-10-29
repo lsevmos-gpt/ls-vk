@@ -1,0 +1,118 @@
+name: Stage original max quality Intro Bar Mojito Berry Stories 29 Oct (NO PUBLISH)
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'media-prep/bar-stories-20261029.json'
+permissions:
+  contents: write
+concurrency:
+  group: stage-bar-original-20261029
+  cancel-in-progress: false
+jobs:
+  stage:
+    if: github.repository == 'lsevmos-gpt/ls-vk' && github.ref == 'refs/heads/main' && github.actor == 'lsevmos-gpt'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - name: Validate approved content and unchanged already-staged originals
+        shell: bash
+        run: |
+          set -euo pipefail
+          test ! -e results/verification/bar-stories-20261029-stage.json || {
+            echo "::error::29 October media already staged; never overwrite"; exit 1;
+          }
+          command -v ffprobe >/dev/null 2>&1 || { sudo apt-get update -qq; sudo apt-get install -y ffmpeg; }
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          doc=json.loads(Path('media-prep/bar-stories-20261029.json').read_text())
+          assert doc['id']=='bar-stories-20261029'
+          assert doc['approved'] is True and doc['publicContent'] is True
+          assert doc['instagram']=='liniya__sporta' and doc['vkGroupId']==48198173
+          assert [r['id'] for r in doc['sequence']]==['intro-bar','mojito','berry-smoothie']
+          assert [r['sha256'] for r in doc['sequence']]==[
+            '1158b8e13b776740476522512843bf3b24bf4a78a764fcdcc693dadf85af1d7b',
+            '7ffe565a9201f92108643e88d55cd23e03424ee6c9c17dc9380739e7b3c6791f',
+            'edc6d12b52992e66b730dc4c925906288855822968f2f500a4a63980d1ee48fb']
+          assert doc['sequence'][0]['file']=='media/bar-20261027-intro-vk.mp4'
+          assert doc['sequence'][1]['file']=='media/bar-20261029-mojito-original.mp4'
+          assert doc['sequence'][2]['file']=='media/bar-20261021-berry-v2-original.mp4'
+          print('THREE_STORY_SOURCE_ORDER_APPROVED; TWO_PREVIOUSLY_VERIFIED_ORIGINALS')
+          PY
+          printf '%s  %s\n' \
+            1158b8e13b776740476522512843bf3b24bf4a78a764fcdcc693dadf85af1d7b media/bar-20261027-intro-vk.mp4 \
+            edc6d12b52992e66b730dc4c925906288855822968f2f500a4a63980d1ee48fb media/bar-20261021-berry-v2-original.mp4 | sha256sum -c
+      - name: Download untouched corrected Mojito original and verify SHA-256 (no social API)
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p media
+          curl --fail --show-error --location --retry 2 --connect-timeout 20 --max-time 180 \
+            'https://at.adobe.com/RUlt98BB8rGZfaS2' -o media/bar-20261029-mojito-original.mp4
+          printf '%s  %s\n' \
+            7ffe565a9201f92108643e88d55cd23e03424ee6c9c17dc9380739e7b3c6791f \
+            media/bar-20261029-mojito-original.mp4 | sha256sum -c
+      - name: Inspect exact 3 original video files without transcoding or altered audio
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json,hashlib,subprocess
+          from datetime import datetime,timezone
+          from pathlib import Path
+          manifest=json.loads(Path('media-prep/bar-stories-20261029.json').read_text())
+          expected={
+            'intro-bar':(5.05,1080,1920,24),
+            'mojito':(7.060998,1080,1920,24),
+            'berry-smoothie':(12.0,1080,1920,24)
+          }
+          out=[]
+          for src in manifest['sequence']:
+            file=Path(src['file'])
+            assert file.exists() and file.is_file() and not file.is_symlink()
+            assert file.stat().st_size==src['bytes'] and 0<file.stat().st_size<10_000_000
+            with file.open('rb') as f: digest=hashlib.file_digest(f,'sha256').hexdigest()
+            assert digest==src['sha256'],'Changed original '+src['id']
+            result=subprocess.check_output(['ffprobe','-v','error',
+              '-show_entries','format=duration,size,bit_rate:stream=codec_type,codec_name,width,height,r_frame_rate,sample_rate,bit_rate',
+              '-of','json',str(file)],timeout=45)
+            meta=json.loads(result)
+            streams=meta['streams']
+            v=next(x for x in streams if x['codec_type']=='video')
+            a=next(x for x in streams if x['codec_type']=='audio')
+            sec,w,h,fps=expected[src['id']]
+            assert v['codec_name']=='h264' and (v['width'],v['height'],v['r_frame_rate'])==(w,h,f'{fps}/1')
+            assert a['codec_name']=='aac' and int(a['sample_rate'])>=44100
+            assert abs(float(meta['format']['duration'])-sec)<0.12
+            out.append({
+              'id':src['id'],'media':str(file),'sha256':digest,'sizeBytes':file.stat().st_size,
+              'durationSeconds':float(meta['format']['duration']),'resolution':f'{w}x{h}',
+              'fps':fps,'audioCodec':'aac','audioSampleRate':int(a['sample_rate']),
+              'audioBitrate':int(a.get('bit_rate') or 0)
+            })
+          doc={'id':'bar-stories-20261029','ok':True,'order':[x['id'] for x in out],
+            'sourceOriginalsVerified':True,'videoAndAudioNotReencoded':True,'files':out,
+            'instagramProvider':'buffer','vkProvider':'vk','instagramChannelId':'6acde74d778b240e2ff489a7',
+            'vkGroupId':48198173,'doesNotPublish':True,
+            'checkedAtUTC':datetime.now(timezone.utc).isoformat()}
+          target=Path('results/verification/bar-stories-20261029-stage.json')
+          target.parent.mkdir(parents=True,exist_ok=True)
+          target.write_text(json.dumps(doc,ensure_ascii=False,indent=2)+'\n')
+          print('BAR_ORIGINAL_29_OCT_ALL_THREE_QA_PASSED',json.dumps([{k:r[k] for k in ('id','sizeBytes','durationSeconds')} for r in out]))
+          PY
+      - name: Save only untouched Mojito MP4 and non-publishing verification JSON
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name ls-smm-media-prep
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add media/bar-20261029-mojito-original.mp4 results/verification/bar-stories-20261029-stage.json
+          git diff --cached --quiet && exit 0
+          git commit -m 'Stage validated three bar Story originals for 29 Oct; NO POSTING [skip ci]'
+          git pull --rebase origin main
+          git push origin HEAD:main
