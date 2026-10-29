@@ -1,0 +1,18 @@
+{
+  "id": "bar-stories-20261029-release",
+  "approved": true,
+  "publicContent": true,
+  "publishNow": true,
+  "instagram": "liniya__sporta",
+  "instagramProvider": "buffer",
+  "bufferChannelId": "6acde74d778b240e2ff489a7",
+  "vkGroupId": 48198173,
+  "stories": [
+    "intro-bar",
+    "mojito",
+    "berry-smoothie"
+  ],
+  "sourceManifest": "media-prep/bar-stories-20261029.json",
+  "sourceVerification": "results/verification/bar-stories-20261029-stage.json",
+  "note": "Publish exactly once NOW, Instagram via Buffer only, VK via existing VK API, using original approved 1080x1920 MP4 video files without transcoding. Ordered separate Stories Intro Bar, corrected Mojito, Berry Smoothie. Durable per-item receipts, never retry uncertain provider mutations."
+}
