@@ -1,0 +1,39 @@
+{
+  "id": "bar-stories-20261029-instagram-buffer",
+  "provider": "buffer",
+  "account": "liniya__sporta",
+  "channelId": "6acde74d778b240e2ff489a7",
+  "runId": "40907313582",
+  "status": "reserved_before_provider_call",
+  "createdAtUTC": "2026-10-29T16:01:33.860Z",
+  "order": [
+    "intro-bar",
+    "mojito",
+    "berry-smoothie"
+  ],
+  "originalHashes": [
+    "1158b8e13b776740476522512843bf3b24bf4a78a764fcdcc693dadf85af1d7b",
+    "7ffe565a9201f92108643e88d55cd23e03424ee6c9c17dc9380739e7b3c6791f",
+    "edc6d12b52992e66b730dc4c925906288855822968f2f500a4a63980d1ee48fb"
+  ],
+  "posts": [],
+  "baselineMetaStoryIds": [
+    "18104550644574986",
+    "18100483691389991",
+    "17910175092575307",
+    "18154811482493465",
+    "18077505287584780",
+    "17926650255202716",
+    "17953146546300732",
+    "18167408491517118",
+    "17876716983586825",
+    "17879476701565011",
+    "18010888349779713",
+    "18135690841662221",
+    "17964477264232826",
+    "18147685246583724"
+  ],
+  "providerCreateAttempts": 0,
+  "note": "Exactly 3 approved Stories through Buffer. No retry of provider submission.",
+  "updatedAtUTC": "2026-10-29T16:01:33.861Z"
+}
