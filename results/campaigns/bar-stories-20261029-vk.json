@@ -5,7 +5,7 @@
   "releaseMode": "immediate",
   "runId": "40907313582",
   "createdAtUTC": "2026-10-29T16:01:39.235Z",
-  "status": "submitted_to_vk",
+  "status": "published_verified_by_vk",
   "published": [
     {
       "index": 1,
@@ -30,5 +30,10 @@
     }
   ],
   "note": "Exactly three approved stories; never retry provider save after uncertainty.",
-  "updatedAtUTC": "2026-10-29T16:02:08.832Z"
+  "updatedAtUTC": "2026-10-29T16:02:10.557Z",
+  "liveVerifiedStoryIds": [
+    456240692,
+    456240693,
+    456240694
+  ]
 }
