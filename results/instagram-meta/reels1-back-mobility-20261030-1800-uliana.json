@@ -9,9 +9,9 @@
   "scheduledAt": "2026-10-30T18:00:00+03:00",
   "collaboratorInvited": "ulianakabanova246",
   "collaborationStatus": "NOT_YET_INVITED",
-  "status": "reserved_before_any_provider_mutation",
+  "status": "container_create_call_started",
   "runId": "41077589591",
   "createdAtUTC": "2026-10-30T15:06:32.776218+00:00",
   "note": "Exactly one Meta media container and one publication call. NO RETRIES after uncertain mutations.",
-  "lastUpdatedAtUTC": "2026-10-30T15:06:32.776243+00:00"
+  "lastUpdatedAtUTC": "2026-10-30T15:06:35.503642+00:00"
 }
