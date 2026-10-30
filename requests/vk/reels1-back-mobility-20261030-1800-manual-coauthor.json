@@ -1,0 +1,23 @@
+{
+  "id": "reels1-back-mobility-20261030-1800-vk-native-coauthor-handoff",
+  "status": "PREPARED_BLOCKED_MISSING_VK_COAUTHOR_PROFILE_AND_API_NATIVE_COLLABORATION",
+  "platform": "vk",
+  "format": "CLIP_NOT_STORY",
+  "communityId": 48198173,
+  "plannedFor": "2026-10-30T18:00:00+03:00",
+  "approvedText": "Красивая спина начинается с движения!\n\nМобильность спины — это не только про красивые прогибы и эстетичные движения. Это про свободу, лёгкость и умение чувствовать своё тело ✨\n\nСовременный образ жизни, долгое сидение и недостаток движения могут ограничивать подвижность позвоночника. Поэтому так важно уделять внимание здоровью спины, развивать мобильность и укреплять мышцы, которые поддерживают наше тело.\n\nНа тренировках мы работаем над тем, чтобы спина становилась более подвижной, движения — свободнее, а осанка — красивее 🤍\n\n✨ Больше мобильности.\n✨ Больше контроля над своим телом.\n✨ Красивая осанка и грациозные движения.\n\nНе жди, пока спина начнёт напоминать о себе. Начни заботиться о ней уже сейчас!\n\n🔥 Приходи в Линию спорта, чтобы развивать мобильность спины, улучшать качество движений и чувствовать себя лучше в своём теле.",
+  "approvedCover": {
+    "png": "media-prep/reels1-rc22-cover-20261030/Reels1_RC2_2_1080x1920.png",
+    "sha256": "150ae03abc93260e420e4738f5f25e0dbe513b5ccb2998606f4ab8b842c3c010"
+  },
+  "sourceVideo": {
+    "path": "media/reels1-back-mobility-20261030-ig-vk-hq.mp4",
+    "qa": "results/verification/reels1-back-mobility-20261030-hq.json"
+  },
+  "nativeVkCoauthorRequired": true,
+  "coauthorInstagramProfile": "https://www.instagram.com/ulianakabanova246/",
+  "vkCoauthorProfile": null,
+  "doNotAutopublishWithoutNativeCoauthor": true,
+  "instructions": "From the VK Clips editor, upload the approved video, select the approved thumbnail, use Invite/Пригласить to select the VK person/community as coauthor, then schedule clip for 18:00. Do not use simple @mention as replacement. VK app coauthor identity must be provided and confirmed.",
+  "noDuplicatePosting": true
+}
