@@ -5,6 +5,7 @@ on:
     paths:
       - 'media-prep/reels1-cover-20261030-render.json'
       - '.github/workflows/render-reels1-cover-rc22-20261030.yml'
+      - 'scripts/render_reels1_cover_rc22_20261030.py'
 permissions:
   contents: write
 concurrency:
