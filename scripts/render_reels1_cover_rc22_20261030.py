@@ -66,7 +66,9 @@ def main():
     logo_bytes=LOGO.read_bytes()
     video_frame_bytes=SRC.read_bytes()
     OUTPUT.mkdir(parents=True,exist_ok=True)
-    if (OUTPUT/"Reels1_RC2_2_1080x1920.png").exists():raise RuntimeError("Cover already created; never overwrite unknown result")
+    if (OUTPUT/"Reels1_RC2_2_1080x1920.png").exists():
+        print("RC22_COVER_ALREADY_RENDERED; NO_REWRITE")
+        return
 
     # Composition: one source hero, real face+body unchanged; editable text and original logo.
     # All essential layers and title fall inside RC2.2 central 1:1 crop.
