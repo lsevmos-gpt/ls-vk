@@ -1,0 +1,100 @@
+name: Inspect original Reels 1 real video for RC2.2 cover (NO PUBLICATION)
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'media-prep/reels1-cover-20261030-request.json'
+permissions:
+  contents: write
+concurrency:
+  group: reels1-real-frames-inspection-20261030
+  cancel-in-progress: false
+jobs:
+  frame_review:
+    if: github.repository == 'lsevmos-gpt/ls-vk' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install source-only video inspector; no social API / no generative changes
+        run: |
+          python -m pip install --quiet --disable-pip-version-check gdown Pillow
+          command -v ffmpeg >/dev/null && command -v ffprobe >/dev/null || { sudo apt-get update -qq && sudo apt-get install -y ffmpeg; }
+      - name: Verify immutable source ID and download real original MP4 (do not commit the MP4)
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          m=json.loads(Path("media-prep/reels1-cover-20261030-request.json").read_text())
+          assert m["original_file_name"]=="рилс1.mp4"
+          assert m["google_drive_file_id"]=="1A3nRzmTg91ZihgjAC_SGk4LedMjoH1FX"
+          assert m["expected_bytes"]==386016210
+          assert m["purpose"]=="read_only_frame_extraction_no_publication"
+          print("REAL_386MB_REELS_1_SOURCE_APPROVED")
+          PY
+          mkdir -p /tmp/reels1-20261030
+          python -m gdown --id 1A3nRzmTg91ZihgjAC_SGk4LedMjoH1FX -O /tmp/reels1-20261030/original.mp4
+          test "$(stat -c%s /tmp/reels1-20261030/original.mp4)" -eq 386016210 || { echo "::error::SOURCE_FILE_SIZE_MISMATCH"; exit 1; }
+          ffprobe -v error -show_entries format=duration,size,bit_rate:stream=codec_type,codec_name,width,height,avg_frame_rate -of json /tmp/reels1-20261030/original.mp4 > /tmp/reels1-20261030/ffprobe.json
+      - name: Extract 16 evenly spaced real frames and a labeled contact sheet for editorial selection
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json,subprocess,hashlib
+          from pathlib import Path
+          from PIL import Image,ImageOps,ImageDraw,ImageFont
+          src=Path("/tmp/reels1-20261030/original.mp4")
+          probe=json.loads(Path("/tmp/reels1-20261030/ffprobe.json").read_text())
+          duration=float(probe["format"]["duration"])
+          assert 3<duration<1200, "Unexpected source length"
+          out=Path("media-prep/reels1-review-20261030")
+          out.mkdir(parents=True,exist_ok=True)
+          n=16
+          frames=[]
+          for i in range(n):
+            t=duration*(i+0.45)/n
+            dest=out/f"sample_{i:02d}.jpg"
+            subprocess.run(["ffmpeg","-hide_banner","-nostdin","-loglevel","error","-ss",str(t),"-i",str(src),"-frames:v","1","-q:v","3","-y",str(dest)],check=True,timeout=120)
+            im=Image.open(dest).convert("RGB")
+            frames.append({"index":i,"timecode_seconds":round(t,3),"width":im.width,"height":im.height,"filename":dest.name})
+          thumb_w,thumb_h=300,480
+          pad=22;head=42;cols=4;rows=4
+          sheet=Image.new("RGB",(cols*(thumb_w+pad)+pad,rows*(thumb_h+head+pad)+pad),(22,27,29))
+          draw=ImageDraw.Draw(sheet)
+          for idx,frame in enumerate(frames):
+            x=pad+(idx%cols)*(thumb_w+pad)
+            y=pad+(idx//cols)*(thumb_h+head+pad)
+            im=Image.open(out/frame["filename"]).convert("RGB")
+            tile=ImageOps.contain(im,(thumb_w,thumb_h))
+            sheet.paste(tile,(x+(thumb_w-tile.width)//2,y+(thumb_h-tile.height)//2))
+            draw.text((x+6,y+thumb_h+8),f"#{idx:02d}     t={frame['timecode_seconds']:.2f} s",fill=(239,241,237))
+          sheet.save(out/"contact.jpg",quality=85,subsampling=0,optimize=True)
+          with src.open("rb") as f:
+            sha=hashlib.file_digest(f,"sha256").hexdigest()
+          report={"id":"reels1-20261030-source-review","sourceDriveId":"1A3nRzmTg91ZihgjAC_SGk4LedMjoH1FX",
+             "sourceName":"рилс1.mp4","originalBytes":src.stat().st_size,"originalSHA256":sha,
+             "durationSeconds":duration,"probe":probe,"frames":frames,
+             "contactSheet":"media-prep/reels1-review-20261030/contact.jpg",
+             "doesNotPublish":True,"doesNotGenerateFakeSubject":True}
+          (out/"inspection.json").write_text(json.dumps(report,ensure_ascii=False,indent=2)+"\n")
+          print("EXTRACTED_SAMPLES_REAL_VIDEO",duration,sha)
+          PY
+      - name: Save inspection contact sheet and real sampled frames only, never post anything
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name ls-reels-cover-inspector
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add media-prep/reels1-review-20261030/
+          git commit -m 'Inspect authentic Reels1 video frames for RC2.2 cover [skip ci]'
+          git pull --rebase origin main
+          git push origin HEAD:main
