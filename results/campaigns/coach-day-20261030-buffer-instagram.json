@@ -1,0 +1,20 @@
+{
+  "id": "coach-day-20261030-buffer-instagram",
+  "provider": "buffer",
+  "account": "liniya__sporta",
+  "channelId": "6acde74d778b240e2ff489a7",
+  "runId": "41051898648",
+  "source": "media/coach-day-20261030-original.png",
+  "sourceSha256": "96fadda082d858c6f40c637263dd11f134236dfb8dc9dcb917e1fc148f05a345",
+  "sourceBytes": 3563841,
+  "mediaType": "image/png",
+  "resolution": "1080x1920",
+  "postType": "story",
+  "approved": true,
+  "withLinks": false,
+  "createdAtUTC": "2026-10-30T11:59:15.432Z",
+  "status": "reserved_before_provider_call",
+  "providerCreateAttempts": 0,
+  "baselineMetaStoryIds": [],
+  "updatedAtUTC": "2026-10-30T11:59:15.433Z"
+}
