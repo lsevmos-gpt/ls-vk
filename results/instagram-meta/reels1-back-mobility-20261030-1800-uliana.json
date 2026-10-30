@@ -9,10 +9,11 @@
   "scheduledAt": "2026-10-30T18:00:00+03:00",
   "collaboratorInvited": "ulianakabanova246",
   "collaborationStatus": "invitation_requested_in_container_fields",
-  "status": "container_created",
+  "status": "container_ready",
   "runId": "41077589591",
   "createdAtUTC": "2026-10-30T15:06:32.776218+00:00",
   "note": "Exactly one Meta media container and one publication call. NO RETRIES after uncertain mutations.",
-  "lastUpdatedAtUTC": "2026-10-30T15:06:38.356526+00:00",
-  "creationId": "18021895766949669"
+  "lastUpdatedAtUTC": "2026-10-30T15:08:12.468511+00:00",
+  "creationId": "18021895766949669",
+  "readyAtUTC": "2026-10-30T15:08:12.468491+00:00"
 }
