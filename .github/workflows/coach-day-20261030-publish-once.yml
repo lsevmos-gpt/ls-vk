@@ -1,0 +1,136 @@
+name: "Coach Day 30 Oct 2026 — original PNG → Buffer Instagram + VK photo Stories ONCE"
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/coach-day-20261030-publish-once.yml'
+permissions:
+  contents: write
+concurrency:
+  group: coach-day-20261030-once-instagram-buffer-and-vk
+  cancel-in-progress: false
+jobs:
+  stage:
+    name: Verify and stage original 1080x1920 PNG byte-for-byte (no provider calls)
+    if: github.repository == 'lsevmos-gpt/ls-vk' && github.ref == 'refs/heads/main' && github.actor == 'lsevmos-gpt'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Validate both single-use publisher scripts before network requests
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --check scripts/publish_coach_day_20261030_buffer.mjs
+          node --check scripts/publish_coach_day_20261030_vk.mjs
+          test ! -e media/coach-day-20261030-original.png
+          test ! -e results/campaigns/coach-day-20261030-buffer-instagram.json
+          test ! -e results/campaigns/coach-day-20261030-vk.json
+      - name: Download exact user-approved original from temporary Adobe asset URL (NO conversion)
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --fail --location --show-error --retry 2 --connect-timeout 25 --max-time 150 \
+            'https://at.adobe.com/X0nFxpzHBVqdUNve' \
+            --output media/coach-day-20261030-original.png
+          printf '%s  %s\n' \
+            '96fadda082d858c6f40c637263dd11f134236dfb8dc9dcb917e1fc148f05a345' \
+            'media/coach-day-20261030-original.png' | sha256sum --check --
+          python3 - <<'PY'
+          import struct,hashlib,json,datetime
+          from pathlib import Path
+          p=Path('media/coach-day-20261030-original.png')
+          data=p.read_bytes()
+          assert len(data)==3563841
+          assert data[:8]==b'\x89PNG\r\n\x1a\n'
+          assert data[12:16]==b'IHDR'
+          assert struct.unpack('>II',data[16:24])==(1080,1920)
+          assert data[24]==8 and data[25]==6, 'Expected RGBA8 PNG'
+          assert hashlib.sha256(data).hexdigest()=='96fadda082d858c6f40c637263dd11f134236dfb8dc9dcb917e1fc148f05a345'
+          receipt={'id':'coach-day-20261030-source','status':'exact_original_verified',
+            'media':p.as_posix(),'bytes':len(data),'resolution':'1080x1920',
+            'format':'PNG RGBA8','sha256':hashlib.sha256(data).hexdigest(),
+            'instagram':'liniya__sporta','instagramProvider':'buffer',
+            'vkGroupId':48198173,'vkProvider':'VK API','approved':True,
+            'publishNow':True,'noLinks':True,'noChanges':True,
+            'verifiedAtUTC':datetime.datetime.now(datetime.timezone.utc).isoformat()}
+          target=Path('results/verification/coach-day-20261030-original.json')
+          target.parent.mkdir(parents=True,exist_ok=True)
+          target.write_text(json.dumps(receipt,ensure_ascii=False,indent=2)+'\n')
+          print('COACH_DAY_EXACT_ORIGINAL_1080x1920_VERIFIED')
+          PY
+      - name: Store exact original for persistent public Buffer fetching, without re-encoding
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'ls-coach-day-stage'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -- media/coach-day-20261030-original.png results/verification/coach-day-20261030-original.json
+          git commit -m 'Stage byte-verified Coach Day original PNG for Buffer and VK [skip ci]'
+          git pull --rebase origin main
+          git push origin HEAD:main
+          for k in $(seq 1 12); do
+            if curl --silent --show-error --fail --location --head --max-time 15 \
+              'https://raw.githubusercontent.com/lsevmos-gpt/ls-vk/main/media/coach-day-20261030-original.png' >/dev/null; then
+              echo 'STAGED_SOURCE_PUBLIC_FOR_BUFFER';exit 0
+            fi
+            sleep 3
+          done
+          echo '::error::Staged image not yet available to Buffer';exit 1
+
+  instagram_buffer:
+    name: Immediately publish one Instagram photo Story using BUFFER and verify
+    needs: stage
+    if: github.repository == 'lsevmos-gpt/ls-vk' && github.ref == 'refs/heads/main' && github.actor == 'lsevmos-gpt'
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    env:
+      BUFFER_API_KEY: ${{ secrets.BUFFER_API_KEY }}
+      META_IG_ACCESS_TOKEN: ${{ secrets.META_IG_ACCESS_TOKEN }}
+      META_IG_USER_ID: ${{ secrets.META_IG_USER_ID }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Buffer — Instagram @liniya__sporta Story exact source ONCE
+        shell: bash
+        run: |
+          set -euo pipefail
+          node scripts/publish_coach_day_20261030_buffer.mjs
+
+  vk:
+    name: Immediately publish one VK photo Story and verify stories.get
+    needs: stage
+    if: github.repository == 'lsevmos-gpt/ls-vk' && github.ref == 'refs/heads/main' && github.actor == 'lsevmos-gpt'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      VK_GROUP_TOKEN: ${{ secrets.VK_GROUP_TOKEN }}
+      VK_GROUP_ID: '48198173'
+      VK_GROUP_SCREEN_NAME: liniya__sporta
+      VK_API_VERSION: '5.199'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install VK client dependency without lifecycle hooks
+        run: npm install --omit=dev --ignore-scripts --no-package-lock --no-audit --no-fund
+      - name: VK — Liniya sporta photo Story exact source ONCE
+        shell: bash
+        run: |
+          set -euo pipefail
+          node scripts/publish_coach_day_20261030_vk.mjs
