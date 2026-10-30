@@ -9,6 +9,7 @@ on:
     branches: [main]
     paths:
       - '.github/workflows/publish-reels1-meta-20261030-1800.yml'
+# Source and approved Meta JPEG are now SHA-256 verified; this push triggers READ-ONLY QA.
 permissions:
   contents: write
 concurrency:
