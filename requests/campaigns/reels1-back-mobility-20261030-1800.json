@@ -1,0 +1,50 @@
+{
+  "id": "reels1-back-mobility-20261030-1800",
+  "scheduledFor": "2026-10-30T18:00:00+03:00",
+  "tz": "Europe/Moscow",
+  "approved": true,
+  "publicContent": true,
+  "sourceVideo": {
+    "name": "рилс1.mp4",
+    "googleDriveFileId": "1A3nRzmTg91ZihgjAC_SGk4LedMjoH1FX",
+    "originalSHA256": "b55744a423c4ee8685b51ad4680a6f94cfe550959e48dac814f0edd3d9ec0398",
+    "originalSizeBytes": 386016210,
+    "durationSeconds": 39.786667,
+    "resolution": "2160x3840",
+    "fps": 25
+  },
+  "igMedia": {
+    "path": "media/reels1-back-mobility-20261030-ig-vk-hq.mp4",
+    "url": "https://raw.githubusercontent.com/lsevmos-gpt/ls-vk/main/media/reels1-back-mobility-20261030-ig-vk-hq.mp4",
+    "qaPath": "results/verification/reels1-back-mobility-20261030-hq.json"
+  },
+  "cover": {
+    "approved": true,
+    "path": "media-prep/reels1-rc22-cover-20261030/Reels1_RC2_2_1080x1920.png",
+    "url": "https://raw.githubusercontent.com/lsevmos-gpt/ls-vk/main/media-prep/reels1-rc22-cover-20261030/Reels1_RC2_2_1080x1920.png",
+    "sha256": "150ae03abc93260e420e4738f5f25e0dbe513b5ccb2998606f4ab8b842c3c010"
+  },
+  "instagram": {
+    "account": "liniya__sporta",
+    "metricoolBrandId": "7014498",
+    "type": "REEL",
+    "showReelOnFeed": true,
+    "coauthors": [
+      "ulianakabanova246"
+    ],
+    "collaboratorInvitationsRequired": true,
+    "autoPublish": true,
+    "quotaStatus": "UNVERIFIED_until_Nov1_reset",
+    "status": "AWAITING_VERIFIED_MEDIA"
+  },
+  "vk": {
+    "groupId": 48198173,
+    "type": "VK_CLIP",
+    "nativeCoauthorInviteRequired": true,
+    "coauthorVkProfile": "NOT_PROVIDED",
+    "vkApiCoauthorParam": "NOT_VERIFIED",
+    "status": "BLOCKED_FOR_COAUTHOR_INSTEAD_OF_PUBLISHING_UNATTRIBUTED"
+  },
+  "caption": "Красивая спина начинается с движения!\n\nМобильность спины — это не только про красивые прогибы и эстетичные движения. Это про свободу, лёгкость и умение чувствовать своё тело ✨\n\nСовременный образ жизни, долгое сидение и недостаток движения могут ограничивать подвижность позвоночника. Поэтому так важно уделять внимание здоровью спины, развивать мобильность и укреплять мышцы, которые поддерживают наше тело.\n\nНа тренировках мы работаем над тем, чтобы спина становилась более подвижной, движения — свободнее, а осанка — красивее 🤍\n\n✨ Больше мобильности.\n✨ Больше контроля над своим телом.\n✨ Красивая осанка и грациозные движения.\n\nНе жди, пока спина начнёт напоминать о себе. Начни заботиться о ней уже сейчас!\n\n🔥 Приходи в Линию спорта, чтобы развивать мобильность спины, улучшать качество движений и чувствовать себя лучше в своём теле.",
+  "noDuplicatePublication": true
+}
