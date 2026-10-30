@@ -16,12 +16,13 @@
     456240694
   ],
   "createdAtUTC": "2026-10-30T12:06:28.368Z",
-  "status": "submitted_to_vk",
+  "status": "published_verified_by_vk",
   "providerAttempts": 1,
   "note": "No retry after unknown save result. JPEG only after explicitly failed PNG upload.",
-  "updatedAtUTC": "2026-10-30T12:06:35.143Z",
+  "updatedAtUTC": "2026-10-30T12:06:36.859Z",
   "attemptedMedia": "media/coach-day-20261030-vk-rgb-lossless.png",
   "mediaUsed": "pixel_identical_rgb_png",
   "vkStoryId": 456240695,
-  "ownerId": -48198173
+  "ownerId": -48198173,
+  "verifiedAtUTC": "2026-10-30T12:06:36.859Z"
 }
