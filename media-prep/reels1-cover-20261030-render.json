@@ -1,0 +1,32 @@
+{
+  "sourceVideoFileId": "1A3nRzmTg91ZihgjAC_SGk4LedMjoH1FX",
+  "sourceFileName": "рилс1.mp4",
+  "sourceVideoSHA256": "b55744a423c4ee8685b51ad4680a6f94cfe550959e48dac814f0edd3d9ec0398",
+  "frameIndex": 3,
+  "frameTimecodeSeconds": 8.579,
+  "ruleFile": "Reels_RC2_2.json",
+  "documentRevision": "RC2.2-JSON",
+  "brandGuide": "Visual System v1.8 (29.10.2026)",
+  "branch": "fitness",
+  "headline": [
+    "РАЗМИНКА",
+    "ДЛЯ СПИНЫ"
+  ],
+  "logoOriginalName": "лого фитнес_черный.png",
+  "logoOriginalId": "1PeUzCGLsRLLEsiGzPkNp7To8inFXiQLU",
+  "logoOriginalSHA256": "e145980feff7d744c5c718aa7f0f59a47fc992fdad7f2260906b98c81e2ecb39",
+  "target": {
+    "width": 1080,
+    "height": 1920,
+    "icc": "sRGB",
+    "png": true,
+    "editable_svg": true,
+    "crop_checks": [
+      "9:16",
+      "3:4",
+      "4:5",
+      "1:1"
+    ]
+  },
+  "publication": false
+}
