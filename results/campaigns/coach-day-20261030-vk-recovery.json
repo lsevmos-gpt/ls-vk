@@ -1,0 +1,23 @@
+{
+  "id": "coach-day-20261030-vk-recovery",
+  "provider": "vk",
+  "groupId": 48198173,
+  "original": "media/coach-day-20261030-original.png",
+  "originalSha256": "96fadda082d858c6f40c637263dd11f134236dfb8dc9dcb917e1fc148f05a345",
+  "originalSize": 3563841,
+  "losslessRgbPngSha256": "03717dbab0aafb40e0e2f183adfbc49ec3fa7de217fe42d758cc2a0a6f0dcd7f",
+  "rgbPixelSha256": "31658ad5b8912774d1557d01f4b5f83e7d295d5575fb442e07aa8dfba68c9682",
+  "fallbackJpegQuality": 100,
+  "fallbackJpegSubsampling": "4:4:4",
+  "previousError": "VK story upload attempt 4/4 failed: VK upload error: go upload error",
+  "preflightVisibleIds": [
+    456240692,
+    456240693,
+    456240694
+  ],
+  "createdAtUTC": "2026-10-30T12:06:28.368Z",
+  "status": "reconciled_no_prior_story_reserved",
+  "providerAttempts": 0,
+  "note": "No retry after unknown save result. JPEG only after explicitly failed PNG upload.",
+  "updatedAtUTC": "2026-10-30T12:06:28.368Z"
+}
