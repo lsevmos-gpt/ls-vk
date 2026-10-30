@@ -26,16 +26,18 @@
   },
   "instagram": {
     "account": "liniya__sporta",
-    "metricoolBrandId": "7014498",
     "type": "REEL",
+    "provider": "direct_meta_graph_api",
     "showReelOnFeed": true,
     "coauthors": [
       "ulianakabanova246"
     ],
     "collaboratorInvitationsRequired": true,
-    "autoPublish": true,
-    "quotaStatus": "UNVERIFIED_until_Nov1_reset",
-    "status": "AWAITING_VERIFIED_MEDIA"
+    "autoPublishAt": "2026-10-30T18:00:00+03:00",
+    "approvedNativeMetaJob": "requests/instagram-meta/reels1-back-mobility-20261030-1800-uliana.json",
+    "scheduler": ".github/workflows/publish-reels1-meta-20261030-1800.yml",
+    "status": "SCHEDULED_PENDING_VERIFIED_HQ_ASSET",
+    "metricoolUsage": "NONE"
   },
   "vk": {
     "groupId": 48198173,
