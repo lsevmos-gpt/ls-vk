@@ -1,0 +1,152 @@
+{
+  "id": "reels1-20261030-source-review",
+  "sourceDriveId": "1A3nRzmTg91ZihgjAC_SGk4LedMjoH1FX",
+  "sourceName": "рилс1.mp4",
+  "originalBytes": 386016210,
+  "originalSHA256": "b55744a423c4ee8685b51ad4680a6f94cfe550959e48dac814f0edd3d9ec0398",
+  "durationSeconds": 39.786667,
+  "probe": {
+    "programs": [],
+    "stream_groups": [],
+    "streams": [
+      {
+        "codec_name": "h264",
+        "codec_type": "video",
+        "width": 2160,
+        "height": 3840,
+        "avg_frame_rate": "25/1"
+      },
+      {
+        "codec_name": "aac",
+        "codec_type": "audio",
+        "avg_frame_rate": "0/0"
+      },
+      {
+        "codec_type": "data",
+        "avg_frame_rate": "12800/512"
+      }
+    ],
+    "format": {
+      "duration": "39.786667",
+      "size": "386016210",
+      "bit_rate": "77617199"
+    }
+  },
+  "frames": [
+    {
+      "index": 0,
+      "timecode_seconds": 1.119,
+      "width": 2160,
+      "height": 3840,
+      "filename": "sample_00.jpg"
+    },
+    {
+      "index": 1,
+      "timecode_seconds": 3.606,
+      "width": 2160,
+      "height": 3840,
+      "filename": "sample_01.jpg"
+    },
+    {
+      "index": 2,
+      "timecode_seconds": 6.092,
+      "width": 2160,
+      "height": 3840,
+      "filename": "sample_02.jpg"
+    },
+    {
+      "index": 3,
+      "timecode_seconds": 8.579,
+      "width": 2160,
+      "height": 3840,
+      "filename": "sample_03.jpg"
+    },
+    {
+      "index": 4,
+      "timecode_seconds": 11.066,
+      "width": 2160,
+      "height": 3840,
+      "filename": "sample_04.jpg"
+    },
+    {
+      "index": 5,
+      "timecode_seconds": 13.552,
+      "width": 2160,
+      "height": 3840,
+      "filename": "sample_05.jpg"
+    },
+    {
+      "index": 6,
+      "timecode_seconds": 16.039,
+      "width": 2160,
+      "height": 3840,
+      "filename": "sample_06.jpg"
+    },
+    {
+      "index": 7,
+      "timecode_seconds": 18.526,
+      "width": 2160,
+      "height": 3840,
+      "filename": "sample_07.jpg"
+    },
+    {
+      "index": 8,
+      "timecode_seconds": 21.012,
+      "width": 2160,
+      "height": 3840,
+      "filename": "sample_08.jpg"
+    },
+    {
+      "index": 9,
+      "timecode_seconds": 23.499,
+      "width": 2160,
+      "height": 3840,
+      "filename": "sample_09.jpg"
+    },
+    {
+      "index": 10,
+      "timecode_seconds": 25.986,
+      "width": 2160,
+      "height": 3840,
+      "filename": "sample_10.jpg"
+    },
+    {
+      "index": 11,
+      "timecode_seconds": 28.472,
+      "width": 2160,
+      "height": 3840,
+      "filename": "sample_11.jpg"
+    },
+    {
+      "index": 12,
+      "timecode_seconds": 30.959,
+      "width": 2160,
+      "height": 3840,
+      "filename": "sample_12.jpg"
+    },
+    {
+      "index": 13,
+      "timecode_seconds": 33.446,
+      "width": 2160,
+      "height": 3840,
+      "filename": "sample_13.jpg"
+    },
+    {
+      "index": 14,
+      "timecode_seconds": 35.932,
+      "width": 2160,
+      "height": 3840,
+      "filename": "sample_14.jpg"
+    },
+    {
+      "index": 15,
+      "timecode_seconds": 38.419,
+      "width": 2160,
+      "height": 3840,
+      "filename": "sample_15.jpg"
+    }
+  ],
+  "contactSheet": "media-prep/reels1-review-20261030/contact.jpg",
+  "doesNotPublish": true,
+  "doesNotGenerateFakeSubject": true
+}
