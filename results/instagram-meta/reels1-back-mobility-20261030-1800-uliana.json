@@ -1,0 +1,17 @@
+{
+  "id": "reels1-back-mobility-20261030-1800-uliana",
+  "platform": "instagram-meta",
+  "account": "liniya__sporta",
+  "type": "REELS",
+  "approvedCover": "media/reels1-back-mobility-20261030-approved-cover-meta.jpg",
+  "videoPath": "media/reels1-back-mobility-20261030-ig-vk-hq.mp4",
+  "videoSHA256": "10e0650e3070289e5a793ceb8bf7774f4a07a999ed6ee82e75347ae76afbaac7",
+  "scheduledAt": "2026-10-30T18:00:00+03:00",
+  "collaboratorInvited": "ulianakabanova246",
+  "collaborationStatus": "NOT_YET_INVITED",
+  "status": "reserved_before_any_provider_mutation",
+  "runId": "41077589591",
+  "createdAtUTC": "2026-10-30T15:06:32.776218+00:00",
+  "note": "Exactly one Meta media container and one publication call. NO RETRIES after uncertain mutations.",
+  "lastUpdatedAtUTC": "2026-10-30T15:06:32.776243+00:00"
+}
