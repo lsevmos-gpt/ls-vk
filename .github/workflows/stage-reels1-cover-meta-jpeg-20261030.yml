@@ -1,0 +1,77 @@
+name: PREPARE approved Reels1 cover JPEG for Meta, source exact PNG (no publishing)
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'media-prep/reels1-20261030-cover-jpeg-request.json'
+permissions:
+  contents: write
+concurrency:
+  group: reels1-cover-jpeg-20261030-stage
+  cancel-in-progress: false
+jobs:
+  stage:
+    if: github.repository == 'lsevmos-gpt/ls-vk' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install image QA only
+        run: python -m pip install --quiet --disable-pip-version-check Pillow
+      - name: Convert immutable approved sRGB PNG to Meta supported JPEG with maximum quality
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import hashlib,json
+          from pathlib import Path
+          from PIL import Image,ImageCms,ImageChops,ImageStat
+          def sha(f):
+              with f.open('rb') as x:return hashlib.file_digest(x,'sha256').hexdigest()
+          req=json.loads(Path('media-prep/reels1-20261030-cover-jpeg-request.json').read_text())
+          assert req['id']=='reels1-20261030-cover-meta-jpeg'
+          assert req['sourceSHA256']=='150ae03abc93260e420e4738f5f25e0dbe513b5ccb2998606f4ab8b842c3c010'
+          assert req['doesNotPublish'] is True
+          inp=Path('media-prep/reels1-rc22-cover-20261030/Reels1_RC2_2_1080x1920.png')
+          out=Path('media/reels1-back-mobility-20261030-approved-cover-meta.jpg')
+          qa=Path('results/verification/reels1-back-mobility-20261030-cover-jpeg.json')
+          if out.exists() or qa.exists():
+              raise RuntimeError('Cover already prepared — refusing to overwrite existing file')
+          assert sha(inp)==req['sourceSHA256']
+          im=Image.open(inp).convert('RGB')
+          assert im.size==(1080,1920)
+          assert Image.open(inp).info.get('icc_profile')
+          srgb=ImageCms.ImageCmsProfile(ImageCms.createProfile('sRGB')).tobytes()
+          out.parent.mkdir(exist_ok=True)
+          out_img=im.copy()
+          out_img.save(out,'JPEG',quality=99,subsampling=0,optimize=True,icc_profile=srgb)
+          assert out.stat().st_size<8000000
+          verify=Image.open(out)
+          assert verify.size==im.size and verify.info.get('icc_profile')
+          diff=ImageStat.Stat(ImageChops.difference(im,verify.convert('RGB')))
+          max_mae=max(diff.mean)
+          assert max_mae<2.5,'JPEG has unacceptable artifacts: MAE '+str(diff.mean)
+          receipt={'id':req['id'],'ok':True,'sourcePNG':str(inp),'sourceSHA256':sha(inp),
+              'outputJPEG':str(out),'outputSHA256':sha(out),'sizeBytes':out.stat().st_size,
+              'resolution':'1080x1920','icc':'sRGB','quality':99,'subsampling':0,
+              'maeRGB':diff.mean,'doesNotPublish':True}
+          qa.parent.mkdir(parents=True,exist_ok=True)
+          qa.write_text(json.dumps(receipt,indent=2,ensure_ascii=False)+'\n')
+          print('APPROVED_META_COVER_JPEG_QA',json.dumps(receipt))
+          PY
+      - name: Commit only approved JPEG derivative and QA without posting
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name ls-cover-meta-stage
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add media/reels1-back-mobility-20261030-approved-cover-meta.jpg results/verification/reels1-back-mobility-20261030-cover-jpeg.json
+          git commit -m 'Prepare original-approved RC2.2 Reel cover for Meta cover_url [skip ci]'
+          git pull --rebase origin main
+          git push origin HEAD:main
