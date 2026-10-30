@@ -1,0 +1,23 @@
+{
+  "id": "coach-day-20261030-vk",
+  "provider": "vk",
+  "groupId": 48198173,
+  "groupScreenName": "liniya__sporta",
+  "runId": "41051898648",
+  "source": "media/coach-day-20261030-original.png",
+  "sourceSha256": "96fadda082d858c6f40c637263dd11f134236dfb8dc9dcb917e1fc148f05a345",
+  "sourceBytes": 3563841,
+  "mediaType": "image/png",
+  "resolution": "1080x1920",
+  "approved": true,
+  "withLinks": false,
+  "createdAtUTC": "2026-10-30T11:59:15.992Z",
+  "status": "reserved_before_provider_call",
+  "providerAttempts": 0,
+  "baselineStoryIds": [
+    456240692,
+    456240693,
+    456240694
+  ],
+  "updatedAtUTC": "2026-10-30T11:59:15.992Z"
+}
