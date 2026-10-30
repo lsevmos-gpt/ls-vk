@@ -4,6 +4,7 @@ on:
     branches: [main]
     paths:
       - 'media-prep/reels1-cover-20261030-request.json'
+      - '.github/workflows/reels1-cover-review-20261030.yml'
 permissions:
   contents: write
 concurrency:
@@ -41,7 +42,7 @@ jobs:
           print("REAL_386MB_REELS_1_SOURCE_APPROVED")
           PY
           mkdir -p /tmp/reels1-20261030
-          python -m gdown --id 1A3nRzmTg91ZihgjAC_SGk4LedMjoH1FX -O /tmp/reels1-20261030/original.mp4
+          python -m gdown 1A3nRzmTg91ZihgjAC_SGk4LedMjoH1FX -O /tmp/reels1-20261030/original.mp4
           test "$(stat -c%s /tmp/reels1-20261030/original.mp4)" -eq 386016210 || { echo "::error::SOURCE_FILE_SIZE_MISMATCH"; exit 1; }
           ffprobe -v error -show_entries format=duration,size,bit_rate:stream=codec_type,codec_name,width,height,avg_frame_rate -of json /tmp/reels1-20261030/original.mp4 > /tmp/reels1-20261030/ffprobe.json
       - name: Extract 16 evenly spaced real frames and a labeled contact sheet for editorial selection
