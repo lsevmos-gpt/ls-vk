@@ -13,10 +13,12 @@
   "approved": true,
   "withLinks": false,
   "createdAtUTC": "2026-10-30T11:59:15.432Z",
-  "status": "buffer_accepted",
+  "status": "buffer_sent_meta_verification_pending",
   "providerCreateAttempts": 1,
   "baselineMetaStoryIds": [],
-  "updatedAtUTC": "2026-10-30T11:59:29.972Z",
+  "updatedAtUTC": "2026-10-30T11:59:31.389Z",
   "bufferPostId": "6ae4869980f61ee519161687",
-  "bufferInitialStatus": "sent"
+  "bufferInitialStatus": "sent",
+  "bufferFinalStatus": "sent",
+  "bufferSentAt": "2026-10-30T11:59:29.288Z"
 }
