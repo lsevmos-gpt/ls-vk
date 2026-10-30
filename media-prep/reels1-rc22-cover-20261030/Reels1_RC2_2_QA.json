@@ -1,0 +1,72 @@
+{
+  "document_rule": "Reels_RC2_2.json / RC2.2",
+  "master_current": "Visual System v1.8 — 29.10.2026",
+  "source_video": {
+    "name": "рилс1.mp4",
+    "driveId": "1A3nRzmTg91ZihgjAC_SGk4LedMjoH1FX",
+    "sha256": "b55744a423c4ee8685b51ad4680a6f94cfe550959e48dac814f0edd3d9ec0398",
+    "duration": 39.786667,
+    "frame_timecode_seconds": 8.579,
+    "selected_still_from_original": true,
+    "source_still_sha256": "66fe7fbbc578c648d0211c3edd3cb6881ad0ab49f38203a9423e244fa5ee6b60"
+  },
+  "branch": "fitness",
+  "headline": "РАЗМИНКА ДЛЯ СПИНЫ",
+  "font": {
+    "family": "Roboto Condensed",
+    "weight": 700,
+    "verified": "Roboto Condensed, variable wght axis instantiated to exact 700"
+  },
+  "logo": {
+    "name": "лого фитнес_черный.png",
+    "driveId": "1PeUzCGLsRLLEsiGzPkNp7To8inFXiQLU",
+    "originalSHA256": "e145980feff7d744c5c718aa7f0f59a47fc992fdad7f2260906b98c81e2ecb39",
+    "computedSHA256": "e145980feff7d744c5c718aa7f0f59a47fc992fdad7f2260906b98c81e2ecb39",
+    "originalDimensions": "2048x476",
+    "displayDimensions": "278x65",
+    "unaltered_logo_bytes_embedded_in_editable_SVG": true
+  },
+  "image": {
+    "width": 1080,
+    "height": 1920,
+    "profile": "sRGB",
+    "iccEmbedded": true,
+    "sourcePortraitRetouching": false,
+    "photoOriginalApartFromWholeCanvasScaling": true,
+    "oneAccent": "#A96663",
+    "fitnessBrandGraphicsContainGreen": false
+  },
+  "editableMaster": "Reels1_RC2_2_editable.svg",
+  "png": "Reels1_RC2_2_1080x1920.png",
+  "cropReferences": {
+    "profile_3x4": "/home/runner/work/ls-vk/ls-vk/media-prep/reels1-rc22-cover-20261030/Reels1_RC2_2_preview_profile_3x4.png",
+    "feed_4x5": "/home/runner/work/ls-vk/ls-vk/media-prep/reels1-rc22-cover-20261030/Reels1_RC2_2_preview_feed_4x5.png",
+    "square_1x1": "/home/runner/work/ls-vk/ls-vk/media-prep/reels1-rc22-cover-20261030/Reels1_RC2_2_preview_square_1x1.png"
+  },
+  "qa": {
+    "P01_to_P18": "checked for content, font, logo, format and proportions; visual review required on mobile",
+    "C01": "PASS",
+    "C02": "simulated only; actual Instagram app preview PENDING",
+    "C03": "PASS by dimensions and visual preview, manual review encouraged",
+    "C04": "PASS original fitness logo SHA256",
+    "C05": "N_A no secondary caption",
+    "C06": "PASS authentic source and independent layers",
+    "C07": "N_A not embedded as video first frame",
+    "C08": "PENDING not published",
+    "F01": "PASS fitness style",
+    "F02": "PASS no green graphics",
+    "F03": "PASS dusty-rose line",
+    "F04": "PASS original burgundy-logo",
+    "F05": "PASS actual Roboto Condensed Bold 700",
+    "F06": "PASS warm palette",
+    "F07": "PASS real source frame",
+    "F08": "PASS exact sRGB export plus modeled crops"
+  },
+  "status": "DRAFT_FOR_APPROVAL",
+  "notes": [
+    "Actual Instagram preview cannot be proven from mathematical crops",
+    "Editable SVG text requires Roboto Condensed installed on editing computer; font file not distributed",
+    "No video or social media was published"
+  ],
+  "sha256PNG": "150ae03abc93260e420e4738f5f25e0dbe513b5ccb2998606f4ab8b842c3c010"
+}
