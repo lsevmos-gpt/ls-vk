@@ -1,0 +1,117 @@
+name: "Coach Day 30 Oct 2026 — VK-only lossless RGB Story recovery ONCE"
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/coach-day-20261030-vk-recovery-once.yml'
+permissions:
+  contents: write
+concurrency:
+  group: coach-day-20261030-vk-recovery-once
+  cancel-in-progress: false
+jobs:
+  stage:
+    name: Stage exact pixel-identical RGB PNG and conditional JPEG fallback (NO SOCIAL POSTING)
+    if: github.repository == 'lsevmos-gpt/ls-vk' && github.ref == 'refs/heads/main' && github.actor == 'lsevmos-gpt'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Check one-shot approval and recovery code syntax
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --check scripts/recover_coach_day_20261030_vk.mjs
+          test ! -e results/campaigns/coach-day-20261030-vk-recovery.json
+          test ! -e media/coach-day-20261030-vk-rgb-lossless.png
+          test ! -e media/coach-day-20261030-vk-compat-q100.jpg
+      - name: Download exact prepared RGB PNG and conditional JPEG (no re-encoding)
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --fail --show-error --location --retry 2 --connect-timeout 25 --max-time 160 \
+            'https://at.adobe.com/Vb3zhwHNyZZZyxGE' \
+            -o media/coach-day-20261030-vk-rgb-lossless.png
+          curl --fail --show-error --location --retry 2 --connect-timeout 25 --max-time 160 \
+            'https://at.adobe.com/xjIyOJ5yQDVwTShu' \
+            -o media/coach-day-20261030-vk-compat-q100.jpg
+          printf '%s  %s\n' \
+            '03717dbab0aafb40e0e2f183adfbc49ec3fa7de217fe42d758cc2a0a6f0dcd7f' \
+            media/coach-day-20261030-vk-rgb-lossless.png \
+            'ac25b6436439451838284e2a98339064fc7ab2d228dd6d40a0f4bfc00bcec216' \
+            media/coach-day-20261030-vk-compat-q100.jpg | sha256sum --check --
+      - name: Verify full-resolution exact RGB pixel match with original; PNG retains all detail
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --quiet 'Pillow>=11,<13'
+          python3 - <<'PY'
+          from PIL import Image
+          from pathlib import Path
+          import hashlib, json
+          a=Image.open('media/coach-day-20261030-original.png')
+          b=Image.open('media/coach-day-20261030-vk-rgb-lossless.png')
+          c=Image.open('media/coach-day-20261030-vk-compat-q100.jpg')
+          assert a.size==b.size==c.size==(1080,1920)
+          assert a.mode=='RGBA' and b.mode=='RGB' and c.mode=='RGB'
+          assert a.getchannel('A').getextrema()==(255,255)
+          pixels=a.convert('RGB').tobytes()
+          assert b.tobytes()==pixels, 'RGB PNG pixels differ!'
+          assert hashlib.sha256(pixels).hexdigest()=='31658ad5b8912774d1557d01f4b5f83e7d295d5575fb442e07aa8dfba68c9682'
+          receipt={'status':'lossless_rgb_png_pixel_identical_to_original',
+            'originalRGBAFullyOpaque':True,'dimensions':[1080,1920],
+            'rgbPixelSHA256':hashlib.sha256(pixels).hexdigest(),
+            'originalSha256':'96fadda082d858c6f40c637263dd11f134236dfb8dc9dcb917e1fc148f05a345',
+            'rgbPngSha256':'03717dbab0aafb40e0e2f183adfbc49ec3fa7de217fe42d758cc2a0a6f0dcd7f',
+            'jpegFallbackSha256':'ac25b6436439451838284e2a98339064fc7ab2d228dd6d40a0f4bfc00bcec216',
+            'jpegFallbackQuality':100,'jpegFallbackSubsampling':'4:4:4',
+            'note':'JPEG attempted only after exact PNG upload-stage rejection. No social posts in staging.'}
+          path=Path('results/verification/coach-day-20261030-vk-recovery-media.json')
+          path.parent.mkdir(parents=True,exist_ok=True)
+          path.write_text(json.dumps(receipt,ensure_ascii=False,indent=2)+'\n')
+          print('VK_RECOVERY_1080p_FULLY_LOSSLESS_RGB_PIXEL_MATCH')
+          PY
+      - name: Commit exact prepared media and verification only
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'ls-coach-day-vk-recovery-stage'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -- media/coach-day-20261030-vk-rgb-lossless.png \
+            media/coach-day-20261030-vk-compat-q100.jpg \
+            results/verification/coach-day-20261030-vk-recovery-media.json
+          git commit -m 'Stage pixel-identical VK RGB PNG and conditional high-quality JPEG fallback [skip ci]'
+          git pull --rebase origin main
+          git push origin HEAD:main
+  publish_vk:
+    name: Retry VK Story only after read-only no-duplicate check; verify live
+    needs: stage
+    if: github.repository == 'lsevmos-gpt/ls-vk' && github.ref == 'refs/heads/main' && github.actor == 'lsevmos-gpt'
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    env:
+      VK_GROUP_TOKEN: ${{ secrets.VK_GROUP_TOKEN }}
+      VK_GROUP_ID: '48198173'
+      VK_GROUP_SCREEN_NAME: liniya__sporta
+      VK_API_VERSION: '5.199'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install VK upload client without lifecycle hooks
+        run: npm install --omit=dev --ignore-scripts --no-package-lock --no-audit --no-fund
+      - name: Publish exactly one Coach Day photo Story to VK; never touch Buffer
+        shell: bash
+        run: |
+          set -euo pipefail
+          node scripts/recover_coach_day_20261030_vk.mjs
