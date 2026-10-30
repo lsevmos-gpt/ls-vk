@@ -160,7 +160,7 @@ def main():
     strip.save(OUTPUT/"Reels1_RC2_2_crop_reference.jpg",quality=94,subsampling=0)
 
     # QA: checks never claim a real Instagram publication.
-    assert all(96<=b[0] and b[2]<=984 and 420<=b[1] and b[3]<=1500 for b in headings)
+    assert all(96<=b[0] and b[2]<=984 and 420<=b[1] and b[3]<=1500 for b in (item["visibleTextBBox"] for item in headings))
     assert 96<=logo_x and logo_x+logo_width<=984
     assert 420<=logo_y and logo_y+logo_h<=1500
     qa={
