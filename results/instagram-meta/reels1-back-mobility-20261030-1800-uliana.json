@@ -9,14 +9,17 @@
   "scheduledAt": "2026-10-30T18:00:00+03:00",
   "collaboratorInvited": "ulianakabanova246",
   "collaborationStatus": "invitation_requested; acceptance not independently confirmed",
-  "status": "published_meta_id_received",
+  "status": "published_readback_confirmed",
   "runId": "41077589591",
   "createdAtUTC": "2026-10-30T15:06:32.776218+00:00",
   "note": "Exactly one Meta media container and one publication call. NO RETRIES after uncertain mutations.",
-  "lastUpdatedAtUTC": "2026-10-30T15:08:30.457495+00:00",
+  "lastUpdatedAtUTC": "2026-10-30T15:08:32.670139+00:00",
   "creationId": "18021895766949669",
   "readyAtUTC": "2026-10-30T15:08:12.468491+00:00",
   "publishAttemptUTC": "2026-10-30T15:08:14.033639+00:00",
   "mediaId": "17975762190176941",
-  "publishedAtUTC": "2026-10-30T15:08:30.457475+00:00"
+  "publishedAtUTC": "2026-10-30T15:08:30.457475+00:00",
+  "permalink": "https://www.instagram.com/reel/DfH3e6ugNaL/",
+  "mediaType": "VIDEO",
+  "metaReadbackConfirmed": true
 }
