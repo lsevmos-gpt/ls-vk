@@ -1,0 +1,19 @@
+{
+  "id": "reels1-20261030-cover-meta-jpeg",
+  "ok": true,
+  "sourcePNG": "media-prep/reels1-rc22-cover-20261030/Reels1_RC2_2_1080x1920.png",
+  "sourceSHA256": "150ae03abc93260e420e4738f5f25e0dbe513b5ccb2998606f4ab8b842c3c010",
+  "outputJPEG": "media/reels1-back-mobility-20261030-approved-cover-meta.jpg",
+  "outputSHA256": "7bbfa580df5b22f479acf0e32bd196bea760882d681fdec939af70f27b16523f",
+  "sizeBytes": 728181,
+  "resolution": "1080x1920",
+  "icc": "sRGB",
+  "quality": 99,
+  "subsampling": 0,
+  "maeRGB": [
+    0.2307518325617284,
+    0.149477237654321,
+    0.25862798996913583
+  ],
+  "doesNotPublish": true
+}
