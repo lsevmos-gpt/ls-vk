@@ -13,8 +13,8 @@
   "approved": true,
   "withLinks": false,
   "createdAtUTC": "2026-10-30T11:59:15.432Z",
-  "status": "reserved_before_provider_call",
-  "providerCreateAttempts": 0,
+  "status": "submitting_to_buffer",
+  "providerCreateAttempts": 1,
   "baselineMetaStoryIds": [],
-  "updatedAtUTC": "2026-10-30T11:59:15.433Z"
+  "updatedAtUTC": "2026-10-30T11:59:20.033Z"
 }
