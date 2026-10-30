@@ -8,10 +8,11 @@
   "videoSHA256": "10e0650e3070289e5a793ceb8bf7774f4a07a999ed6ee82e75347ae76afbaac7",
   "scheduledAt": "2026-10-30T18:00:00+03:00",
   "collaboratorInvited": "ulianakabanova246",
-  "collaborationStatus": "NOT_YET_INVITED",
-  "status": "container_create_call_started",
+  "collaborationStatus": "invitation_requested_in_container_fields",
+  "status": "container_created",
   "runId": "41077589591",
   "createdAtUTC": "2026-10-30T15:06:32.776218+00:00",
   "note": "Exactly one Meta media container and one publication call. NO RETRIES after uncertain mutations.",
-  "lastUpdatedAtUTC": "2026-10-30T15:06:35.503642+00:00"
+  "lastUpdatedAtUTC": "2026-10-30T15:06:38.356526+00:00",
+  "creationId": "18021895766949669"
 }
