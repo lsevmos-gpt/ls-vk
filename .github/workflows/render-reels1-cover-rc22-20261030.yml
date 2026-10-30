@@ -31,7 +31,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          python -m gdown 1PeUzCGLsRLLEsiGzPkNp7To8inFXiQLU -O /tmp/reels1-fitness-original.png
+          base64 -d media-prep/reels1-review-20261030/fitness-logo-original.b64 > /tmp/reels1-fitness-original.png
           test "$(stat -c%s /tmp/reels1-fitness-original.png)" -eq 72893
           echo 'e145980feff7d744c5c718aa7f0f59a47fc992fdad7f2260906b98c81e2ecb39  /tmp/reels1-fitness-original.png' | sha256sum -c
       - name: Fetch actual Roboto Condensed variable TTF, instantiate Bold wght 700 in memory
