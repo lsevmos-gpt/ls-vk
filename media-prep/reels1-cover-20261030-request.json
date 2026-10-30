@@ -1,0 +1,8 @@
+{
+  "original_file_name": "рилс1.mp4",
+  "google_drive_file_id": "1A3nRzmTg91ZihgjAC_SGk4LedMjoH1FX",
+  "expected_bytes": 386016210,
+  "purpose": "read_only_frame_extraction_no_publication",
+  "cover_rule": "Reels_RC2_2.json",
+  "note": "Extract genuine frame samples for the approved RC2.2 cover; do not publish/alter the video or create fake source imagery."
+}
