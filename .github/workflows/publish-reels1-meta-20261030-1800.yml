@@ -1,0 +1,98 @@
+name: Publish Reels1 30 Oct 2026 at 18:00 MSK — Instagram native Meta Collab @ulianakabanova246 ONCE
+on:
+  schedule:
+    # Moscow is UTC+3. 14:15 UTC = 17:15 MSK. Worker waits for 18:00 MSK.
+    # Several early triggers protect against GitHub scheduler delays; existing receipt prevents duplicates.
+    - cron: '15,25,35,45,55 14 30 10 *'
+    - cron: '0 15 30 10 *'
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/publish-reels1-meta-20261030-1800.yml'
+permissions:
+  contents: write
+concurrency:
+  group: reels1-uliana-20261030-native-meta-collab-one-submission
+  cancel-in-progress: false
+jobs:
+  readiness_only:
+    name: READ ONLY approved cover, HQ video, native collaborator and Meta account QA (never post)
+    if: github.repository == 'lsevmos-gpt/ls-vk' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    timeout-minutes: 16
+    env:
+      META_IG_ACCESS_TOKEN: ${{ secrets.META_IG_ACCESS_TOKEN }}
+      META_IG_USER_ID: ${{ secrets.META_IG_USER_ID }}
+      META_GRAPH_VERSION: 'v26.0'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Validate scripts and complete approved native collaborator request offline
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m py_compile scripts/publish_reels1_20261030_1800_meta_uliana.py
+          python -m scripts.instagram_collab validate requests/instagram-meta/reels1-back-mobility-20261030-1800-uliana.json
+          python3 - <<'PY'
+          import json,hashlib
+          from pathlib import Path
+          j=json.loads(Path('requests/instagram-meta/reels1-back-mobility-20261030-1800-uliana.json').read_text())
+          source=json.loads(Path('requests/campaigns/reels1-back-mobility-20261030-1800.json').read_text())
+          vid=json.loads(Path('results/verification/reels1-back-mobility-20261030-hq.json').read_text())
+          cov=json.loads(Path('results/verification/reels1-back-mobility-20261030-cover-jpeg.json').read_text())
+          assert j['collaborators']==['ulianakabanova246'] and j['postType']=='reel'
+          assert j['shouldShareToFeed'] is True and j['approved'] is True and j['publicContent'] is True
+          assert j['text']==source['caption'] and source['scheduledFor']=='2026-10-30T18:00:00+03:00'
+          assert vid['ok'] and cov['ok'] and vid['outputBytes']<95000000
+          assert vid['width']==1080 and vid['height']==1920 and vid['fps']==25
+          for p,sha in [(Path(vid['outputPath']),vid['outputSHA256']),(Path(cov['outputJPEG']),cov['outputSHA256'])]:
+              assert p.is_file() and not p.is_symlink()
+              with p.open('rb') as f: assert hashlib.file_digest(f,'sha256').hexdigest()==sha
+          assert cov['sourceSHA256']==source['cover']['sha256']
+          print('DRY_RUN_APPROVED_HQ_REELS_NATIVE_META_COLLAB_READY; NO_POSTING')
+          PY
+      - name: Read-only exact Meta publishing-account verification and publicly accessible media
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$META_IG_ACCESS_TOKEN" && test -n "$META_IG_USER_ID"
+          python -m scripts.instagram_collab check -
+          curl --fail --silent --show-error --head --location --max-time 50 \
+            'https://raw.githubusercontent.com/lsevmos-gpt/ls-vk/main/media/reels1-back-mobility-20261030-ig-vk-hq.mp4' >/dev/null
+          curl --fail --silent --show-error --head --location --max-time 50 \
+            'https://raw.githubusercontent.com/lsevmos-gpt/ls-vk/main/media/reels1-back-mobility-20261030-approved-cover-meta.jpg' >/dev/null
+          echo 'PUBLISHER_READY_ALL_READONLY_META_18MSK'
+  publish_meta_collaboration_once:
+    name: Schedule-native Meta Reel with @ulianakabanova246, only at 18:00 MSK, no replay
+    if: github.repository == 'lsevmos-gpt/ls-vk' && github.ref == 'refs/heads/main' && github.event_name == 'schedule'
+    runs-on: ubuntu-latest
+    timeout-minutes: 75
+    env:
+      META_IG_ACCESS_TOKEN: ${{ secrets.META_IG_ACCESS_TOKEN }}
+      META_IG_USER_ID: ${{ secrets.META_IG_USER_ID }}
+      META_GRAPH_VERSION: 'v26.0'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Python publisher syntax guard
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$META_IG_ACCESS_TOKEN" && test -n "$META_IG_USER_ID"
+          python -m py_compile scripts/publish_reels1_20261030_1800_meta_uliana.py
+          python -m scripts.instagram_collab validate requests/instagram-meta/reels1-back-mobility-20261030-1800-uliana.json
+      - name: Safe pre-create Reel video container after 17:35 MSK, invite native collaborator, publish at 18:00 MSK
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m scripts.publish_reels1_20261030_1800_meta_uliana
