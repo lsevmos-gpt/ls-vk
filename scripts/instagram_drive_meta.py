@@ -176,18 +176,23 @@ def render_meta_2k(source: Path, destination: Path, post_type: str) -> tuple[Pat
         raise DriveMetaError("Source fps/aspect incompatible; manual review, no cropping")
     if not (3 <= meta["duration"] <= (60 if post_type == "story" else 900)):
         raise DriveMetaError("Source duration incompatible with destination")
-    # Keep 1080p and already-compliant 2K sources. Convert only when required.
+    # Avoid a source above Meta's 25 Mb/s video limit, even if its resolution is compatible.
+    # Allow headroom for variable-bitrate peaks; no artificial pixel upscaling.
     resize = w > 1440 or h > 2560
+    source_average_bps = source.stat().st_size * 8 / meta["duration"]
+    source_video_bps = int(v.get("bit_rate") or 0) or source_average_bps
+    bitrate_too_high = source_video_bps > 23_000_000 or source_average_bps > 24_000_000
     video_ok = v["codec_name"] in ("h264", "hevc") and v.get("pix_fmt") in ("yuv420p", "yuvj420p")
     audio_ok = (a.get("codec_name") == "aac" and int(a.get("sample_rate") or 0) == 48000
                 and 0 < int(a.get("bit_rate") or 0) <= 128_000)
-    if not resize and video_ok and audio_ok and source.stat().st_size <= VIDEO_MAX_BYTES[post_type]:
+    if (not resize and video_ok and audio_ok and not bitrate_too_high
+            and source.stat().st_size <= VIDEO_MAX_BYTES[post_type]):
         return source, {"sourceResolution": f"{w}x{h}", "outputResolution": f"{w}x{h}",
                         "reencoded": False, "reason": "Original Meta-compatible video and audio"}
     command = ["ffmpeg", "-hide_banner", "-nostdin", "-loglevel", "error", "-y", "-i", str(source),
                "-map", "0:v:0", "-map", "0:a:0", "-sn", "-dn"]
     # For oversized 2K Story, reduce bitrate but keep pixels and composition.
-    if resize or not video_ok or source.stat().st_size > VIDEO_MAX_BYTES[post_type]:
+    if resize or not video_ok or bitrate_too_high or source.stat().st_size > VIDEO_MAX_BYTES[post_type]:
         filter_ = ("scale=1440:2560:flags=lanczos,format=yuv420p"
                    if resize else "format=yuv420p")
         bitrate = "10000k" if post_type == "story" else "18000k"
@@ -205,7 +210,8 @@ def render_meta_2k(source: Path, destination: Path, post_type: str) -> tuple[Pat
     out = probe(destination)
     ov = out["video"]
     if (int(ov["width"]) > 1440 or int(ov["height"]) > 2560
-            or int(destination.stat().st_size) > VIDEO_MAX_BYTES[post_type]):
+            or int(destination.stat().st_size) > VIDEO_MAX_BYTES[post_type]
+            or (int(ov.get("bit_rate") or 0) or destination.stat().st_size * 8 / out["duration"]) > 24_000_000):
         raise DriveMetaError("Rendered media exceeds 2K or Meta size limit; publishing blocked")
     return destination, {"sourceResolution": f"{w}x{h}",
                          "outputResolution": f"{ov['width']}x{ov['height']}",
