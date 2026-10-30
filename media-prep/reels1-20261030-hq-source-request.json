@@ -1,0 +1,17 @@
+{
+  "id": "reels1-hq-20261030",
+  "sourceDriveFileId": "1A3nRzmTg91ZihgjAC_SGk4LedMjoH1FX",
+  "sourceName": "рилс1.mp4",
+  "originalBytes": 386016210,
+  "originalSHA256": "b55744a423c4ee8685b51ad4680a6f94cfe550959e48dac814f0edd3d9ec0398",
+  "approvedCoverSHA256": "150ae03abc93260e420e4738f5f25e0dbe513b5ccb2998606f4ab8b842c3c010",
+  "coverPath": "media-prep/reels1-rc22-cover-20261030/Reels1_RC2_2_1080x1920.png",
+  "reencodeOnlyForPlatformCompatibility": true,
+  "targetVideoPath": "media/reels1-back-mobility-20261030-ig-vk-hq.mp4",
+  "targetRelease": "2026-10-30T18:00:00+03:00",
+  "doesNotPublish": true,
+  "collaborator": "ulianakabanova246",
+  "instagram": "liniya__sporta",
+  "vkCommunityId": 48198173,
+  "contentApproval": "User approved cover and instructed Reel scheduling with named collaborator and supplied caption."
+}
