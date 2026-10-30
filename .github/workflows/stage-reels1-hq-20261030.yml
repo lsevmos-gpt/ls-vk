@@ -1,0 +1,149 @@
+name: STAGE high-quality Reels1 1080x1920 25fps for IG Metricool and VK — NO PUBLICATION
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'media-prep/reels1-20261030-hq-source-request.json'
+permissions:
+  contents: write
+concurrency:
+  group: prepare-reels1-hq-20261030
+  cancel-in-progress: false
+jobs:
+  stage:
+    if: github.repository == 'lsevmos-gpt/ls-vk' && github.ref == 'refs/heads/main' && github.actor == 'lsevmos-gpt'
+    runs-on: ubuntu-latest
+    timeout-minutes: 55
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Prepare exact source download and H.264 encoder; no social API or publication
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --quiet --disable-pip-version-check gdown
+          command -v ffmpeg >/dev/null && command -v ffprobe >/dev/null || {
+            sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg;
+          }
+          mkdir -p /tmp/reels1-hq-20261030 media results/verification
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          r=json.loads(Path('media-prep/reels1-20261030-hq-source-request.json').read_text())
+          assert r['id']=='reels1-hq-20261030'
+          assert r['sourceDriveFileId']=='1A3nRzmTg91ZihgjAC_SGk4LedMjoH1FX'
+          assert r['sourceName']=='рилс1.mp4'
+          assert r['originalBytes']==386016210
+          assert r['originalSHA256']=='b55744a423c4ee8685b51ad4680a6f94cfe550959e48dac814f0edd3d9ec0398'
+          assert r['approvedCoverSHA256']=='150ae03abc93260e420e4738f5f25e0dbe513b5ccb2998606f4ab8b842c3c010'
+          assert r['reencodeOnlyForPlatformCompatibility'] is True and r['doesNotPublish'] is True
+          assert r['targetRelease']=='2026-10-30T18:00:00+03:00'
+          print('HQ_SOURCE_TARGET_AND_OWNER_APPROVAL_VERIFIED')
+          PY
+          python -m gdown 1A3nRzmTg91ZihgjAC_SGk4LedMjoH1FX -O /tmp/reels1-hq-20261030/original.mp4
+          test "$(stat -c%s /tmp/reels1-hq-20261030/original.mp4)" -eq 386016210 || { echo '::error::ORIGINAL_SIZE_CHANGED'; exit 1; }
+          echo 'b55744a423c4ee8685b51ad4680a6f94cfe550959e48dac814f0edd3d9ec0398  /tmp/reels1-hq-20261030/original.mp4' | sha256sum --check
+          echo '150ae03abc93260e420e4738f5f25e0dbe513b5ccb2998606f4ab8b842c3c010  media-prep/reels1-rc22-cover-20261030/Reels1_RC2_2_1080x1920.png' | sha256sum --check
+          ffprobe -v error -show_entries format=size,duration,bit_rate:stream=codec_type,codec_name,width,height,avg_frame_rate,pix_fmt,sample_rate,channels,color_space,color_transfer,color_primaries -of json \
+            /tmp/reels1-hq-20261030/original.mp4 > /tmp/reels1-hq-20261030/original-probe.json
+      - name: High-quality two-pass H.264 from immutable 4K source, 1080x1920, 25fps, 18Mbps, AAC 128k
+        shell: bash
+        run: |
+          set -euo pipefail
+          INPUT=/tmp/reels1-hq-20261030/original.mp4
+          OUTPUT=media/reels1-back-mobility-20261030-ig-vk-hq.mp4
+          PASSFILE=/tmp/reels1-hq-20261030/twopass
+          ffmpeg -hide_banner -nostdin -loglevel error -stats \
+            -i "$INPUT" -map 0:v:0 -an -sn -dn \
+            -vf 'scale=1080:1920:flags=lanczos,format=yuv420p' -r 25 \
+            -c:v libx264 -preset slow -profile:v high -level 4.2 \
+            -b:v 18000k -maxrate 22500k -bufsize 45000k \
+            -g 50 -keyint_min 50 -sc_threshold 0 -x264-params 'open-gop=0' \
+            -pass 1 -passlogfile "$PASSFILE" \
+            -f null -y /dev/null
+          ffmpeg -hide_banner -nostdin -loglevel error -stats \
+            -i "$INPUT" -map 0:v:0 -map 0:a:0 -sn -dn \
+            -vf 'scale=1080:1920:flags=lanczos,format=yuv420p' -r 25 \
+            -c:v libx264 -preset slow -profile:v high -level 4.2 \
+            -b:v 18000k -maxrate 22500k -bufsize 45000k \
+            -g 50 -keyint_min 50 -sc_threshold 0 -x264-params 'open-gop=0' \
+            -pass 2 -passlogfile "$PASSFILE" \
+            -c:a aac -b:a 128k -ar 48000 -ac 2 \
+            -movflags +faststart \
+            -y "$OUTPUT"
+          test "$(stat -c%s "$OUTPUT")" -lt 95000000 || {
+            echo '::error::HQ output exceeds safe GitHub/API storage threshold; stop rather than silently compress'; exit 1;
+          }
+          echo "HQ_VIDEO_BYTES=$(stat -c%s "$OUTPUT")"
+      - name: Strict source/video/audio/caption-cover readiness quality report
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import hashlib,json,subprocess
+          from pathlib import Path
+          from datetime import datetime,timezone
+          origin=Path('/tmp/reels1-hq-20261030/original.mp4')
+          output=Path('media/reels1-back-mobility-20261030-ig-vk-hq.mp4')
+          cover=Path('media-prep/reels1-rc22-cover-20261030/Reels1_RC2_2_1080x1920.png')
+          def sha(p):
+            with p.open('rb') as f: return hashlib.file_digest(f,'sha256').hexdigest()
+          def probe(p):
+            return json.loads(subprocess.check_output(['ffprobe','-v','error',
+              '-show_entries','format=size,duration,bit_rate,format_name:stream=codec_type,codec_name,width,height,avg_frame_rate,pix_fmt,sample_rate,channels,profile,level,bit_rate',
+              '-of','json',str(p)],timeout=50))
+          original=probe(origin)
+          out=probe(output)
+          v=next(x for x in out['streams'] if x['codec_type']=='video')
+          a=next(x for x in out['streams'] if x['codec_type']=='audio')
+          src=next(x for x in original['streams'] if x['codec_type']=='video')
+          assert sha(origin)=='b55744a423c4ee8685b51ad4680a6f94cfe550959e48dac814f0edd3d9ec0398'
+          assert sha(cover)=='150ae03abc93260e420e4738f5f25e0dbe513b5ccb2998606f4ab8b842c3c010'
+          assert src['width']==2160 and src['height']==3840 and src['avg_frame_rate']=='25/1'
+          assert (v['codec_name'],v['width'],v['height'],v['avg_frame_rate'],v['pix_fmt'])==('h264',1080,1920,'25/1','yuv420p')
+          assert a['codec_name']=='aac' and a['sample_rate']=='48000' and a['channels']==2
+          assert int(a.get('bit_rate',0))>=115000 and int(a.get('bit_rate',0))<=133000
+          assert 18_000_000 <= output.stat().st_size < 95_000_000
+          assert 3 <= float(out['format']['duration']) <= 60
+          assert abs(float(out['format']['duration'])-float(original['format']['duration']))<0.17
+          assert 14000000 <= int(v.get('bit_rate',0)) <= 22500000
+          assert 'mp4' in out['format']['format_name']
+          # Check faststart: 'moov' atom must be ahead of 'mdat'.
+          with output.open('rb') as f: head=f.read(120000)
+          assert b'moov' in head and b'ftyp' in head,'MP4 faststart moov atom missing'
+          receipt={'id':'reels1-20261030-hq','ok':True,'doesNotPublish':True,
+             'sourceName':'рилс1.mp4','sourceDriveFileId':'1A3nRzmTg91ZihgjAC_SGk4LedMjoH1FX',
+             'sourceSHA256':sha(origin),'sourceBytes':origin.stat().st_size,
+             'sourceWidth':2160,'sourceHeight':3840,'sourceFps':25,
+             'coverPath':str(cover),'coverSHA256':sha(cover),
+             'outputPath':str(output),'outputSHA256':sha(output),'outputBytes':output.stat().st_size,
+             'durationSec':float(out['format']['duration']),
+             'width':1080,'height':1920,'fps':25,
+             'videoCodec':'h264','videoProfile':v.get('profile'),'videoBitrate':int(v.get('bit_rate',0)),
+             'audioCodec':'aac','audioBitrate':int(a.get('bit_rate',0)),
+             'audioSampleRate':int(a['sample_rate']),'channels':a['channels'],
+             'color420':True,'faststartVerified':True,
+             'reencodeReason':'Metricool/Meta maximum width 1920, 9:16 ideal, average bitrate below 25Mbps',
+             'releaseAtMoscow':'2026-10-30T18:00:00+03:00',
+             'checkedAtUTC':datetime.now(timezone.utc).isoformat()}
+          p=Path('results/verification/reels1-back-mobility-20261030-hq.json')
+          p.parent.mkdir(parents=True,exist_ok=True)
+          p.write_text(json.dumps(receipt,ensure_ascii=False,indent=2)+'\n')
+          print('REELS1_HQ_PREPARE_VERIFIED',json.dumps(receipt,ensure_ascii=False))
+          PY
+      - name: Persist only approved high-quality MP4 and QA proof (no social publisher calls)
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name ls-hq-social-preparer
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add media/reels1-back-mobility-20261030-ig-vk-hq.mp4 results/verification/reels1-back-mobility-20261030-hq.json
+          git diff --cached --quiet && exit 0
+          git commit -m 'Stage exact approved Reels1 1080p high-bitrate Instagram/VK video [skip ci]'
+          git pull --rebase origin main
+          git push origin HEAD:main
