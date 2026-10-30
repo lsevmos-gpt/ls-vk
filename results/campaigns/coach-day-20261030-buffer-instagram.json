@@ -13,8 +13,10 @@
   "approved": true,
   "withLinks": false,
   "createdAtUTC": "2026-10-30T11:59:15.432Z",
-  "status": "submitting_to_buffer",
+  "status": "buffer_accepted",
   "providerCreateAttempts": 1,
   "baselineMetaStoryIds": [],
-  "updatedAtUTC": "2026-10-30T11:59:20.033Z"
+  "updatedAtUTC": "2026-10-30T11:59:29.972Z",
+  "bufferPostId": "6ae4869980f61ee519161687",
+  "bufferInitialStatus": "sent"
 }
