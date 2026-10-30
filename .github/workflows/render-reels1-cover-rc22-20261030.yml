@@ -1,0 +1,61 @@
+name: Render exact RC2.2 fitness Reels1 cover using REAL source frame and MASTER logo (NO PUBLICATION)
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'media-prep/reels1-cover-20261030-render.json'
+      - '.github/workflows/render-reels1-cover-rc22-20261030.yml'
+permissions:
+  contents: write
+concurrency:
+  group: rc22-reels1-cover-render-20261030
+  cancel-in-progress: false
+jobs:
+  render:
+    if: github.repository == 'lsevmos-gpt/ls-vk' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install exact Roboto Condensed static-instancing and lossless PNG renderer
+        run: |
+          set -euo pipefail
+          python -m pip install --quiet --disable-pip-version-check Pillow fonttools gdown
+      - name: Verify actual original fitness MASTER PNG bytes, no generated logos
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m gdown 1PeUzCGLsRLLEsiGzPkNp7To8inFXiQLU -O /tmp/reels1-fitness-original.png
+          test "$(stat -c%s /tmp/reels1-fitness-original.png)" -eq 72893
+          echo 'e145980feff7d744c5c718aa7f0f59a47fc992fdad7f2260906b98c81e2ecb39  /tmp/reels1-fitness-original.png' | sha256sum -c
+      - name: Fetch actual Roboto Condensed variable TTF, instantiate Bold wght 700 in memory
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --fail --silent --show-error --location --retry 2 --max-time 70 \
+            'https://raw.githubusercontent.com/google/fonts/main/ofl/robotocondensed/RobotoCondensed%5Bwght%5D.ttf' \
+            -o /tmp/RobotoCondensed-variable.ttf
+          file /tmp/RobotoCondensed-variable.ttf
+          test "$(stat -c%s /tmp/RobotoCondensed-variable.ttf)" -gt 10000
+      - name: Render authentic 1080x1920 sRGB cover and separate-layer editable SVG from 8.579s frame
+        shell: bash
+        run: |
+          set -euo pipefail
+          python scripts/render_reels1_cover_rc22_20261030.py
+      - name: Persist only genuine resulting cover, editable master, crops and QA (NEVER publish)
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name ls-reels-cover-render
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add media-prep/reels1-rc22-cover-20261030/
+          git diff --cached --quiet && exit 0
+          git commit -m 'Render Reels1 cover with RC2.2 original fitness assets [skip ci]'
+          git pull --rebase origin main
+          git push origin HEAD:main
