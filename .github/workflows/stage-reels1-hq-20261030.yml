@@ -107,7 +107,8 @@ jobs:
           assert sha(cover)=='150ae03abc93260e420e4738f5f25e0dbe513b5ccb2998606f4ab8b842c3c010'
           assert src['width']==2160 and src['height']==3840 and src['avg_frame_rate']=='25/1'
           print('FFPROBE_HQ_ACTUAL',json.dumps({'video':v,'audio':a,'format':out['format']},ensure_ascii=False),flush=True)
-          assert (v['codec_name'],v['width'],v['height'],v['pix_fmt'])==('h264',1080,1920,'yuv420p'),'Wrong codec/size/color format'
+          assert (v['codec_name'],v['width'],v['height'])==('h264',1080,1920),'Wrong codec or dimensions'
+          assert v['pix_fmt'] in ('yuv420p','yuvj420p'),'Wrong chroma subsampling; need original compatible 4:2:0 H264'
           from fractions import Fraction
           fps=float(Fraction(v['avg_frame_rate']))
           assert abs(fps-25)<0.10,'Wrong frame rate: '+str(fps)
@@ -132,7 +133,7 @@ jobs:
              'videoCodec':'h264','videoProfile':v.get('profile'),'videoBitrate':int(v.get('bit_rate',0)),
              'audioCodec':'aac','audioBitrate':int(a.get('bit_rate',0)),
              'audioSampleRate':int(a['sample_rate']),'channels':a['channels'],
-             'color420':True,'faststartVerified':True,
+             'color420':True,'fullRange4KPreserved':v['pix_fmt']=='yuvj420p','actualPixFmt':v['pix_fmt'],'faststartVerified':True,
              'reencodeReason':'Meta Graph API compatibility; maximum width 1920, 9:16, video below 25Mbps',
              'releaseAtMoscow':'2026-10-30T18:00:00+03:00',
              'checkedAtUTC':datetime.now(timezone.utc).isoformat()}
