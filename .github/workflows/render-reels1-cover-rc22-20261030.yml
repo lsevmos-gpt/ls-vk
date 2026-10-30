@@ -49,6 +49,23 @@ jobs:
         run: |
           set -euo pipefail
           python scripts/render_reels1_cover_rc22_20261030.py
+      - name: Create lightweight full 9:16 preview from verified final PNG (unchanged composition)
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from PIL import Image
+          from pathlib import Path
+          folder=Path('media-prep/reels1-rc22-cover-20261030')
+          p=folder/'Reels1_RC2_2_1080x1920.png'
+          thumb=folder/'Reels1_RC2_2_full_preview.jpg'
+          assert p.is_file()
+          im=Image.open(p).convert('RGB')
+          assert im.size==(1080,1920)
+          im.resize((540,960),Image.Resampling.LANCZOS).save(thumb,'JPEG',quality=84,optimize=True,subsampling=0)
+          assert thumb.stat().st_size<500000
+          print('SHOWABLE_EXACT_COVER_PREVIEW',thumb.stat().st_size)
+          PY
       - name: Persist only genuine resulting cover, editable master, crops and QA (NEVER publish)
         shell: bash
         run: |
