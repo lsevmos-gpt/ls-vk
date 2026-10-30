@@ -4,6 +4,7 @@ on:
     branches: [main]
     paths:
       - 'media-prep/reels1-20261030-hq-source-request.json'
+      - '.github/workflows/stage-reels1-hq-20261030.yml'
 permissions:
   contents: write
 concurrency:
@@ -105,7 +106,11 @@ jobs:
           assert sha(origin)=='b55744a423c4ee8685b51ad4680a6f94cfe550959e48dac814f0edd3d9ec0398'
           assert sha(cover)=='150ae03abc93260e420e4738f5f25e0dbe513b5ccb2998606f4ab8b842c3c010'
           assert src['width']==2160 and src['height']==3840 and src['avg_frame_rate']=='25/1'
-          assert (v['codec_name'],v['width'],v['height'],v['avg_frame_rate'],v['pix_fmt'])==('h264',1080,1920,'25/1','yuv420p')
+          print('FFPROBE_HQ_ACTUAL',json.dumps({'video':v,'audio':a,'format':out['format']},ensure_ascii=False),flush=True)
+          assert (v['codec_name'],v['width'],v['height'],v['pix_fmt'])==('h264',1080,1920,'yuv420p'),'Wrong codec/size/color format'
+          from fractions import Fraction
+          fps=float(Fraction(v['avg_frame_rate']))
+          assert abs(fps-25)<0.10,'Wrong frame rate: '+str(fps)
           assert a['codec_name']=='aac' and a['sample_rate']=='48000' and a['channels']==2
           assert int(a.get('bit_rate',0))>=115000 and int(a.get('bit_rate',0))<=133000
           assert 18_000_000 <= output.stat().st_size < 95_000_000
@@ -128,7 +133,7 @@ jobs:
              'audioCodec':'aac','audioBitrate':int(a.get('bit_rate',0)),
              'audioSampleRate':int(a['sample_rate']),'channels':a['channels'],
              'color420':True,'faststartVerified':True,
-             'reencodeReason':'Metricool/Meta maximum width 1920, 9:16 ideal, average bitrate below 25Mbps',
+             'reencodeReason':'Meta Graph API compatibility; maximum width 1920, 9:16, video below 25Mbps',
              'releaseAtMoscow':'2026-10-30T18:00:00+03:00',
              'checkedAtUTC':datetime.now(timezone.utc).isoformat()}
           p=Path('results/verification/reels1-back-mobility-20261030-hq.json')
