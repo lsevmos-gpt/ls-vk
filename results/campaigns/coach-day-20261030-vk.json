@@ -12,12 +12,13 @@
   "approved": true,
   "withLinks": false,
   "createdAtUTC": "2026-10-30T11:59:15.992Z",
-  "status": "submitting_to_vk",
+  "status": "manual_reconciliation_required",
   "providerAttempts": 1,
   "baselineStoryIds": [
     456240692,
     456240693,
     456240694
   ],
-  "updatedAtUTC": "2026-10-30T11:59:17.483Z"
+  "updatedAtUTC": "2026-10-30T12:00:40.653Z",
+  "error": "VK story upload attempt 4/4 failed: VK upload error: go upload error"
 }
