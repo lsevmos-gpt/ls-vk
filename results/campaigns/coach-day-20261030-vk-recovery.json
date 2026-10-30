@@ -16,8 +16,9 @@
     456240694
   ],
   "createdAtUTC": "2026-10-30T12:06:28.368Z",
-  "status": "reconciled_no_prior_story_reserved",
-  "providerAttempts": 0,
+  "status": "submitting_pixel_identical_rgb_png",
+  "providerAttempts": 1,
   "note": "No retry after unknown save result. JPEG only after explicitly failed PNG upload.",
-  "updatedAtUTC": "2026-10-30T12:06:28.368Z"
+  "updatedAtUTC": "2026-10-30T12:06:30.344Z",
+  "attemptedMedia": "media/coach-day-20261030-vk-rgb-lossless.png"
 }
