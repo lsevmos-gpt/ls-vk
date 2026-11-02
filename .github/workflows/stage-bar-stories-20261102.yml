@@ -59,7 +59,7 @@ jobs:
             c2a5b7c9d2028b83ccf8c69e2b9d2347ed413dabf189153d24a3ac3a87d62f2b /tmp/ls-bar-20261102/green.mp4 | sha256sum -c
           echo 'GREEN_ORIGINAL_MATCHES_DRIVE'
           curl --fail --show-error --location --retry 1 --connect-timeout 20 --max-time 600 \
-            'https://at.adobe.com/sS5B33potSf4cbEQ' -o /tmp/ls-bar-20261102/isotonic.mp4
+            'https://at.adobe.com/uJORfj55WmmMj4ex' -o /tmp/ls-bar-20261102/isotonic.mp4
           printf '%s  %s\n' \
             1ed4d276d704ff645fadbc5c32792ea5f666ae053f898d16338c61047a602a20 /tmp/ls-bar-20261102/isotonic.mp4 | sha256sum -c
           python3 - <<'PY'
