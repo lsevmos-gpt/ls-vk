@@ -1,0 +1,109 @@
+name: Publish 02Nov exact Heroes6D outage photo Story via Meta and VK exactly once
+on:
+  push:
+    branches: [main]
+    paths:
+      - requests/campaigns/ls-heroes6d-electricity-off-20261102-release.json
+permissions:
+  contents: write
+concurrency:
+  group: ls-heroes6d-electricity-off-20261102-publish-once
+  cancel-in-progress: false
+jobs:
+  preflight:
+    name: Read-only SHA256, original image and Meta JPEG source readiness
+    if: github.repository == 'lsevmos-gpt/ls-vk' && github.ref == 'refs/heads/main' && github.actor == 'lsevmos-gpt'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - name: Validate publisher scripts and immutable source, prevent duplicate submissions
+        shell: bash
+        run: |
+          set -euo pipefail
+          test ! -e results/campaigns/ls-heroes6d-electricity-off-20261102-ig.json || { echo "::error::IG already reserved"; exit 1; }
+          test ! -e results/campaigns/ls-heroes6d-electricity-off-20261102-vk.json || { echo "::error::VK already reserved"; exit 1; }
+          python -m py_compile scripts/publish_heroes6d_electricity_off_meta.py
+          node --check scripts/publish_heroes6d_electricity_off_vk.mjs
+          python3 - <<'PY'
+          import json,hashlib
+          from pathlib import Path
+          rid='ls-heroes6d-electricity-off-20261102'
+          release=json.loads(Path('requests/campaigns/'+rid+'-release.json').read_text())
+          stage=json.loads(Path('results/verification/'+rid+'-stage.json').read_text())
+          assert release['id']==stage['id']==rid
+          assert release['approved'] is True and release['publicContent'] is True and release['submitNow'] is True
+          assert release['instagram']=='liniya__sporta' and release['vkGroupId']==48198173
+          assert release['stories']==['electricity-off-heroes6d']
+          assert stage['ok'] is True and stage['stagingOnly'] is True and stage['originalVKUnchanged'] is True
+          assert stage['sourceSha256']=='b49ca56bfee78725407f5172f52d53106c93fca3b9e7cb82eff5999ffd95ecbb'
+          assert stage['sourceBytes']==3223258 and stage['width']==1080 and stage['height']==1920 and stage['jpgQuality']==100
+          for path,expected,size in [
+              (stage['pngPath'],stage['sourceSha256'],stage['sourceBytes']),
+              (stage['jpgPath'],stage['jpgSHA256'],stage['jpgBytes'])]:
+            f=Path(path)
+            assert f.is_file() and not f.is_symlink() and f.stat().st_size==size
+            with f.open('rb') as h:assert hashlib.file_digest(h,'sha256').hexdigest()==expected
+          print('EXACT_SOURCE_VERIFIED_AND_ONE_PHOTO_STORY_APPROVED_FOR_META_AND_VK')
+          PY
+      - name: Check Meta public JPG URL without any provider writes
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --silent --show-error --fail --location --head --max-time 30 \
+            https://raw.githubusercontent.com/lsevmos-gpt/ls-vk/main/media/ls-heroes6d-electricity-off-20261102-meta.jpg >/dev/null
+  instagram_meta:
+    needs: preflight
+    name: Direct Meta publish one original design as Instagram image Story
+    if: github.repository == 'lsevmos-gpt/ls-vk' && github.ref == 'refs/heads/main' && github.actor == 'lsevmos-gpt'
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    env:
+      META_IG_ACCESS_TOKEN: ${{ secrets.META_IG_ACCESS_TOKEN }}
+      META_IG_USER_ID: ${{ secrets.META_IG_USER_ID }}
+      META_GRAPH_VERSION: v26.0
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Publish single Instagram Story through direct Meta, no retry, read back ID
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$META_IG_ACCESS_TOKEN" && test -n "$META_IG_USER_ID"
+          python -m scripts.publish_heroes6d_electricity_off_meta
+  vk:
+    needs: preflight
+    name: Post unchanged original PNG as VK image Story in group 48198173
+    if: github.repository == 'lsevmos-gpt/ls-vk' && github.ref == 'refs/heads/main' && github.actor == 'lsevmos-gpt'
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    env:
+      VK_GROUP_TOKEN: ${{ secrets.VK_GROUP_TOKEN }}
+      VK_GROUP_ID: '48198173'
+      VK_GROUP_SCREEN_NAME: liniya__sporta
+      VK_API_VERSION: '5.199'
+      SOCIAL_PLATFORM: vk
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install VK upload dependencies
+        run: npm install --omit=dev --ignore-scripts --no-package-lock --no-audit --no-fund
+      - name: Publish exact PNG into one VK Story, read back Story ID, no retry
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$VK_GROUP_TOKEN"
+          node scripts/publish_heroes6d_electricity_off_vk.mjs
