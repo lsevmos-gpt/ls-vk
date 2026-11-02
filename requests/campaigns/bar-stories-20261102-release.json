@@ -1,0 +1,22 @@
+{
+  "id": "bar-stories-20261102-release",
+  "approved": true,
+  "publicContent": true,
+  "submitNow": true,
+  "instagram": "liniya__sporta",
+  "vkGroupId": 48198173,
+  "stories": [
+    "intro-bar",
+    "green-smoothie",
+    "isotonic-archive"
+  ],
+  "channels": [
+    "instagram-meta",
+    "vk"
+  ],
+  "quality": {
+    "instagram": "2K 1440x2560 for two product videos; 1080x1920 native intro",
+    "vk": "1080x1920 high quality"
+  },
+  "onceOnly": true
+}
