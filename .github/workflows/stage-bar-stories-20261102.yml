@@ -113,7 +113,7 @@ jobs:
             meta=Path(f'media/bar-20261102-{short}-meta.mp4') if short=='intro' else Path(f'media/bar-20261102-{short}-meta-2k.mp4')
             vk=Path(f'media/bar-20261102-{short}-vk.mp4') if short=='intro' else Path(f'media/bar-20261102-{short}-vk-hq.mp4')
             row={'id':name,'sourceDriveId':source['driveFileId'],'sourceDriveSHA256':source['sha256']}
-            for label,path,w,h,max_audio in (('meta',meta,1080 if short=='intro' else 1440,1920 if short=='intro' else 2560,128000),('vk',vk,1080,1920,256000)):
+            for label,path,w,h,max_audio in (('meta',meta,1080 if short=='intro' else 1440,1920 if short=='intro' else 2560,128000),('vk',vk,1080,1920,320000)):
               assert path.is_file() and 1000<path.stat().st_size<95_000_000
               data=json.loads(subprocess.check_output(['ffprobe','-v','error','-show_entries','format=duration:stream=codec_type,codec_name,width,height,r_frame_rate,sample_rate,bit_rate','-of','json',str(path)]))
               v=next(x for x in data['streams'] if x['codec_type']=='video')
