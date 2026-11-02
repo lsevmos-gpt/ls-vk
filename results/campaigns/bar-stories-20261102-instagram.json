@@ -3,7 +3,7 @@
   "provider": "meta",
   "account": "liniya__sporta",
   "releaseMode": "immediate",
-  "status": "submission_started",
+  "status": "partial_published",
   "runId": "41428736550",
   "createdAtUTC": "2026-11-02T10:27:19.751370+00:00",
   "published": [
@@ -14,10 +14,16 @@
       "publishedAtUTC": "2026-11-02T10:27:58.621818+00:00",
       "permalink": "https://www.instagram.com/stories/liniya__sporta/4021458619807375445",
       "metaReadbackConfirmed": true
+    },
+    {
+      "index": 2,
+      "name": "green-smoothie",
+      "instagramMediaId": "18415580836091445",
+      "publishedAtUTC": "2026-11-02T10:29:03.684325+00:00",
+      "permalink": "https://www.instagram.com/stories/liniya__sporta/4021459105507791048",
+      "metaReadbackConfirmed": true
     }
   ],
   "note": "Only three explicitly approved Stories. No provider mutation retries.",
-  "updatedAtUTC": "2026-11-02T10:28:03.236073+00:00",
-  "attemptingIndex": 2,
-  "attemptingItem": "green-smoothie"
+  "updatedAtUTC": "2026-11-02T10:29:03.684344+00:00"
 }
