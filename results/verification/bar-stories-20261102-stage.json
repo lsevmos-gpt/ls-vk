@@ -1,0 +1,50 @@
+{
+  "id": "bar-stories-20261102",
+  "ok": true,
+  "account": "liniya__sporta",
+  "vkGroupId": 48198173,
+  "sourceOriginalsVerified": true,
+  "published": false,
+  "sequence": [
+    {
+      "id": "intro-bar",
+      "sourceDriveId": "1SoexOQPc8MA_gIZQQ1iUF9FjNppA-cqy",
+      "sourceDriveSHA256": "1158b8e13b776740476522512843bf3b24bf4a78a764fcdcc693dadf85af1d7b",
+      "metaPath": "media/bar-20261102-intro-meta.mp4",
+      "metaBytes": 2915917,
+      "metaSHA256": "1f326ce42b33bc147db003d5d0215511b6a9230fd617044269b64605833420e1",
+      "metaResolution": "1080x1920",
+      "vkPath": "media/bar-20261102-intro-vk.mp4",
+      "vkBytes": 3017051,
+      "vkSHA256": "1158b8e13b776740476522512843bf3b24bf4a78a764fcdcc693dadf85af1d7b",
+      "vkResolution": "1080x1920"
+    },
+    {
+      "id": "green-smoothie",
+      "sourceDriveId": "1aX7LR1EXY09SbhI2GtcvszDyYUwq9T25",
+      "sourceDriveSHA256": "c2a5b7c9d2028b83ccf8c69e2b9d2347ed413dabf189153d24a3ac3a87d62f2b",
+      "metaPath": "media/bar-20261102-green-meta-2k.mp4",
+      "metaBytes": 17379599,
+      "metaSHA256": "ce83a87993f1f858ddf2cef7649054445af7af778ad7362d30ae5fe7f621a904",
+      "metaResolution": "1440x2560",
+      "vkPath": "media/bar-20261102-green-vk-hq.mp4",
+      "vkBytes": 13106495,
+      "vkSHA256": "661aca26452a8c1e32d7d9028ef804e8b2b9adfbafddab0a2d5d2a4a39754bff",
+      "vkResolution": "1080x1920"
+    },
+    {
+      "id": "isotonic-archive",
+      "sourceDriveId": "1dt10yPuCOMvanJnU8zE6efWfvFWy67T7",
+      "sourceDriveSHA256": "1ed4d276d704ff645fadbc5c32792ea5f666ae053f898d16338c61047a602a20",
+      "metaPath": "media/bar-20261102-isotonic-meta-2k.mp4",
+      "metaBytes": 11141978,
+      "metaSHA256": "49af9e3387e36009aa90e1e1ed95aae246d8bacfaa8fa3b5029e13c45cf7bafd",
+      "metaResolution": "1440x2560",
+      "vkPath": "media/bar-20261102-isotonic-vk-hq.mp4",
+      "vkBytes": 12840396,
+      "vkSHA256": "8e479ee0082df9cc7f5be814119c0b16b3968104cf946bacfc7315504a641fc7",
+      "vkResolution": "1080x1920"
+    }
+  ],
+  "validatedAtUTC": "2026-11-02T10:25:26.884328+00:00"
+}
