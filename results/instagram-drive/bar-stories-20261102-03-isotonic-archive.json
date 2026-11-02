@@ -1,0 +1,6 @@
+{
+  "id": "bar-stories-20261102-03-isotonic-archive",
+  "status": "superseded_no_provider_submission",
+  "supersededBy": "bar-stories-20261102-release",
+  "note": "2026-11-02 initial Google Drive service-account workflow failed before any Meta call. Prevent duplicate on future action dispatch. Use direct Meta/VK campaign release instead."
+}

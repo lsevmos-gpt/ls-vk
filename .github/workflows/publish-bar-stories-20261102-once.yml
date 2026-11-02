@@ -1,0 +1,111 @@
+name: Publish 02 Nov Bar Stories Instagram Meta 2K and VK HQ exactly once
+on:
+  push:
+    branches: [main]
+    paths:
+      - requests/campaigns/bar-stories-20261102-release.json
+permissions:
+  contents: write
+concurrency:
+  group: bar-20261102-instagram-meta-vk-immediate-one-shot
+  cancel-in-progress: false
+jobs:
+  readiness:
+    name: Validate 3 SHA-locked original media sources and six final outputs, NO PUBLISH
+    if: github.repository == 'lsevmos-gpt/ls-vk' && github.ref == 'refs/heads/main' && github.actor == 'lsevmos-gpt'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - name: Validate both publishing scripts offline
+        run: |
+          python -m py_compile scripts/publish_bar_stories_20261102_ig.py
+          node --check scripts/publish_bar_stories_20261102_vk.mjs
+      - name: Validate release, source identities, original hashes and six final media SHA-256
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f results/verification/bar-stories-20261102-stage.json
+          test ! -f results/campaigns/bar-stories-20261102-instagram.json || { echo "::error::IG already reserved, never duplicate"; exit 1; }
+          test ! -f results/campaigns/bar-stories-20261102-vk.json || { echo "::error::VK already reserved, never duplicate"; exit 1; }
+          python3 - <<'PY'
+          import json,hashlib
+          from pathlib import Path
+          release=json.loads(Path('requests/campaigns/bar-stories-20261102-release.json').read_text())
+          m=json.loads(Path('media-prep/bar-stories-20261102.json').read_text())
+          qa=json.loads(Path('results/verification/bar-stories-20261102-stage.json').read_text())
+          ids=['intro-bar','green-smoothie','isotonic-archive']
+          assert release['id']=='bar-stories-20261102-release' and release['approved'] and release['publicContent'] and release['submitNow']
+          assert release['instagram']=='liniya__sporta' and release['vkGroupId']==48198173 and release['stories']==ids
+          assert m['id']=='bar-stories-20261102' and m['approved'] and m['publicContent'] and m['postType']=='story'
+          assert qa['id']==m['id'] and qa['ok'] and qa['sourceOriginalsVerified'] and not qa['published']
+          assert len(qa['sequence'])==len(m['sequence'])==3
+          assert [x['id'] for x in qa['sequence']]==[x['id'] for x in m['sequence']]==ids
+          for i,(s,q) in enumerate(zip(m['sequence'],qa['sequence'])):
+            assert s['sha256']==q['sourceDriveSHA256'] and s['driveFileId']==q['sourceDriveId']
+            for platform in ('meta','vk'):
+              p=Path(q[platform+'Path'])
+              assert p.is_file() and not p.is_symlink() and p.stat().st_size==q[platform+'Bytes']
+              with p.open('rb') as f: sha=hashlib.file_digest(f,'sha256').hexdigest()
+              assert sha==q[platform+'SHA256']
+              expected='1080x1920' if platform=='vk' or i==0 else '1440x2560'
+              assert q[platform+'Resolution']==expected
+          print('READY_TO_PUBLISH_THREE_2K_META_AND_THREE_VK_HQ_STORIES_EXACT_HASHES')
+          PY
+      - name: Check public URLs for all three Meta video files, without provider writes
+        shell: bash
+        run: |
+          set -euo pipefail
+          for path in bar-20261102-intro-meta.mp4 bar-20261102-green-meta-2k.mp4 bar-20261102-isotonic-meta-2k.mp4; do
+            curl --fail --silent --show-error --location --head --max-time 60 \
+              "https://raw.githubusercontent.com/lsevmos-gpt/ls-vk/main/media/${path}" >/dev/null
+          done
+          echo 'THREE_META_2K_HQ_VIDEO_URLS_PUBLIC_AND_CHECKED'
+  instagram_meta:
+    needs: readiness
+    name: Publish 3 Instagram Stories @liniya__sporta via direct Meta, once each, readback
+    if: github.repository == 'lsevmos-gpt/ls-vk' && github.ref == 'refs/heads/main' && github.actor == 'lsevmos-gpt'
+    runs-on: ubuntu-latest
+    timeout-minutes: 50
+    env:
+      META_IG_ACCESS_TOKEN: ${{ secrets.META_IG_ACCESS_TOKEN }}
+      META_IG_USER_ID: ${{ secrets.META_IG_USER_ID }}
+      META_GRAPH_VERSION: v26.0
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - name: Publish in exact approved order with durable receipts and Meta readback, no provider retries
+        run: |
+          test -n "$META_IG_ACCESS_TOKEN" && test -n "$META_IG_USER_ID"
+          python -m scripts.publish_bar_stories_20261102_ig
+  vk:
+    needs: readiness
+    name: Publish 3 VK Stories -48198173 in exact order, once each, stories.get readback
+    if: github.repository == 'lsevmos-gpt/ls-vk' && github.ref == 'refs/heads/main' && github.actor == 'lsevmos-gpt'
+    runs-on: ubuntu-latest
+    timeout-minutes: 50
+    env:
+      VK_GROUP_TOKEN: ${{ secrets.VK_GROUP_TOKEN }}
+      VK_GROUP_ID: '48198173'
+      VK_GROUP_SCREEN_NAME: liniya__sporta
+      VK_API_VERSION: '5.199'
+      SOCIAL_PLATFORM: vk
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install VK uploader dependencies without lifecycle hooks
+        run: npm install --omit=dev --ignore-scripts --no-package-lock --no-audit --no-fund
+      - name: Publish three VK stories once and verify their IDs
+        run: |
+          test -n "$VK_GROUP_TOKEN"
+          node scripts/publish_bar_stories_20261102_vk.mjs
