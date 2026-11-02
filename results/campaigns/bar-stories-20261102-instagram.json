@@ -3,12 +3,19 @@
   "provider": "meta",
   "account": "liniya__sporta",
   "releaseMode": "immediate",
-  "status": "submission_started",
+  "status": "partial_published",
   "runId": "41428736550",
   "createdAtUTC": "2026-11-02T10:27:19.751370+00:00",
-  "published": [],
+  "published": [
+    {
+      "index": 1,
+      "name": "intro-bar",
+      "instagramMediaId": "18099616814399811",
+      "publishedAtUTC": "2026-11-02T10:27:58.621818+00:00",
+      "permalink": "https://www.instagram.com/stories/liniya__sporta/4021458619807375445",
+      "metaReadbackConfirmed": true
+    }
+  ],
   "note": "Only three explicitly approved Stories. No provider mutation retries.",
-  "updatedAtUTC": "2026-11-02T10:27:21.496875+00:00",
-  "attemptingIndex": 1,
-  "attemptingItem": "intro-bar"
+  "updatedAtUTC": "2026-11-02T10:27:58.621838+00:00"
 }
