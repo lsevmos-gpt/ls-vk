@@ -3,10 +3,12 @@
   "provider": "meta",
   "account": "liniya__sporta",
   "releaseMode": "immediate",
-  "status": "reserved_before_provider_call",
+  "status": "submission_started",
   "runId": "41428736550",
   "createdAtUTC": "2026-11-02T10:27:19.751370+00:00",
   "published": [],
   "note": "Only three explicitly approved Stories. No provider mutation retries.",
-  "updatedAtUTC": "2026-11-02T10:27:19.751390+00:00"
+  "updatedAtUTC": "2026-11-02T10:27:21.496875+00:00",
+  "attemptingIndex": 1,
+  "attemptingItem": "intro-bar"
 }
