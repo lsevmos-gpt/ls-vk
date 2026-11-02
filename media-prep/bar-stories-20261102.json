@@ -32,5 +32,5 @@
       "duration": 7.061333
     }
   ],
-  "note": "Stage only, no social submission; strict SHA256 verification of all original bytes. Direct Meta 2K and VK HQ after staging."
+  "note": "Stage-only SHA-locked source QA; preserve original 274 kbps AAC intro for VK. High-quality 2K Meta and 1080p VK output."
 }
