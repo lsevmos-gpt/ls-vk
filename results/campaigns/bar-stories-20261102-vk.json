@@ -5,7 +5,7 @@
   "releaseMode": "immediate",
   "runId": "41428736550",
   "createdAtUTC": "2026-11-02T10:26:26.274Z",
-  "status": "partial_submitted_to_vk",
+  "status": "submission_started",
   "published": [
     {
       "index": 1,
@@ -23,5 +23,7 @@
     }
   ],
   "note": "Exactly three approved stories; never retry provider save after uncertainty.",
-  "updatedAtUTC": "2026-11-02T10:26:42.081Z"
+  "updatedAtUTC": "2026-11-02T10:26:45.947Z",
+  "attemptingIndex": 3,
+  "attemptingItem": "isotonic-archive"
 }
