@@ -3,10 +3,11 @@
   "provider": "vk",
   "groupId": 48198173,
   "postType": "photo_story",
-  "status": "submission_started",
+  "status": "submitted_to_vk_verify_pending",
   "sourceSha256": "b49ca56bfee78725407f5172f52d53106c93fca3b9e7cb82eff5999ffd95ecbb",
   "originalPNGUnchanged": true,
   "submittedOnce": true,
   "runId": "41455532321",
-  "updatedAtUTC": "2026-11-02T13:44:50.292Z"
+  "updatedAtUTC": "2026-11-02T13:44:55.327Z",
+  "vkStoryId": 456240699
 }
