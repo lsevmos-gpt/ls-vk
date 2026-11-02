@@ -1,0 +1,143 @@
+name: Stage 02 Nov Bar Stories for Instagram Meta 2K + VK HQ (NO PUBLISH)
+on:
+  push:
+    branches: [main]
+    paths:
+      - media-prep/bar-stories-20261102.json
+permissions:
+  contents: write
+concurrency:
+  group: stage-bar-stories-20261102-one-time
+  cancel-in-progress: false
+jobs:
+  stage:
+    if: github.repository == 'lsevmos-gpt/ls-vk' && github.ref == 'refs/heads/main' && github.actor == 'lsevmos-gpt'
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - name: Check immutable source manifest and no existing media receipt
+        shell: bash
+        run: |
+          set -euo pipefail
+          test ! -f results/verification/bar-stories-20261102-stage.json || { echo "::error::Already staged"; exit 1; }
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          d=json.loads(Path('media-prep/bar-stories-20261102.json').read_text())
+          assert d['id']=='bar-stories-20261102' and d['approved'] and d['publicContent']
+          assert d['postType']=='story' and d['publishMode']=='immediate'
+          assert d['instagram']=='liniya__sporta' and d['vkGroupId']==48198173
+          assert [x['id'] for x in d['sequence']]==['intro-bar','green-smoothie','isotonic-archive']
+          assert d['sequence'][0]['source']=='media/bar-20261027-intro-vk.mp4'
+          assert d['sequence'][1]['driveFileId']=='1aX7LR1EXY09SbhI2GtcvszDyYUwq9T25'
+          assert d['sequence'][2]['driveFileId']=='1dt10yPuCOMvanJnU8zE6efWfvFWy67T7'
+          print('THREE_STORY_ORDER_AND_DRIVE_IDS_APPROVED')
+          PY
+      - name: Install video inspector and encoder if missing
+        shell: bash
+        run: |
+          set -euo pipefail
+          if ! command -v ffmpeg >/dev/null || ! command -v ffprobe >/dev/null; then
+            sudo apt-get update -qq
+            sudo apt-get install -y -qq ffmpeg
+          fi
+          command -v ffmpeg; command -v ffprobe
+      - name: Download exact originals from accessible production sources, SHA256 locked
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/ls-bar-20261102 media results/verification
+          cp media/bar-20261027-intro-vk.mp4 /tmp/ls-bar-20261102/intro.mp4
+          curl --fail --show-error --location --retry 1 --connect-timeout 20 --max-time 600 \
+            'https://d2ol7oe51mr4n9.cloudfront.net/user_3DGFj8YOvQgbPvppr50r6fgfGAi/71116681-2dfd-48eb-84f8-de0bcf57194c.mp4' -o /tmp/ls-bar-20261102/green.mp4
+          printf '%s  %s\n' \
+            1158b8e13b776740476522512843bf3b24bf4a78a764fcdcc693dadf85af1d7b /tmp/ls-bar-20261102/intro.mp4 \
+            c2a5b7c9d2028b83ccf8c69e2b9d2347ed413dabf189153d24a3ac3a87d62f2b /tmp/ls-bar-20261102/green.mp4 | sha256sum -c
+          echo 'GREEN_ORIGINAL_MATCHES_DRIVE'
+          curl --fail --show-error --location --retry 1 --connect-timeout 20 --max-time 600 \
+            'https://at.adobe.com/sS5B33potSf4cbEQ' -o /tmp/ls-bar-20261102/isotonic.mp4
+          printf '%s  %s\n' \
+            1ed4d276d704ff645fadbc5c32792ea5f666ae053f898d16338c61047a602a20 /tmp/ls-bar-20261102/isotonic.mp4 | sha256sum -c
+          python3 - <<'PY'
+          import json,subprocess
+          from pathlib import Path
+          d=json.loads(Path('media-prep/bar-stories-20261102.json').read_text())
+          for row,short in zip(d['sequence'],('intro','green','isotonic')):
+            p=Path('/tmp/ls-bar-20261102')/f'{short}.mp4'
+            assert p.stat().st_size==row['sourceBytes']
+            probe=json.loads(subprocess.check_output(['ffprobe','-v','error','-show_entries','format=duration:stream=codec_type,codec_name,width,height,r_frame_rate','-of','json',str(p)]))
+            v=next(s for s in probe['streams'] if s['codec_type']=='video')
+            a=next(s for s in probe['streams'] if s['codec_type']=='audio')
+            exp=(1080,1920) if short=='intro' else (2160,3840)
+            assert (v['width'],v['height'],v['r_frame_rate'],v['codec_name'])==(*exp,'24/1','h264')
+            assert a['codec_name']=='aac'
+            assert abs(float(probe['format']['duration'])-row['duration'])<0.15
+            print('EXACT_SOURCE_VALID',short,p.stat().st_size,exp)
+          PY
+      - name: Preserve intro; render 2K Instagram and maximum compatible VK vertical Stories
+        shell: bash
+        run: |
+          set -euo pipefail
+          cp media/bar-20261027-intro-meta.mp4 media/bar-20261102-intro-meta.mp4
+          cp media/bar-20261027-intro-vk.mp4 media/bar-20261102-intro-vk.mp4
+          for name in green isotonic; do
+            src="/tmp/ls-bar-20261102/${name}.mp4"
+            ffmpeg -hide_banner -nostdin -loglevel error -y -i "$src" \
+              -map 0:v:0 -map 0:a:0 -sn -dn \
+              -vf "scale=1440:2560:flags=lanczos,format=yuv420p" \
+              -c:v libx264 -preset slow -crf 16 -maxrate 12000k -bufsize 24000k -g 48 \
+              -c:a aac -b:a 112k -ar 48000 -ac 2 -movflags +faststart \
+              "media/bar-20261102-${name}-meta-2k.mp4"
+            ffmpeg -hide_banner -nostdin -loglevel error -y -i "$src" \
+              -map 0:v:0 -map 0:a:0 -sn -dn \
+              -vf "scale=1080:1920:flags=lanczos,format=yuv420p" \
+              -c:v libx264 -preset slow -crf 15 -maxrate 16000k -bufsize 32000k -g 48 \
+              -c:a aac -b:a 192k -ar 48000 -ac 2 -movflags +faststart \
+              "media/bar-20261102-${name}-vk-hq.mp4"
+          done
+      - name: Verify staged media and persist immutable quality report
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json,hashlib,subprocess
+          from pathlib import Path
+          from datetime import datetime,timezone
+          seq=[]
+          manifest=json.loads(Path('media-prep/bar-stories-20261102.json').read_text())
+          for (name,short), source in zip([('intro-bar','intro'),('green-smoothie','green'),('isotonic-archive','isotonic')],manifest['sequence']):
+            meta=Path(f'media/bar-20261102-{short}-meta.mp4') if short=='intro' else Path(f'media/bar-20261102-{short}-meta-2k.mp4')
+            vk=Path(f'media/bar-20261102-{short}-vk.mp4') if short=='intro' else Path(f'media/bar-20261102-{short}-vk-hq.mp4')
+            row={'id':name,'sourceDriveId':source['driveFileId'],'sourceDriveSHA256':source['sha256']}
+            for label,path,w,h,max_audio in (('meta',meta,1080 if short=='intro' else 1440,1920 if short=='intro' else 2560,128000),('vk',vk,1080,1920,256000)):
+              assert path.is_file() and 1000<path.stat().st_size<95_000_000
+              data=json.loads(subprocess.check_output(['ffprobe','-v','error','-show_entries','format=duration:stream=codec_type,codec_name,width,height,r_frame_rate,sample_rate,bit_rate','-of','json',str(path)]))
+              v=next(x for x in data['streams'] if x['codec_type']=='video')
+              a=next(x for x in data['streams'] if x['codec_type']=='audio')
+              assert (v['width'],v['height'],v['r_frame_rate'],v['codec_name'])==(w,h,'24/1','h264')
+              assert a['codec_name']=='aac' and a['sample_rate']=='48000' and 0<int(a['bit_rate'])<=max_audio
+              assert abs(float(data['format']['duration'])-source['duration'])<0.15
+              row[label+'Path']=str(path);row[label+'Bytes']=path.stat().st_size
+              with path.open('rb') as f: row[label+'SHA256']=hashlib.file_digest(f,'sha256').hexdigest()
+              row[label+'Resolution']=f'{w}x{h}'
+            seq.append(row)
+          out={'id':'bar-stories-20261102','ok':True,'account':'liniya__sporta','vkGroupId':48198173,'sourceOriginalsVerified':True,'published':False,'sequence':seq,'validatedAtUTC':datetime.now(timezone.utc).isoformat()}
+          target=Path('results/verification/bar-stories-20261102-stage.json')
+          target.write_text(json.dumps(out,ensure_ascii=False,indent=2)+'\n')
+          print('THREE_STORIES_STAGED_NO_SOCIAL_PUBLISH',json.dumps([{k:r[k] for k in ('id','metaResolution','vkResolution','metaBytes','vkBytes')} for r in seq]))
+          PY
+      - name: Save six verified HQ assets and QA report, never call social providers
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name ls-social-qa-bot
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add media/bar-20261102-*.mp4 results/verification/bar-stories-20261102-stage.json
+          git diff --cached --quiet && exit 0
+          git commit -m "Stage verified Nov 02 bar Instagram 2K and VK Stories; no publication [skip ci]"
+          git pull --rebase origin main
+          git push origin HEAD:main

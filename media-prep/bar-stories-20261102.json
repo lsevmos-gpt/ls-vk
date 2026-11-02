@@ -1,0 +1,36 @@
+{
+  "id": "bar-stories-20261102",
+  "approved": true,
+  "publicContent": true,
+  "publishMode": "immediate",
+  "instagram": "liniya__sporta",
+  "vkGroupId": 48198173,
+  "postType": "story",
+  "sequence": [
+    {
+      "id": "intro-bar",
+      "driveFileId": "1SoexOQPc8MA_gIZQQ1iUF9FjNppA-cqy",
+      "source": "media/bar-20261027-intro-vk.mp4",
+      "sha256": "1158b8e13b776740476522512843bf3b24bf4a78a764fcdcc693dadf85af1d7b",
+      "sourceBytes": 3017051,
+      "duration": 5.05
+    },
+    {
+      "id": "green-smoothie",
+      "driveFileId": "1aX7LR1EXY09SbhI2GtcvszDyYUwq9T25",
+      "sourceUrl": "https://d2ol7oe51mr4n9.cloudfront.net/user_3DGFj8YOvQgbPvppr50r6fgfGAi/71116681-2dfd-48eb-84f8-de0bcf57194c.mp4",
+      "sha256": "c2a5b7c9d2028b83ccf8c69e2b9d2347ed413dabf189153d24a3ac3a87d62f2b",
+      "sourceBytes": 34580335,
+      "duration": 14.75
+    },
+    {
+      "id": "isotonic-archive",
+      "driveFileId": "1dt10yPuCOMvanJnU8zE6efWfvFWy67T7",
+      "sourceUrl": "https://at.adobe.com/sS5B33potSf4cbEQ",
+      "sha256": "1ed4d276d704ff645fadbc5c32792ea5f666ae053f898d16338c61047a602a20",
+      "sourceBytes": 108648130,
+      "duration": 7.061333
+    }
+  ],
+  "note": "Stage only, no social submission; strict SHA256 verification of all original bytes. Direct Meta 2K and VK HQ after staging."
+}
