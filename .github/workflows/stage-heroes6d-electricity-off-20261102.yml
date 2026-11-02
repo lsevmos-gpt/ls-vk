@@ -1,0 +1,84 @@
+name: Stage exact 02Nov Heroes6D electricity-off photo for IG and VK (NO PUBLISH)
+on:
+  push:
+    branches: [main]
+    paths:
+      - requests/campaigns/ls-heroes6d-electricity-off-20261102-stage.json
+permissions:
+  contents: write
+concurrency:
+  group: ls-heroes6d-electricity-off-original-photo-stage-once
+  cancel-in-progress: false
+jobs:
+  stage:
+    if: github.repository == 'lsevmos-gpt/ls-vk' && github.ref == 'refs/heads/main' && github.actor == 'lsevmos-gpt'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Exact source and no duplicate staging
+        shell: bash
+        run: |
+          set -euo pipefail
+          test ! -f results/verification/ls-heroes6d-electricity-off-20261102-stage.json
+          test ! -f results/campaigns/ls-heroes6d-electricity-off-20261102-ig.json
+          test ! -f results/campaigns/ls-heroes6d-electricity-off-20261102-vk.json
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          d=json.loads(Path('requests/campaigns/ls-heroes6d-electricity-off-20261102-stage.json').read_text())
+          assert d['approved'] and d['publicContent'] and d['submitNow'] and d['postType']=='story'
+          assert d['instagram']=='liniya__sporta' and d['vkGroupId']==48198173
+          assert d['sourceSHA256']=='b49ca56bfee78725407f5172f52d53106c93fca3b9e7cb82eff5999ffd95ecbb'
+          PY
+      - name: Download approved original PNG and check exact SHA256
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p media results/verification
+          curl --fail --show-error --location --retry 1 --connect-timeout 25 --max-time 180 \
+            'https://at.adobe.com/f0xigidvMHV7JmYx' -o media/ls-heroes6d-electricity-off-20261102.png
+          printf '%s  %s\n' b49ca56bfee78725407f5172f52d53106c93fca3b9e7cb82eff5999ffd95ecbb media/ls-heroes6d-electricity-off-20261102.png | sha256sum -c
+          test "$(stat -c%s media/ls-heroes6d-electricity-off-20261102.png)" -eq 3223258
+      - name: Preserve original VK PNG and create high fidelity JPEG for Meta required format
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check 'Pillow>=10,<13'
+          python3 - <<'PY'
+          import json,hashlib
+          from PIL import Image
+          from pathlib import Path
+          p=Path('media/ls-heroes6d-electricity-off-20261102.png')
+          j=Path('media/ls-heroes6d-electricity-off-20261102-meta.jpg')
+          with Image.open(p) as im:
+            assert im.size==(1080,1920) and im.mode=='RGBA'
+            assert im.getchannel('A').getextrema()==(255,255)
+            im.convert('RGB').save(j,'JPEG',quality=100,subsampling=0,optimize=True)
+          with Image.open(j) as im:assert im.size==(1080,1920) and im.format=='JPEG'
+          assert j.stat().st_size<8000000
+          assert hashlib.sha256(p.read_bytes()).hexdigest()=='b49ca56bfee78725407f5172f52d53106c93fca3b9e7cb82eff5999ffd95ecbb'
+          record={'id':'ls-heroes6d-electricity-off-20261102','ok':True,
+            'sourceSha256':'b49ca56bfee78725407f5172f52d53106c93fca3b9e7cb82eff5999ffd95ecbb',
+            'sourceBytes':p.stat().st_size,'pngPath':str(p),'jpgPath':str(j),'jpgBytes':j.stat().st_size,
+            'jpgSHA256':hashlib.sha256(j.read_bytes()).hexdigest(),'jpgQuality':100,
+            'width':1080,'height':1920,'originalVKUnchanged':True,'stagingOnly':True}
+          Path('results/verification/ls-heroes6d-electricity-off-20261102-stage.json').write_text(json.dumps(record,ensure_ascii=False,indent=2)+'\n')
+          print('SOURCE_AND_META_JPG_VERIFIED',json.dumps(record))
+          PY
+      - name: Commit QA and two file variants, NO platform calls
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name ls-story-stage
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add media/ls-heroes6d-electricity-off-20261102.png media/ls-heroes6d-electricity-off-20261102-meta.jpg results/verification/ls-heroes6d-electricity-off-20261102-stage.json
+          git commit -m 'Stage exact electricity-off photo for VK plus maximum fidelity Meta JPEG [skip ci]'
+          git pull --rebase origin main
+          git push origin HEAD:main
