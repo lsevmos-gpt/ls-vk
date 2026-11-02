@@ -3,10 +3,11 @@
   "provider": "meta",
   "account": "liniya__sporta",
   "postType": "story",
-  "status": "submission_started",
+  "status": "published_readback_pending",
   "sourceSha256": "b49ca56bfee78725407f5172f52d53106c93fca3b9e7cb82eff5999ffd95ecbb",
   "runId": "41455532321",
   "uploadFormat": "JPEG quality 100 1080x1920",
   "createAttempts": 1,
-  "updatedAtUTC": "2026-11-02T13:44:57.260870+00:00"
+  "updatedAtUTC": "2026-11-02T13:45:08.759909+00:00",
+  "instagramMediaId": "18110557964578574"
 }
