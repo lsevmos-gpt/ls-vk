@@ -3,11 +3,14 @@
   "provider": "meta",
   "account": "liniya__sporta",
   "postType": "story",
-  "status": "published_readback_pending",
+  "status": "published_verified_by_meta",
   "sourceSha256": "b49ca56bfee78725407f5172f52d53106c93fca3b9e7cb82eff5999ffd95ecbb",
   "runId": "41455532321",
   "uploadFormat": "JPEG quality 100 1080x1920",
   "createAttempts": 1,
-  "updatedAtUTC": "2026-11-02T13:45:08.759909+00:00",
-  "instagramMediaId": "18110557964578574"
+  "updatedAtUTC": "2026-11-02T13:45:10.482119+00:00",
+  "instagramMediaId": "18110557964578574",
+  "readbackConfirmed": true,
+  "permalink": "https://www.instagram.com/stories/liniya__sporta/4021558072494301999",
+  "timestamp": "2026-11-02T13:45:06+0000"
 }
