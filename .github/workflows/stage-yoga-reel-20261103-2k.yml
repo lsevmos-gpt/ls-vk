@@ -1,0 +1,231 @@
+name: Stage Yoga Reel verified 2K for Instagram Meta and VK — NO SOCIAL PUBLISH
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'requests/staging/yoga-reel-20261103.json'
+permissions:
+  contents: write
+concurrency:
+  group: ls-yoga-reel-20261103-2k-stage-no-publishing
+  cancel-in-progress: false
+jobs:
+  stage:
+    name: Download exact Drive original, prepare 2K video and approved cover, save QA only
+    if: github.repository == 'lsevmos-gpt/ls-vk' && github.ref == 'refs/heads/main' && github.actor == 'lsevmos-gpt'
+    runs-on: ubuntu-latest
+    timeout-minutes: 100
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Confirm precise original, source size, cover identity and no publishing authorization
+        shell: bash
+        run: |
+          set -euo pipefail
+          test ! -e results/verification/yoga-reel-20261103-2k.json || {
+            echo "::error::Already staged; do not replace reviewed media"; exit 1;
+          }
+          python3 - <<'PY'
+          from pathlib import Path
+          import json
+          d=json.loads(Path('requests/staging/yoga-reel-20261103.json').read_text())
+          assert d['id']=='yoga-reel-20261103' and d['postType']=='reel'
+          assert d['source']['driveFileId']=='1P4g1twKNQJwKneQqLwEzWhzwnae8QSdx'
+          assert d['source']['bytes']==466126262
+          assert d['cover']['sourceSHA256']=='e9dea808b97a2b32605242c2b3bcc290c5d7125dc1667dce9d0d1a73de18824a'
+          assert d['cover']['sourceBytes']==3723398
+          assert d['instagram']['account']=='liniya__sporta'
+          assert d['instagram']['collaborator']=='sir_ena06'
+          assert d['vk']['groupId']==48198173 and d['vk']['collaboratorVerified'] is False
+          assert d['quality']['minWidth']==1440 and d['quality']['minHeight']==2560
+          assert d['publicationAuthorized'] is False and d['scheduledFor'] is None
+          assert d['releaseStatus']=='awaiting_owner_schedule'
+          print('YOGA_ORIGINAL_AND_NO_PUBLICATION_APPROVAL_VERIFIED')
+          PY
+      - name: Install video inspection and downloader tools
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check gdown 'Pillow>=10,<13'
+          if ! command -v ffmpeg >/dev/null || ! command -v ffprobe >/dev/null; then
+            sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg
+          fi
+          command -v ffmpeg; command -v ffprobe
+      - name: Download 466 MB exact Google Drive source; do not publish anywhere
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/ls-yoga-20261103 media results/verification
+          python -m gdown 1P4g1twKNQJwKneQqLwEzWhzwnae8QSdx -O /tmp/ls-yoga-20261103/original.mp4
+          test "$(stat -c%s /tmp/ls-yoga-20261103/original.mp4)" -eq 466126262 || {
+            echo "::error::Source Drive file incomplete or different size; no staging"; exit 1;
+          }
+          python3 - <<'PY'
+          import json,subprocess,hashlib
+          from pathlib import Path
+          from fractions import Fraction
+          p=Path('/tmp/ls-yoga-20261103/original.mp4')
+          data=json.loads(subprocess.check_output(['ffprobe','-v','error','-show_entries',
+            'format=duration,size,bit_rate,format_name:stream=codec_type,codec_name,width,height,avg_frame_rate,pix_fmt,sample_rate,channels,color_transfer,color_primaries,color_space',
+            '-of','json',str(p)],timeout=90))
+          v=next((x for x in data.get('streams',[]) if x['codec_type']=='video'),None)
+          a=next((x for x in data.get('streams',[]) if x['codec_type']=='audio'),None)
+          assert v is not None and a is not None,'Both original video and audio required'
+          w,h=int(v['width']),int(v['height'])
+          assert w>=1440 and h>=2560,'Cannot deliver genuine 2K: original lower resolution'
+          assert abs(w/h-9/16)<0.012,'Not a vertical 9:16 original, do not crop'
+          fps=float(Fraction(v['avg_frame_rate']))
+          assert 23<=fps<=60,'FPS incompatible with Meta Reels'
+          duration=float(data['format']['duration'])
+          assert 3<=duration<=180,'VK Clip must fit up to 3 minutes'
+          assert v.get('color_transfer') not in ('smpte2084','arib-std-b67'),'HDR requires color-managed grading'
+          if a.get('codec_name') not in ('aac','mp3','pcm_s16le','alac'):
+            raise ValueError('Unexpected audio codec, review before encoding')
+          sha=hashlib.sha256(p.read_bytes()).hexdigest()
+          out={'sourcePath':str(p),'sha256':sha,'sourceBytes':p.stat().st_size,
+              'sourceResolution':f'{w}x{h}','sourceFps':fps,'durationSeconds':duration,
+              'sourceCodec':v['codec_name'],'sourceAudioCodec':a['codec_name'],
+              'sourceColorTransfer':v.get('color_transfer'),'sourceColorPrimaries':v.get('color_primaries')}
+          Path('/tmp/ls-yoga-20261103/original-probe.json').write_text(json.dumps(out,indent=2))
+          print('YOGA_ORIGINAL_VIDEO_QA',json.dumps(out))
+          PY
+      - name: Retrieve exact user-supplied yoga cover using authenticated original transfer
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --fail --silent --show-error --location --retry 1 --connect-timeout 20 --max-time 150 \
+            'https://at.adobe.com/6H95mfMjDHBOqb8r' -o media/yoga-reel-20261103-original-cover.png
+          printf '%s  %s\n' \
+            e9dea808b97a2b32605242c2b3bcc290c5d7125dc1667dce9d0d1a73de18824a \
+            media/yoga-reel-20261103-original-cover.png | sha256sum --check
+          test "$(stat -c%s media/yoga-reel-20261103-original-cover.png)" -eq 3723398
+          python3 - <<'PY'
+          from PIL import Image,ImageChops,ImageStat
+          from pathlib import Path
+          import math
+          src=Path('media/yoga-reel-20261103-original-cover.png')
+          dst=Path('media/yoga-reel-20261103-meta-cover.jpg')
+          with Image.open(src) as im:
+            assert im.size==(1152,2048) and im.mode=='RGBA'
+            assert im.getchannel('A').getextrema()==(255,255)
+            im.convert('RGB').save(dst,'JPEG',quality=100,subsampling=0,optimize=True)
+          with Image.open(src) as i,Image.open(dst) as j:
+            assert j.size==i.size and j.format=='JPEG'
+            rgb=i.convert('RGB')
+            stat=ImageStat.Stat(ImageChops.difference(rgb,j))
+            rms=(sum(x*x for x in stat.rms)/3)**0.5
+            psnr=20*math.log10(255/rms)
+            assert psnr>45,'Meta cover JPEG differs too much from original design'
+            print('ORIGINAL_COVER_UNCHANGED_AND_META_JPEG_PSNR_DB',round(psnr,2),'jpeg_bytes',dst.stat().st_size)
+          assert 1000<dst.stat().st_size<8_000_000
+          PY
+      - name: Encode genuine 1440 x 2560 H.264 Reel, 2-pass high quality; original FPS
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json,math
+          from pathlib import Path
+          p=Path('/tmp/ls-yoga-20261103/original-probe.json')
+          d=json.loads(p.read_text())
+          seconds=d['durationSeconds']
+          # Maintain a high-quality 2K rate while respecting GitHub's 100MB per-file storage ceiling.
+          target_bps=min(21_000_000,int((91_000_000*8/seconds)-240_000))
+          if target_bps<8_000_000:raise ValueError('Video too long for at-least-8Mbps 2K within GitHub file size; separate media hosting required')
+          target_kbps=target_bps//1000
+          peak_kbps=min(24_000,target_kbps+2000)
+          Path('/tmp/ls-yoga-20261103/bitrate.env').write_text(f'BPS={target_kbps}k\nMAXRATE={peak_kbps}k\n')
+          print('YOGA_2K_TARGET_BITRATE_KBPS',target_kbps,'MAXRATE_KBPS',peak_kbps)
+          PY
+          source /tmp/ls-yoga-20261103/bitrate.env
+          INPUT=/tmp/ls-yoga-20261103/original.mp4
+          OUTPUT=media/yoga-reel-20261103-2k-ig-vk.mp4
+          PASSFILE=/tmp/ls-yoga-20261103/twopass
+          ffmpeg -hide_banner -nostdin -loglevel error -stats -y -i "$INPUT" \
+            -map 0:v:0 -an -sn -dn \
+            -vf 'scale=1440:2560:flags=lanczos,format=yuv420p' \
+            -c:v libx264 -preset slow -profile:v high -level 5.1 \
+            -b:v "$BPS" -maxrate "$MAXRATE" -bufsize 48000k \
+            -g 50 -keyint_min 25 -sc_threshold 0 \
+            -pass 1 -passlogfile "$PASSFILE" -f null /dev/null
+          ffmpeg -hide_banner -nostdin -loglevel error -stats -y -i "$INPUT" \
+            -map 0:v:0 -map 0:a:0 -sn -dn \
+            -vf 'scale=1440:2560:flags=lanczos,format=yuv420p' \
+            -c:v libx264 -preset slow -profile:v high -level 5.1 \
+            -b:v "$BPS" -maxrate "$MAXRATE" -bufsize 48000k \
+            -g 50 -keyint_min 25 -sc_threshold 0 \
+            -pass 2 -passlogfile "$PASSFILE" \
+            -c:a aac -b:a 128k -ar 48000 -ac 2 \
+            -movflags +faststart "$OUTPUT"
+          test "$(stat -c%s "$OUTPUT")" -lt 95_000_000 || {
+            echo "::error::Video exceeds 95MB staging threshold, no publication and no reduction to 1080"; exit 1;
+          }
+          echo 2K_REEL_ENCODE_COMPLETED
+      - name: Validate exact 2K output, audio, H264, cover and original SHA — NO SOCIAL API CALLS
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json,hashlib,subprocess
+          from pathlib import Path
+          from fractions import Fraction
+          from datetime import datetime,timezone
+          d=json.loads(Path('requests/staging/yoga-reel-20261103.json').read_text())
+          o=json.loads(Path('/tmp/ls-yoga-20261103/original-probe.json').read_text())
+          video=Path('media/yoga-reel-20261103-2k-ig-vk.mp4')
+          cover=Path('media/yoga-reel-20261103-original-cover.png')
+          meta_cover=Path('media/yoga-reel-20261103-meta-cover.jpg')
+          p=json.loads(subprocess.check_output(['ffprobe','-v','error','-show_entries',
+            'format=duration,size,bit_rate,format_name:stream=codec_type,codec_name,width,height,avg_frame_rate,pix_fmt,sample_rate,channels,bit_rate,profile,level',
+            '-of','json',str(video)],timeout=90))
+          v=next(x for x in p['streams'] if x['codec_type']=='video')
+          a=next(x for x in p['streams'] if x['codec_type']=='audio')
+          assert (v['width'],v['height'],v['codec_name'])==(1440,2560,'h264')
+          assert v['pix_fmt']=='yuv420p'
+          assert 23<=float(Fraction(v['avg_frame_rate']))<=60
+          assert abs(float(Fraction(v['avg_frame_rate']))-o['sourceFps'])<0.5
+          assert a['codec_name']=='aac' and a['sample_rate']=='48000' and a['channels']==2
+          assert 0<int(a.get('bit_rate') or 0)<=130000
+          assert video.stat().st_size<95_000_000
+          assert abs(float(p['format']['duration'])-o['durationSeconds'])<0.20
+          assert int(v.get('bit_rate') or 0)<25_000_000
+          with video.open('rb') as f:assert b'moov' in f.read(180000),'MP4 faststart atom missing'
+          def sha(f):
+            with f.open('rb') as h:return hashlib.file_digest(h,'sha256').hexdigest()
+          assert sha(cover)==d['cover']['sourceSHA256']
+          assert cover.stat().st_size==d['cover']['sourceBytes']
+          report={'id':'yoga-reel-20261103','ok':True,'stagingOnly':True,'published':False,
+            'sourceDriveFileId':d['source']['driveFileId'],
+            'sourceSHA256':o['sha256'],'sourceBytes':o['sourceBytes'],'sourceResolution':o['sourceResolution'],
+            'sourceFps':o['sourceFps'],'durationSeconds':o['durationSeconds'],
+            'videoPath':str(video),'videoSHA256':sha(video),'videoBytes':video.stat().st_size,
+            'videoResolution':'1440x2560','videoFps':float(Fraction(v['avg_frame_rate'])),
+            'videoCodec':'h264','videoBitrate':int(v.get('bit_rate') or 0),
+            'audioCodec':'aac','audioBitrate':int(a['bit_rate']),'audioRate':int(a['sample_rate']),
+            'coverOriginalPath':str(cover),'coverOriginalSHA256':sha(cover),
+            'coverMetaPath':str(meta_cover),'coverMetaSHA256':sha(meta_cover),
+            'coverResolution':'1152x2048','coverJpegQuality':100,
+            'collaboratorInstagram':'sir_ena06','instagramAccount':'liniya__sporta',
+            'vkGroupId':48198173,'vkNativeCoauthorUnverified':True,
+            'publishOnlyAfterOwnerDateTimeCommand':True,
+            'recordedAtUTC':datetime.now(timezone.utc).isoformat()}
+          target=Path('results/verification/yoga-reel-20261103-2k.json')
+          target.parent.mkdir(parents=True,exist_ok=True)
+          target.write_text(json.dumps(report,ensure_ascii=False,indent=2)+'\n')
+          print('YOGA_2K_MEDIA_STAGED_FOR_INSTAGRAM_AND_VK_NO_PUBLISH',json.dumps(report,ensure_ascii=False))
+          PY
+      - name: Commit prepared 2K original video variant, user cover and QA ONLY, never publish
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name ls-yoga-2k-media-stager
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add media/yoga-reel-20261103-2k-ig-vk.mp4 media/yoga-reel-20261103-original-cover.png media/yoga-reel-20261103-meta-cover.jpg results/verification/yoga-reel-20261103-2k.json
+          git commit -m 'Stage exact Yoga 2K Instagram/VK Reel and original cover, awaiting owner schedule [skip ci]'
+          git pull --rebase origin main
+          git push origin HEAD:main
