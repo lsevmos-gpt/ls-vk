@@ -1,0 +1,51 @@
+{
+  "id": "yoga-reel-20261103",
+  "postType": "reel",
+  "releaseStatus": "awaiting_owner_schedule",
+  "publicationAuthorized": false,
+  "scheduledFor": null,
+  "source": {
+    "driveFileId": "1P4g1twKNQJwKneQqLwEzWhzwnae8QSdx",
+    "name": "йога.mp4",
+    "bytes": 466126262,
+    "url": "https://drive.google.com/file/d/1P4g1twKNQJwKneQqLwEzWhzwnae8QSdx/view"
+  },
+  "cover": {
+    "uploadedName": "YOGA_RC25_A_4K(2).png",
+    "sourceSHA256": "e9dea808b97a2b32605242c2b3bcc290c5d7125dc1667dce9d0d1a73de18824a",
+    "sourceBytes": 3723398,
+    "originalResolution": "1152x2048",
+    "originalPath": "media/yoga-reel-20261103-original-cover.png",
+    "metaJPEGPath": "media/yoga-reel-20261103-meta-cover.jpg",
+    "preserveGraphic": true
+  },
+  "quality": {
+    "minWidth": 1440,
+    "minHeight": 2560,
+    "aspectRatio": "9:16",
+    "minimum": "2K",
+    "h264": true,
+    "aac": true,
+    "plan": "Single verified true-2K file for Meta and VK, without upscaling if source is smaller"
+  },
+  "instagram": {
+    "account": "liniya__sporta",
+    "provider": "Meta Graph API",
+    "collaborator": "sir_ena06",
+    "collaboratorProfile": "https://www.instagram.com/sir_ena06/",
+    "nativeInvitationRequired": true,
+    "acceptanceNotAssumed": true,
+    "shareToFeed": true
+  },
+  "vk": {
+    "groupId": 48198173,
+    "groupScreenName": "liniya__sporta",
+    "postType": "clip",
+    "nativeCoauthRequired": true,
+    "collaboratorProfile": null,
+    "collaboratorVerified": false,
+    "doNotPublishWithoutNativeCoauthor": true
+  },
+  "caption": "Ты когда-нибудь замечала, как тело становится другим, когда перестаёшь его заставлять и начинаешь с ним договариваться?🌿\n\nЙога в Линии спорта — про силу без надрыва, про гибкость без боли и про тишину, которой так не хватает.\n\nИногда самые настоящие изменения приходят не через усилие,а через бережное внимание к себе.\nПриходи. Твоё тело уже ждёт.",
+  "guard": "Staging only. NO social provider calls and NO publication until owner gives date and time."
+}
