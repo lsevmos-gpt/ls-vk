@@ -607,6 +607,14 @@ async function markAbandonedJobs(db, mode = "live") {
     "AND operation_id " + filter + " 'test:%' " +
     "AND datetime(updated_at) < datetime('now', '-3 minutes')"
   ).run();
+  // Meta иногда продолжает обработку контейнера слишком долго.
+  // Через 20 минут требуем ручную проверку без повторной отправки.
+  await db.prepare(
+    "UPDATE light_publication_jobs SET state = 'review_required', " +
+    "diagnostic = 'media_processing_timeout', updated_at = CURRENT_TIMESTAMP " +
+    "WHERE state = 'processing' AND operation_id " + filter + " 'test:%' " +
+    "AND datetime(updated_at) < datetime('now', '-20 minutes')"
+  ).run();
 }
 
 
@@ -800,6 +808,7 @@ function moscowConfirmedAt(utcString) {
 function lightNoticeText(op, jobs) {
   const byPlatform = Object.fromEntries(jobs.map(j => [j.platform, j]));
   const bothPublished = jobs.every(j => j.state === "published");
+  const allSuperseded = jobs.every(j => j.state === "superseded");
   const place = op.scope === "all" ? "Все три клуба" :
     (LIGHT_CLUB_LABELS[op.club_id] || op.club_id);
   const state = statusLabel(op.new_status);
@@ -815,7 +824,9 @@ function lightNoticeText(op, jobs) {
     return "⚠️ " + label + ": требуется проверка (" + j.state + ")";
   };
   return [
-    bothPublished ? "✅ СТОРИС ОПУБЛИКОВАНЫ" : "⚠️ ПУБЛИКАЦИЯ ТРЕБУЕТ ВНИМАНИЯ",
+    bothPublished ? "✅ СТОРИС ОПУБЛИКОВАНЫ" :
+      allSuperseded ? "↪️ СТОРИС НЕ ОТПРАВЛЕНЫ: СТАТУС УЖЕ ОБНОВИЛСЯ" :
+      "⚠️ ПУБЛИКАЦИЯ ТРЕБУЕТ ВНИМАНИЯ",
     "🏋️ ЛИНИЯ СПОРТА · СВЕТ",
     "",
     "📍 " + place,
@@ -825,7 +836,8 @@ function lightNoticeText(op, jobs) {
     show("vk"),
     "",
     "Время указано по Москве, по подтверждению системой.",
-    bothPublished ? "" : "Не повторяйте отправку до проверки истории в соцсетях."
+    bothPublished || allSuperseded ? "" :
+      "Не повторяйте отправку до проверки истории в соцсетях."
   ].filter(Boolean).join("\n");
 }
 
