@@ -1089,6 +1089,42 @@ async function applyChange(db, user, operationId, scope, clubId, state) {
     .bind(operationId).first();
 }
 
+
+// Предупреждение о повторе: без новых сообщений и без вызовов Meta/VK.
+// Telegram answerCallbackQuery поддерживает максимум 200 символов.
+async function duplicateStoryWarning(db, scope, clubId, state) {
+  const title = scope === "all" ? "Все три клуба" :
+    (LIGHT_CLUB_LABELS[clubId] || clubId);
+  const assetKey = (scope === "all" ? "all" : clubId) + "-" + state;
+  const recent = (await db.prepare(
+    "SELECT platform, state, updated_at FROM light_publication_jobs " +
+    "WHERE asset_key = ? ORDER BY created_at DESC, job_id DESC LIMIT 30"
+  ).bind(assetKey).all()).results || [];
+  const latest = {};
+  for (const j of recent) {
+    if (!latest[j.platform]) latest[j.platform] = j;
+  }
+  function channel(name, platform) {
+    const item = latest[platform];
+    if (!item) return name + ": нет записи";
+    if (item.state === "published") {
+      const date = moscowConfirmedAt(item.updated_at).replace(", ", " ");
+      return name + ": опубликовано " + date;
+    }
+    if (["queued", "preparing", "processing", "ready", "publishing", "submitted"].includes(item.state)) {
+      return name + ": обработка ещё идёт";
+    }
+    return name + ": публикация не подтверждена";
+  }
+  const message = [
+    "⚠️ " + title + " — статус «" + (state === "on" ? "Свет есть" : "Света нет") + "» уже установлен.",
+    "Повторная сторис не отправлена.",
+    channel("IG", "instagram"),
+    channel("VK", "vk")
+  ].join("\n");
+  return message.slice(0, 200);
+}
+
 async function onCallback(callback, env) {
   if (callback.message?.chat?.type !== "private") return;
   const user = await getUser(env.DB, callback.from?.id);
@@ -1121,8 +1157,12 @@ async function onCallback(callback, env) {
     const state = data.split(":")[1];
     const op = await applyChange(env.DB, user, callback.id, "all", null, state);
     const changed = Number(op?.changed_count || 0);
-    await answer(env, callback.id,
-      changed ? `Обновлено клубов: ${changed} из 3` : "У всех клубов уже этот статус");
+    if (!changed) {
+      await answer(env, callback.id,
+        await duplicateStoryWarning(env.DB, "all", null, state), true);
+    } else {
+      await answer(env, callback.id, `Обновлено клубов: ${changed} из 3`);
+    }
     const updated = await getVisible(env.DB, user);
     return render(env, chatId, messageId, allView(updated, await publishingEnabled(env)));
   }
@@ -1143,7 +1183,12 @@ async function onCallback(callback, env) {
   }
   const op = await applyChange(env.DB, user, callback.id, "club", clubId, state);
   const changed = Number(op?.changed_count || 0);
-  await answer(env, callback.id, changed ? "Состояние сохранено" : "Статус не изменился");
+  if (!changed) {
+    await answer(env, callback.id,
+      await duplicateStoryWarning(env.DB, "club", clubId, state), true);
+  } else {
+    await answer(env, callback.id, "Состояние сохранено");
+  }
   const updated = await allowedClub(env.DB, user, clubId);
   return render(env, chatId, messageId, clubView(updated, await publishingEnabled(env)));
 }
