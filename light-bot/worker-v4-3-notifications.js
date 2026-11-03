@@ -840,6 +840,12 @@ async function notifyPublicationResults(env) {
     "FROM light_operations o JOIN light_publication_jobs j " +
     "ON j.operation_id = o.operation_id " +
     "WHERE o.operation_id NOT LIKE 'test:%' AND j.created_at >= ? " +
+    "AND (NOT EXISTS (SELECT 1 FROM light_notification_receipts n " +
+    "WHERE n.operation_id = o.operation_id AND n.telegram_id = o.telegram_id) " +
+    "OR EXISTS (SELECT 1 FROM admins a WHERE a.role = 'owner' " +
+    "AND a.active = 1 AND NOT EXISTS " +
+    "(SELECT 1 FROM light_notification_receipts n " +
+    "WHERE n.operation_id = o.operation_id AND n.telegram_id = a.telegram_id))) " +
     "GROUP BY o.operation_id " +
     "HAVING COUNT(*) = 2 AND SUM(CASE WHEN j.state IN " +
     "('published','failed','review_required','superseded') " +
