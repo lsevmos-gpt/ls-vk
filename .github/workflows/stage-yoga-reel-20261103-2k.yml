@@ -162,7 +162,7 @@ jobs:
             -pass 2 -passlogfile "$PASSFILE" \
             -c:a aac -b:a 128k -ar 48000 -ac 2 \
             -movflags +faststart "$OUTPUT"
-          test "$(stat -c%s "$OUTPUT")" -lt 95_000_000 || {
+          test "$(stat -c%s "$OUTPUT")" -lt 95000000 || {
             echo "::error::Video exceeds 95MB staging threshold, no publication and no reduction to 1080"; exit 1;
           }
           echo 2K_REEL_ENCODE_COMPLETED
