@@ -1,14 +1,14 @@
-name: Publish Yoga 2K Reel 04 Nov 2026 at 18:30 MSK via native Meta Collab sir_ena06 ONCE
+name: Publish Yoga 2K Reel 06 Nov 2026 at 18:30 MSK via native Meta Collab sir_ena06 ONCE
 on:
   schedule:
     # UTC+3 Moscow. Early slots guard against GitHub scheduler delays.
     # Worker creates a single video container after 18:00 MSK and publishes at 18:30.
-    - cron: '15,25,35,45,55 14 4 11 *'
-    - cron: '0,10,20,30,40 15 4 11 *'
+    - cron: '15,25,35,45,55 14 6 11 *'
+    - cron: '0,10,20,30,40 15 6 11 *'
   push:
     branches: [main]
     paths:
-      - '.github/workflows/publish-yoga-reel-20261104-1830-meta.yml'
+      - '.github/workflows/publish-yoga-reel-20261106-1830-meta.yml'
   workflow_dispatch:
     inputs:
       operation:
@@ -20,7 +20,7 @@ on:
 permissions:
   contents: write
 concurrency:
-  group: yoga-20261104-1830-native-meta-sirena06-one-shot
+  group: yoga-20261106-1830-native-meta-sirena06-one-shot
   cancel-in-progress: false
 jobs:
   readiness_only:
@@ -47,20 +47,20 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          python -m py_compile scripts/publish_yoga_reel_20261104_1830_meta_sirena.py
-          python -m scripts.instagram_collab validate requests/instagram-meta/yoga-reel-20261104-1830-sirena06.json
+          python -m py_compile scripts/publish_yoga_reel_20261106_1830_meta_sirena.py
+          python -m scripts.instagram_collab validate requests/instagram-meta/yoga-reel-20261106-1830-sirena06.json
           python3 - <<'PY'
           import json
           from pathlib import Path
-          r=json.loads(Path('requests/campaigns/yoga-reel-20261104-1830.json').read_text())
-          q=json.loads(Path('requests/instagram-meta/yoga-reel-20261104-1830-sirena06.json').read_text())
-          assert r['id']=='yoga-reel-20261104-1830' and r['approved'] is True and r['publicContent'] is True
-          assert r['scheduledFor']=='2026-11-04T18:30:00+03:00'
+          r=json.loads(Path('requests/campaigns/yoga-reel-20261106-1830.json').read_text())
+          q=json.loads(Path('requests/instagram-meta/yoga-reel-20261106-1830-sirena06.json').read_text())
+          assert r['id']=='yoga-reel-20261106-1830' and r['approved'] is True and r['publicContent'] is True
+          assert r['scheduledFor']=='2026-11-06T18:30:00+03:00'
           assert r['instagram']['account']=='liniya__sporta' and r['instagram']['collaborators']==['sir_ena06']
           assert q['postType']=='reel' and q['type']=='instagram-reel' and q['collaborators']==['sir_ena06']
           assert q['text']==r['caption'] and q['shouldShareToFeed'] is True
           assert r['vk']['mayPostWithoutNativeCoauthor'] is False
-          print('NOV4_1830_META_NATIVE_COLLAB_CAPTION_APPROVED_READONLY')
+          print('NOV6_1830_META_NATIVE_COLLAB_CAPTION_APPROVED_READONLY')
           import hashlib
           v=json.loads(Path('results/verification/yoga-reel-20261103-2k.json').read_text())
           assert v['ok'] is True and v['stagingOnly'] is True and v['published'] is False
@@ -113,10 +113,10 @@ jobs:
         run: |
           set -euo pipefail
           test -n "$META_IG_ACCESS_TOKEN" && test -n "$META_IG_USER_ID"
-          python -m py_compile scripts/publish_yoga_reel_20261104_1830_meta_sirena.py
-          python -m scripts.instagram_collab validate requests/instagram-meta/yoga-reel-20261104-1830-sirena06.json
+          python -m py_compile scripts/publish_yoga_reel_20261106_1830_meta_sirena.py
+          python -m scripts.instagram_collab validate requests/instagram-meta/yoga-reel-20261106-1830-sirena06.json
       - name: Reserve once, create native collaborative 2K Meta video container, publish 18:30 MSK
         shell: bash
         run: |
           set -euo pipefail
-          python -m scripts.publish_yoga_reel_20261104_1830_meta_sirena
+          python -m scripts.publish_yoga_reel_20261106_1830_meta_sirena

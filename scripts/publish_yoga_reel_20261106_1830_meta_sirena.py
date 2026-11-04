@@ -1,4 +1,4 @@
-"""One-time 4 Nov 2026 18:30 MSK yoga Reel via native Meta collaboration.
+"""One-time 6 Nov 2026 18:30 MSK yoga Reel via native Meta collaboration.
 
 The parent video container is created only after 18:00 MSK, with @sir_ena06
 in Meta's native collaborators parameter.  Exactly one media publish attempt
@@ -19,16 +19,16 @@ from urllib.request import Request, urlopen
 from scripts.instagram_collab import MetaClient, load_job
 
 ROOT = Path(__file__).resolve().parents[1]
-RELEASE = ROOT / "requests/campaigns/yoga-reel-20261104-1830.json"
-COLLAB = ROOT / "requests/instagram-meta/yoga-reel-20261104-1830-sirena06.json"
+RELEASE = ROOT / "requests/campaigns/yoga-reel-20261106-1830.json"
+COLLAB = ROOT / "requests/instagram-meta/yoga-reel-20261106-1830-sirena06.json"
 QA = ROOT / "results/verification/yoga-reel-20261103-2k.json"
 VIDEO = ROOT / "media/yoga-reel-20261103-2k-ig-vk.mp4"
 COVER = ROOT / "media/yoga-reel-20261103-meta-cover.jpg"
-RECEIPT = ROOT / "results/instagram-meta/yoga-reel-20261104-1830-sirena06.json"
+RECEIPT = ROOT / "results/instagram-meta/yoga-reel-20261106-1830-sirena06.json"
 RAW = "https://raw.githubusercontent.com/lsevmos-gpt/ls-vk/main/"
-START_CONTAINER = dt.datetime(2026, 11, 4, 15, 0, tzinfo=dt.timezone.utc)  # 18:00 MSK
-PUBLISH_AT = dt.datetime(2026, 11, 4, 15, 30, tzinfo=dt.timezone.utc)     # 18:30 MSK
-DEADLINE = dt.datetime(2026, 11, 4, 15, 45, tzinfo=dt.timezone.utc)       # 18:45 MSK
+START_CONTAINER = dt.datetime(2026, 11, 6, 15, 0, tzinfo=dt.timezone.utc)  # 18:00 MSK
+PUBLISH_AT = dt.datetime(2026, 11, 6, 15, 30, tzinfo=dt.timezone.utc)     # 18:30 MSK
+DEADLINE = dt.datetime(2026, 11, 6, 15, 45, tzinfo=dt.timezone.utc)       # 18:45 MSK
 EXPECTED_SOURCE_SHA = "9f30f07afe04ddc881e390a8c54c6e055ed4745ce1d6e5dda72798d0c9aa9028"
 EXPECTED_COVER_PNG_SHA = "e9dea808b97a2b32605242c2b3bcc290c5d7125dc1667dce9d0d1a73de18824a"
 EXPECTED_COLLAB = "sir_ena06"
@@ -60,7 +60,7 @@ def checkpoint(data: dict, first=False):
         json.dump(data, f, ensure_ascii=False, indent=2)
         f.write("\n")
     git("add", "--", str(RECEIPT.relative_to(ROOT)))
-    git("commit", "-m", "Record one Yoga Nov04 18:30 Meta native-collab Reel " + data["status"] + " [skip ci]")
+    git("commit", "-m", "Record one Yoga Nov06 18:30 Meta native-collab Reel " + data["status"] + " [skip ci]")
     for i in range(8):
         try:
             git("pull", "--rebase", "origin", "main")
@@ -97,11 +97,11 @@ def preflight():
     job = load_job(str(COLLAB.relative_to(ROOT)))
     frozen = json.loads((ROOT / "requests/staging/yoga-reel-20261103.json").read_text(encoding="utf-8"))
     if not (
-        release["id"] == "yoga-reel-20261104-1830"
+        release["id"] == "yoga-reel-20261106-1830"
         and release["postType"] == "reel"
         and release["approved"] is True
         and release["publicContent"] is True
-        and release["scheduledFor"] == "2026-11-04T18:30:00+03:00"
+        and release["scheduledFor"] == "2026-11-06T18:30:00+03:00"
         and release["instagram"]["account"] == "liniya__sporta"
         and release["instagram"]["collaborators"] == [EXPECTED_COLLAB]
         and release["instagram"]["nativeInviteRequired"] is True
@@ -109,7 +109,7 @@ def preflight():
         and release["sourceSHA256"] == EXPECTED_SOURCE_SHA
         and release["vk"]["status"] == "blocked_pending_verified_vk_native_coauthor"
         and release["vk"]["mayPostWithoutNativeCoauthor"] is False
-        and job["id"] == "yoga-reel-20261104-1830-sirena06"
+        and job["id"] == "yoga-reel-20261106-1830-sirena06"
         and job["collaborators"] == [EXPECTED_COLLAB]
         and job["share_to_feed"] is True
         and job["caption"] == release["caption"] == frozen["caption"]
@@ -182,7 +182,7 @@ def main():
         "account": "liniya__sporta",
         "platform": "instagram-meta",
         "type": "REELS",
-        "scheduledAt": "2026-11-04T18:30:00+03:00",
+        "scheduledAt": "2026-11-06T18:30:00+03:00",
         "approvedCover": str(COVER.relative_to(ROOT)),
         "videoPath": str(VIDEO.relative_to(ROOT)),
         "videoSHA256": sha256(VIDEO),
