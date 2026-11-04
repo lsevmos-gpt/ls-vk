@@ -1,0 +1,32 @@
+{
+  "id": "yoga-reel-20261104-1830",
+  "postType": "reel",
+  "approved": true,
+  "publicContent": true,
+  "scheduledFor": "2026-11-04T18:30:00+03:00",
+  "timeZone": "Europe/Moscow",
+  "instagram": {
+    "account": "liniya__sporta",
+    "provider": "meta",
+    "collaborators": [
+      "sir_ena06"
+    ],
+    "nativeInviteRequired": true,
+    "acceptanceUnverifiedUntilReadback": true
+  },
+  "caption": "Ты когда-нибудь замечала, как тело становится другим, когда перестаёшь его заставлять и начинаешь с ним договариваться?🌿\n\nЙога в Линии спорта — про силу без надрыва, про гибкость без боли и про тишину, которой так не хватает.\n\nИногда самые настоящие изменения приходят не через усилие,а через бережное внимание к себе.\nПриходи. Твоё тело уже ждёт.",
+  "assetVerification": "results/verification/yoga-reel-20261103-2k.json",
+  "sourceDriveFileId": "1P4g1twKNQJwKneQqLwEzWhzwnae8QSdx",
+  "sourceSHA256": "9f30f07afe04ddc881e390a8c54c6e055ed4745ce1d6e5dda72798d0c9aa9028",
+  "videoPath": "media/yoga-reel-20261103-2k-ig-vk.mp4",
+  "coverPath": "media/yoga-reel-20261103-meta-cover.jpg",
+  "vk": {
+    "groupId": 48198173,
+    "status": "blocked_pending_verified_vk_native_coauthor",
+    "requiredNativeCoauthor": true,
+    "instagramProfileNotSufficient": true,
+    "mayPostWithoutNativeCoauthor": false
+  },
+  "noRetries": true,
+  "release": "scheduled_not_yet_submitted"
+}
