@@ -4,7 +4,7 @@
   "type": "clip",
   "groupId": 48198173,
   "runId": "41862263663",
-  "status": "vk_video_and_wall_api_accepted",
+  "status": "vk_api_accepted_readback_partial",
   "videoPath": "media/sofiya-bulatetskaya-20261104-reel-meta.mp4",
   "videoSHA256": "eeef216d93c29b4f0ebcbeba8e763466c411adb7b1d0a1c96d06c5b01b30a072",
   "videoResolution": "1080x1920",
@@ -17,8 +17,14 @@
   "wallPostId": 5366,
   "coverNote": "Original approved cover stored; platform cover upload not configured; do not claim custom VK thumbnail was applied",
   "note": "Exactly one provider video upload and one wall post. Never retry if outcome uncertain",
-  "updatedAtUTC": "2026-11-04T16:02:50.526Z",
+  "updatedAtUTC": "2026-11-04T16:03:06.395Z",
   "videoOwnerId": -48198173,
   "attachment": "video-48198173_456240841",
-  "submittedAtUTC": "2026-11-04T16:02:50.526Z"
+  "submittedAtUTC": "2026-11-04T16:02:50.526Z",
+  "wallReadbackErrorClass": "VkApiError",
+  "videoReadbackConfirmed": true,
+  "wallReadbackConfirmed": false,
+  "videoUrl": "https://vk.com/video-48198173_456240841",
+  "wallUrl": "https://vk.com/wall-48198173_5366",
+  "checkedAtUTC": "2026-11-04T16:03:06.395Z"
 }
