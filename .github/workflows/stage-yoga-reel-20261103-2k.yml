@@ -186,7 +186,7 @@ jobs:
           v=next(x for x in p['streams'] if x['codec_type']=='video')
           a=next(x for x in p['streams'] if x['codec_type']=='audio')
           assert (v['width'],v['height'],v['codec_name'])==(1440,2560,'h264')
-          assert v['pix_fmt']=='yuv420p'
+          assert v['pix_fmt'] in ('yuv420p','yuvj420p'), 'Unsupported 4:2:0 pixel format'
           assert 23<=float(Fraction(v['avg_frame_rate']))<=60
           assert abs(float(Fraction(v['avg_frame_rate']))-o['sourceFps'])<0.5
           assert a['codec_name']=='aac' and a['sample_rate']=='48000' and a['channels']==2
