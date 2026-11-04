@@ -160,7 +160,7 @@ jobs:
             -b:v "$BPS" -maxrate "$MAXRATE" -bufsize 48000k \
             -g 50 -keyint_min 25 -sc_threshold 0 \
             -pass 2 -passlogfile "$PASSFILE" \
-            -c:a aac -b:a 128k -ar 48000 -ac 2 \
+            -c:a aac -b:a 120k -ar 48000 -ac 2 \
             -movflags +faststart "$OUTPUT"
           test "$(stat -c%s "$OUTPUT")" -lt 95000000 || {
             echo "::error::Video exceeds 95MB staging threshold, no publication and no reduction to 1080"; exit 1;
@@ -190,7 +190,8 @@ jobs:
           assert 23<=float(Fraction(v['avg_frame_rate']))<=60
           assert abs(float(Fraction(v['avg_frame_rate']))-o['sourceFps'])<0.5
           assert a['codec_name']=='aac' and a['sample_rate']=='48000' and a['channels']==2
-          assert 0<int(a.get('bit_rate') or 0)<=130000
+          print('YOGA_2K_FINAL_STREAMS',json.dumps({'video':v,'audio':a,'format':p['format']}),flush=True)
+          assert 0<int(a.get('bit_rate') or 0)<=128000, 'Meta AAC stream bitrate too high'
           assert video.stat().st_size<95_000_000
           assert abs(float(p['format']['duration'])-o['durationSeconds'])<0.20
           assert int(v.get('bit_rate') or 0)<25_000_000
