@@ -49,5 +49,5 @@
   },
   "caption": "Ты когда-нибудь замечала, как тело становится другим, когда перестаёшь его заставлять и начинаешь с ним договариваться?🌿\n\nЙога в Линии спорта — про силу без надрыва, про гибкость без боли и про тишину, которой так не хватает.\n\nИногда самые настоящие изменения приходят не через усилие,а через бережное внимание к себе.\nПриходи. Твоё тело уже ждёт.",
   "guard": "Staging only. NO social provider calls and NO publication until owner gives date and time.",
-  "stagingRetryReason": "Adobe short-lived cover transfer URL expired with HTTP 403; refreshed authorized original asset reference. Exact original SHA and 2K video QA unchanged."
+  "stagingRetryReason": "Final 2K QA detected AAC stream bitrate over Meta 128kbps limit. Target audio 120kbps with unchanged high quality 2K H264 video; no social actions."
 }
