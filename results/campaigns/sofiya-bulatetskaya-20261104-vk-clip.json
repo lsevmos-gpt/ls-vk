@@ -1,0 +1,21 @@
+{
+  "id": "sofiya-bulatetskaya-20261104-vk-clip",
+  "provider": "vk",
+  "type": "clip",
+  "groupId": 48198173,
+  "runId": "41862263663",
+  "status": "reserved_before_provider_mutation",
+  "videoPath": "media/sofiya-bulatetskaya-20261104-reel-meta.mp4",
+  "videoSHA256": "eeef216d93c29b4f0ebcbeba8e763466c411adb7b1d0a1c96d06c5b01b30a072",
+  "videoResolution": "1080x1920",
+  "h264Unchanged": true,
+  "caption": "Знакомьтесь — София Булатецкая! 👋\n\nВ команде «Линии спорта» новый тренер, для которого спорт — часть жизни уже 14 лет.\n\nСофия — кандидат в мастера спорта по эстетической гимнастике, призёр всероссийских соревнований и обладатель III спортивного разряда по тяжёлой атлетике.\n\nВ работе сочетает тренировки в зале, методики ЛФК и стретчинга — с вниманием к технике и целям каждого.\n\nПосмотрите ролик и познакомьтесь с Софией поближе!\n\n📍 «Линия спорта», Героев Сталинграда, 6Д.\n\n💬 По вопросам персональных тренировок и записи обращайтесь к администраторам клуба или пишите нам в сообщения.",
+  "noCoauthorRequested": true,
+  "createdAtUTC": "2026-11-04T16:02:32.168Z",
+  "refreshScheme": "27-oct-shpagat-same-runner-vkid",
+  "videoId": null,
+  "wallPostId": null,
+  "coverNote": "Original approved cover stored; platform cover upload not configured; do not claim custom VK thumbnail was applied",
+  "note": "Exactly one provider video upload and one wall post. Never retry if outcome uncertain",
+  "updatedAtUTC": "2026-11-04T16:02:32.168Z"
+}
