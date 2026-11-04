@@ -61,12 +61,21 @@ jobs:
           assert q['text']==r['caption'] and q['shouldShareToFeed'] is True
           assert r['vk']['mayPostWithoutNativeCoauthor'] is False
           print('NOV4_1830_META_NATIVE_COLLAB_CAPTION_APPROVED_READONLY')
-          if Path('results/verification/yoga-reel-20261103-2k.json').is_file():
-            v=json.loads(Path('results/verification/yoga-reel-20261103-2k.json').read_text())
-            assert v['ok'] and v['videoResolution']=='1440x2560'
-            print('YOGA_TRUE_2K_STAGING_RECEIPT_PRESENT')
-          else:
-            print('YOGA_MEDIA_STAGING_NOT_FINAL_YET; PUBLISH_JOB_WILL_REQUIRE_QA')
+          import hashlib
+          v=json.loads(Path('results/verification/yoga-reel-20261103-2k.json').read_text())
+          assert v['ok'] is True and v['stagingOnly'] is True and v['published'] is False
+          assert v['videoResolution']=='1440x2560' and abs(v['videoFps']-25)<0.1
+          assert 8_000_000<v['videoBitrate']<25_000_000 and 0<v['audioBitrate']<=128_000
+          assert v['sourceSHA256']==r['sourceSHA256']
+          assert v['coverOriginalSHA256']=='e9dea808b97a2b32605242c2b3bcc290c5d7125dc1667dce9d0d1a73de18824a'
+          assert v['collaboratorInstagram']=='sir_ena06' and v['coverJpegQuality']==100
+          for path,size,sha in [(v['videoPath'],v['videoBytes'],v['videoSHA256']),
+                                (v['coverMetaPath'],None,v['coverMetaSHA256'])]:
+            p=Path(path)
+            assert p.is_file() and not p.is_symlink()
+            if size is not None:assert p.stat().st_size==size
+            with p.open('rb') as fileobj:assert hashlib.file_digest(fileobj,'sha256').hexdigest()==sha
+          print('YOGA_TRUE_2K_AND_APPROVED_COVER_SHA_VALIDATED_NO_PUBLISH')
           PY
       - name: Read-only exact Meta business account identity verification
         shell: bash
@@ -74,6 +83,11 @@ jobs:
           set -euo pipefail
           test -n "$META_IG_ACCESS_TOKEN" && test -n "$META_IG_USER_ID"
           python -m scripts.instagram_collab check -
+          curl --fail --silent --show-error --location --head --max-time 55 \
+            https://raw.githubusercontent.com/lsevmos-gpt/ls-vk/main/media/yoga-reel-20261103-2k-ig-vk.mp4 >/dev/null
+          curl --fail --silent --show-error --location --head --max-time 35 \
+            https://raw.githubusercontent.com/lsevmos-gpt/ls-vk/main/media/yoga-reel-20261103-meta-cover.jpg >/dev/null
+          echo 'YOGA_2K_AND_COVER_PUBLIC_URLS_READY_FOR_META'
   publish_native_meta_once:
     name: Scheduled 18:30 MSK direct Meta 2K Reel, native @sir_ena06 invitation, verified receipt
     if: >-
