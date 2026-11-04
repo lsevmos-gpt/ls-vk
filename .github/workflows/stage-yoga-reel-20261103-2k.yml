@@ -99,7 +99,7 @@ jobs:
         run: |
           set -euo pipefail
           curl --fail --silent --show-error --location --retry 1 --connect-timeout 20 --max-time 150 \
-            'https://at.adobe.com/6H95mfMjDHBOqb8r' -o media/yoga-reel-20261103-original-cover.png
+            'https://at.adobe.com/BPzptQVg7LYCirWN' -o media/yoga-reel-20261103-original-cover.png
           printf '%s  %s\n' \
             e9dea808b97a2b32605242c2b3bcc290c5d7125dc1667dce9d0d1a73de18824a \
             media/yoga-reel-20261103-original-cover.png | sha256sum --check
