@@ -1,0 +1,20 @@
+{
+  "id": "yoga-reel-20261104-1830-sirena06",
+  "type": "instagram-reel",
+  "postType": "reel",
+  "handle": "liniya__sporta",
+  "approved": true,
+  "publicContent": true,
+  "text": "Ты когда-нибудь замечала, как тело становится другим, когда перестаёшь его заставлять и начинаешь с ним договариваться?🌿\n\nЙога в Линии спорта — про силу без надрыва, про гибкость без боли и про тишину, которой так не хватает.\n\nИногда самые настоящие изменения приходят не через усилие,а через бережное внимание к себе.\nПриходи. Твоё тело уже ждёт.",
+  "media": [
+    {
+      "type": "video",
+      "url": "https://raw.githubusercontent.com/lsevmos-gpt/ls-vk/main/media/yoga-reel-20261103-2k-ig-vk.mp4"
+    }
+  ],
+  "coverUrl": "https://raw.githubusercontent.com/lsevmos-gpt/ls-vk/main/media/yoga-reel-20261103-meta-cover.jpg",
+  "collaborators": [
+    "sir_ena06"
+  ],
+  "shouldShareToFeed": true
+}
