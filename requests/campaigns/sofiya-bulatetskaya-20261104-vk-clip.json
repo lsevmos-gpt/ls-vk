@@ -1,0 +1,42 @@
+{
+  "id": "sofiya-bulatetskaya-20261104-vk-clip",
+  "type": "clip",
+  "approved": true,
+  "publicContent": true,
+  "submitNow": true,
+  "groupId": 48198173,
+  "groupScreenName": "liniya__sporta",
+  "name": "София Булатецкая — новый тренер «Линии спорта»",
+  "description": "Знакомьтесь — София Булатецкая! 👋\n\nВ команде «Линии спорта» новый тренер, для которого спорт — часть жизни уже 14 лет.\n\nСофия — кандидат в мастера спорта по эстетической гимнастике, призёр всероссийских соревнований и обладатель III спортивного разряда по тяжёлой атлетике.\n\nВ работе сочетает тренировки в зале, методики ЛФК и стретчинга — с вниманием к технике и целям каждого.\n\nПосмотрите ролик и познакомьтесь с Софией поближе!\n\n📍 «Линия спорта», Героев Сталинграда, 6Д.\n\n💬 По вопросам персональных тренировок и записи обращайтесь к администраторам клуба или пишите нам в сообщения.",
+  "postToWall": true,
+  "wallText": "Знакомьтесь — София Булатецкая! 👋\n\nВ команде «Линии спорта» новый тренер, для которого спорт — часть жизни уже 14 лет.\n\nСофия — кандидат в мастера спорта по эстетической гимнастике, призёр всероссийских соревнований и обладатель III спортивного разряда по тяжёлой атлетике.\n\nВ работе сочетает тренировки в зале, методики ЛФК и стретчинга — с вниманием к технике и целям каждого.\n\nПосмотрите ролик и познакомьтесь с Софией поближе!\n\n📍 «Линия спорта», Героев Сталинграда, 6Д.\n\n💬 По вопросам персональных тренировок и записи обращайтесь к администраторам клуба или пишите нам в сообщения.",
+  "videoPath": "media/sofiya-bulatetskaya-20261104-reel-meta.mp4",
+  "coverOriginalPath": "media/sofiya-bulatetskaya-20261104-reel-original-cover.png",
+  "quality": {
+    "width": 1080,
+    "height": 1920,
+    "fps": 25,
+    "videoCodec": "h264",
+    "videoStreamUnchanged": true,
+    "bytes": 58890709,
+    "sha256": "eeef216d93c29b4f0ebcbeba8e763466c411adb7b1d0a1c96d06c5b01b30a072"
+  },
+  "cover": {
+    "sha256": "1ebf16eaca7b8cc7c6de25043bf5d922361ec96087d5eb605c0670b7a3dbfaa1",
+    "note": "Original cover preserved and available; do not claim VK custom thumbnail unless supported and confirmed"
+  },
+  "nativeCollaborator": {
+    "required": false,
+    "approvedToPublishWithoutCollaborator": true,
+    "added": false
+  },
+  "instagram": {
+    "alreadyPublished": true,
+    "doNotPublishAgain": true
+  },
+  "safety": {
+    "doNotRetryAfterVKVideoSaveOrUpload": true,
+    "doNotChangeVideoBytes": true
+  },
+  "release": "immediately"
+}

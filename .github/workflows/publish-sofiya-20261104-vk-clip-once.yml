@@ -1,0 +1,62 @@
+name: Publish Sofia Bulatetskaya VK Clip, user-approved WITHOUT coauthor, high quality, ONCE
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'requests/campaigns/sofiya-bulatetskaya-20261104-vk-clip.json'
+permissions:
+  contents: write
+concurrency:
+  group: sofiya-bulatetskaya-20261104-vk-clip-single-guarded-upload
+  cancel-in-progress: false
+jobs:
+  publish:
+    if: github.repository == 'lsevmos-gpt/ls-vk' && github.ref == 'refs/heads/main' && github.actor == 'lsevmos-gpt'
+    runs-on: ubuntu-latest
+    timeout-minutes: 50
+    env:
+      VK_GROUP_ID: '48198173'
+      VK_GROUP_SCREEN_NAME: liniya__sporta
+      VK_GROUP_TOKEN: ${{ secrets.VK_GROUP_TOKEN }}
+      VK_USER_TOKEN: ${{ secrets.VK_USER_TOKEN }}
+      VK_API_VERSION: '5.199'
+      SOCIAL_PLATFORM: vk
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Guard permissions and exact approved video source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$VK_GROUP_TOKEN" || { echo '::error::VK_GROUP_TOKEN missing'; exit 1; }
+          test -n "$VK_USER_TOKEN" || { echo '::error::VK_USER_TOKEN missing, no clip upload attempted'; exit 1; }
+          node --check 'scripts/publish_sofiya_20261104_vk_clip.mjs'
+          python3 - <<'PY'
+          from pathlib import Path
+          import hashlib,json
+          j=json.loads(Path('requests/campaigns/sofiya-bulatetskaya-20261104-vk-clip.json').read_text())
+          qa=json.loads(Path('results/verification/sofiya-bulatetskaya-20261104-reel-qa.json').read_text())
+          assert j['id']=='sofiya-bulatetskaya-20261104-vk-clip' and j['type']=='clip' and j['approved'] and j['publicContent'] and j['submitNow']
+          assert j['groupId']==48198173 and j['nativeCollaborator']['approvedToPublishWithoutCollaborator'] is True
+          assert j['nativeCollaborator']['required'] is False and j['postToWall'] is True
+          assert qa['ok'] and qa['videoStreamUnchanged'] and qa['videoWidth']==1080 and qa['videoHeight']==1920 and qa['fps']==25
+          assert j['description']==j['wallText'] and 'София Булатецкая' in j['description']
+          path=Path('media/sofiya-bulatetskaya-20261104-reel-meta.mp4')
+          assert path.is_file() and path.stat().st_size==58890709
+          with path.open('rb') as f:
+            assert hashlib.file_digest(f,'sha256').hexdigest()=='eeef216d93c29b4f0ebcbeba8e763466c411adb7b1d0a1c96d06c5b01b30a072'
+          assert not Path('results/campaigns/sofiya-bulatetskaya-20261104-vk-clip.json').exists(),'Existing VK receipt, no duplicate'
+          print('SOFIYA_VK_CLIP_APPROVED_WITHOUT_COAUTHOR_1080P_SOURCE_SHA_OK')
+          PY
+      - name: Install VK multipart dependencies with no lifecycle scripts
+        run: npm install --omit=dev --ignore-scripts --no-package-lock --no-audit --no-fund
+      - name: Upload exact source to VK Clips once, attach approved caption to wall, verify IDs
+        shell: bash
+        run: |
+          set -euo pipefail
+          node 'scripts/publish_sofiya_20261104_vk_clip.mjs'
