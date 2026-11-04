@@ -1,0 +1,23 @@
+{
+  "id": "sofiya-bulatetskaya-20261104-vk-clip",
+  "approved": true,
+  "publicContent": true,
+  "submitNow": true,
+  "channel": "VK",
+  "type": "clip",
+  "groupId": 48198173,
+  "groupScreenName": "liniya__sporta",
+  "name": "София Булатецкая — новый тренер «Линии спорта»",
+  "text": "Знакомьтесь — София Булатецкая! 👋\n\nВ команде «Линии спорта» новый тренер, для которого спорт — часть жизни уже 14 лет.\n\nСофия — кандидат в мастера спорта по эстетической гимнастике, призёр всероссийских соревнований и обладатель III спортивного разряда по тяжёлой атлетике.\n\nВ работе сочетает тренировки в зале, методики ЛФК и стретчинга — с вниманием к технике и целям каждого.\n\nПосмотрите ролик и познакомьтесь с Софией поближе!\n\n📍 «Линия спорта», Героев Сталинграда, 6Д.\n\n💬 По вопросам персональных тренировок и записи обращайтесь к администраторам клуба или пишите нам в сообщения.",
+  "postToWall": true,
+  "videoPath": "media/sofiya-bulatetskaya-20261104-reel-meta.mp4",
+  "videoSHA256": "eeef216d93c29b4f0ebcbeba8e763466c411adb7b1d0a1c96d06c5b01b30a072",
+  "videoBytes": 58890709,
+  "originalCover": "media/sofiya-bulatetskaya-20261104-reel-original-cover.png",
+  "noCollaborator": true,
+  "approvedByOwner": "Publish in VK even without coauthor; use proven VK ID refresh on same GitHub runner",
+  "publisher": "shpagat-20261027-working-refresh",
+  "sourceExampleRunId": 40533696242,
+  "neverRepeatOnUncertainProviderMutation": true,
+  "instagramDoNotRepublish": true
+}

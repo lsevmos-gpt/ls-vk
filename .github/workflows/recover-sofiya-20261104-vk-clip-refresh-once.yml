@@ -1,0 +1,70 @@
+name: Recover Sofia Bulatetskaya VK Clip through proven VK ID same-runner refresh, ONCE
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'requests/vk/sofiya-bulatetskaya-20261104-recovery.json'
+permissions:
+  contents: write
+concurrency:
+  group: sofiya-20261104-vk-clip-refresh-recovery-exact-once
+  cancel-in-progress: false
+jobs:
+  vk_clip:
+    name: Refresh VK ID access token ON runner, rotate stored refresh secret, upload approved Sofia Clip once
+    if: github.repository == 'lsevmos-gpt/ls-vk' && github.ref == 'refs/heads/main' && github.actor == 'lsevmos-gpt'
+    runs-on: ubuntu-latest
+    timeout-minutes: 55
+    env:
+      VK_GROUP_ID: '48198173'
+      VK_GROUP_SCREEN_NAME: liniya__sporta
+      VK_GROUP_TOKEN: ${{ secrets.VK_GROUP_TOKEN }}
+      VK_REFRESH_TOKEN: ${{ secrets.VK_REFRESH_TOKEN }}
+      VK_DEVICE_ID: ${{ secrets.VK_DEVICE_ID }}
+      VK_SECRETS_WRITE_PAT: ${{ secrets.VK_SECRETS_WRITE_PAT }}
+      VK_API_VERSION: '5.199'
+      SOCIAL_PLATFORM: vk
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Verify exact file, approved no-coauthor release, refresh script and dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$VK_GROUP_TOKEN" && test -n "$VK_REFRESH_TOKEN" && test -n "$VK_DEVICE_ID" && test -n "$VK_SECRETS_WRITE_PAT"
+          node --check 'scripts/publish_sofiya_20261104_vk_refresh_clip.mjs'
+          node --check scripts/vk-refresh-lib.mjs
+          npm install --omit=dev --ignore-scripts --no-package-lock --no-audit --no-fund
+          python3 - <<'PY'
+          import hashlib,json
+          from pathlib import Path
+          j=json.loads(Path('requests/vk/sofiya-bulatetskaya-20261104-recovery.json').read_text())
+          q=json.loads(Path('results/verification/sofiya-bulatetskaya-20261104-reel-qa.json').read_text())
+          assert j['id']=='sofiya-bulatetskaya-20261104-vk-clip' and j['approved'] and j['publicContent'] and j['submitNow']
+          assert j['noCollaborator'] and j['groupId']==48198173 and j['videoSHA256']=='eeef216d93c29b4f0ebcbeba8e763466c411adb7b1d0a1c96d06c5b01b30a072'
+          assert j['text']==json.loads(Path('requests/campaigns/sofiya-bulatetskaya-20261104-vk-clip.json').read_text())['description']
+          assert q['ok'] and q['videoStreamUnchanged'] and q['videoWidth']==1080 and q['videoHeight']==1920 and q['fps']==25
+          p=Path('media/sofiya-bulatetskaya-20261104-reel-meta.mp4')
+          assert p.stat().st_size==58890709
+          with p.open('rb') as f:assert hashlib.file_digest(f,'sha256').hexdigest()=='eeef216d93c29b4f0ebcbeba8e763466c411adb7b1d0a1c96d06c5b01b30a072'
+          assert not Path('results/campaigns/sofiya-bulatetskaya-20261104-vk-clip.json').exists(),'VK already attempted/published; no duplicate'
+          print('SOFIYA_VK_SAME_RUNNER_REFRESH_RELEASE_SHA256=OK')
+          PY
+      - name: Verify video inspection tool exists
+        shell: bash
+        run: |
+          set -euo pipefail
+          if ! command -v ffprobe >/dev/null; then
+            sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg
+          fi
+          ffprobe -version | head -1
+      - name: Use proven 27 October VK ID refresh+secret rotation+video.save+wall.post on ONE runner
+        shell: bash
+        run: |
+          set -euo pipefail
+          node 'scripts/publish_sofiya_20261104_vk_refresh_clip.mjs'
