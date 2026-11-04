@@ -1,0 +1,47 @@
+{
+  "id": "sofiya-bulatetskaya-20261104-reel",
+  "contentType": "reel",
+  "approved": true,
+  "publicContent": true,
+  "requestedFor": "2026-11-04T18:30:00+03:00",
+  "releaseMode": "immediate_after_missed_1830",
+  "expireAt": "2026-11-04T19:30:00+03:00",
+  "instagram": {
+    "account": "liniya__sporta",
+    "nativeCollaborator": "sofiya_bulat",
+    "postType": "REELS",
+    "shareToFeed": true,
+    "provider": "Meta"
+  },
+  "vk": {
+    "groupId": 48198173,
+    "status": "blocked_unverified_vk_native_collaborator",
+    "noPublishWithoutNativeCoauth": true
+  },
+  "video": {
+    "originalName": "Тренер София(1).mov",
+    "originalBytes": 67270356,
+    "originalSHA256": "4965ddb004754d0c75d8806f8381fc76c341e3363b46889d4af7d86e8a96fe52",
+    "originalWidth": 1080,
+    "originalHeight": 1920,
+    "originalFPS": 25,
+    "originalVideoCodec": "h264",
+    "originalVideoBitrate": 15188425,
+    "originalAudioCodec": "pcm_s24le",
+    "originalSourceUrl": "https://at.adobe.com/yzTgM63bAgJJ3yXq",
+    "preparedPath": "media/sofiya-bulatetskaya-20261104-reel-meta.mp4",
+    "processing": "H264 bitstream copy without video re-encode; AAC 120k audio only"
+  },
+  "cover": {
+    "originalName": "Новый тренер София Булатецкая _ Клуб «Линия спорта».png",
+    "sourceSHA256": "1ebf16eaca7b8cc7c6de25043bf5d922361ec96087d5eb605c0670b7a3dbfaa1",
+    "sourceUrl": "https://at.adobe.com/SyHKW3yQSjssuO0H",
+    "width": 941,
+    "height": 1672,
+    "originalPath": "media/sofiya-bulatetskaya-20261104-reel-original-cover.png",
+    "metaJPEGPath": "media/sofiya-bulatetskaya-20261104-reel-meta-cover.jpg",
+    "quality": 100
+  },
+  "caption": "Знакомьтесь — София Булатецкая! 👋\n\nВ команде «Линии спорта» новый тренер, для которого спорт — часть жизни уже 14 лет.\n\nСофия — кандидат в мастера спорта по эстетической гимнастике, призёр всероссийских соревнований и обладатель III спортивного разряда по тяжёлой атлетике.\n\nВ работе сочетает тренировки в зале, методики ЛФК и стретчинга — с вниманием к технике и целям каждого.\n\nПосмотрите ролик и познакомьтесь с Софией поближе!\n\n📍 «Линия спорта», Героев Сталинграда, 6Д.\n\n💬 По вопросам персональных тренировок и записи обращайтесь к администраторам клуба или пишите нам в сообщения.",
+  "noRetries": true
+}

@@ -1,0 +1,20 @@
+{
+  "id": "sofiya-bulatetskaya-20261104-reel",
+  "type": "instagram-reel",
+  "postType": "reel",
+  "handle": "liniya__sporta",
+  "approved": true,
+  "publicContent": true,
+  "text": "Знакомьтесь — София Булатецкая! 👋\n\nВ команде «Линии спорта» новый тренер, для которого спорт — часть жизни уже 14 лет.\n\nСофия — кандидат в мастера спорта по эстетической гимнастике, призёр всероссийских соревнований и обладатель III спортивного разряда по тяжёлой атлетике.\n\nВ работе сочетает тренировки в зале, методики ЛФК и стретчинга — с вниманием к технике и целям каждого.\n\nПосмотрите ролик и познакомьтесь с Софией поближе!\n\n📍 «Линия спорта», Героев Сталинграда, 6Д.\n\n💬 По вопросам персональных тренировок и записи обращайтесь к администраторам клуба или пишите нам в сообщения.",
+  "media": [
+    {
+      "type": "video",
+      "url": "https://raw.githubusercontent.com/lsevmos-gpt/ls-vk/main/media/sofiya-bulatetskaya-20261104-reel-meta.mp4"
+    }
+  ],
+  "coverUrl": "https://raw.githubusercontent.com/lsevmos-gpt/ls-vk/main/media/sofiya-bulatetskaya-20261104-reel-meta-cover.jpg",
+  "collaborators": [
+    "sofiya_bulat"
+  ],
+  "shouldShareToFeed": true
+}

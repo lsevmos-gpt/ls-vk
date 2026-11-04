@@ -1,0 +1,166 @@
+name: Publish Sofia Bulatetskaya high-quality native Meta collab Reel, immediate after 18:30
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'requests/campaigns/sofiya-bulatetskaya-20261104-reel.json'
+permissions:
+  contents: write
+concurrency:
+  group: sofiya-bulatetskaya-20261104-meta-reel-once
+  cancel-in-progress: false
+jobs:
+  stage:
+    name: Stage exact original H264 video unchanged and original cover; no social posting
+    if: github.repository == 'lsevmos-gpt/ls-vk' && github.ref == 'refs/heads/main' && github.actor == 'lsevmos-gpt'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Verify approved request and no prior Meta posting receipt
+        shell: bash
+        run: |
+          set -euo pipefail
+          test ! -f 'results/verification/sofiya-bulatetskaya-20261104-reel-qa.json' || { echo '::error::Already staged'; exit 1; }
+          test ! -f 'results/instagram-meta/sofiya-bulatetskaya-20261104-reel.json' || { echo '::error::Meta already attempted'; exit 1; }
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          m=json.loads(Path('requests/campaigns/sofiya-bulatetskaya-20261104-reel.json').read_text())
+          c=json.loads(Path('requests/instagram-meta/sofiya-bulatetskaya-20261104-reel.json').read_text())
+          assert m['id']==c['id']=='sofiya-bulatetskaya-20261104-reel' and m['approved'] and m['publicContent']
+          assert c['collaborators']==['sofiya_bulat'] and c['text']==m['caption']
+          assert m['instagram']['account']=='liniya__sporta' and m['vk']['noPublishWithoutNativeCoauth']
+          assert m['video']['originalSHA256']=='4965ddb004754d0c75d8806f8381fc76c341e3363b46889d4af7d86e8a96fe52' and m['cover']['sourceSHA256']=='1ebf16eaca7b8cc7c6de25043bf5d922361ec96087d5eb605c0670b7a3dbfaa1'
+          assert m['video']['originalBytes']==67270356
+          print('EXACT_OWNER_APPROVED_NATIVE_COLLAB_REEL_AND_SOURCE_LOCK')
+          PY
+      - name: Download immutable user originals
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/sofiya-20261104 media results/verification
+          curl --fail --show-error --location --retry 1 --connect-timeout 20 --max-time 240 'https://at.adobe.com/yzTgM63bAgJJ3yXq' -o /tmp/sofiya-20261104/original.mov
+          curl --fail --show-error --location --retry 1 --connect-timeout 20 --max-time 180 'https://at.adobe.com/SyHKW3yQSjssuO0H' -o 'media/sofiya-bulatetskaya-20261104-reel-original-cover.png'
+          printf '%s  %s\n' '4965ddb004754d0c75d8806f8381fc76c341e3363b46889d4af7d86e8a96fe52' /tmp/sofiya-20261104/original.mov '1ebf16eaca7b8cc7c6de25043bf5d922361ec96087d5eb605c0670b7a3dbfaa1' 'media/sofiya-bulatetskaya-20261104-reel-original-cover.png' | sha256sum -c
+          test "$(stat -c%s /tmp/sofiya-20261104/original.mov)" -eq 67270356
+      - name: Install compatible ffmpeg and Pillow for Meta JPEG
+        shell: bash
+        run: |
+          set -euo pipefail
+          if ! command -v ffmpeg >/dev/null || ! command -v ffprobe >/dev/null; then
+            sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg
+          fi
+          python -m pip install --disable-pip-version-check 'Pillow>=10,<13'
+      - name: Preserve bit-identical H264 stream, convert only PCM audio to compliant AAC
+        shell: bash
+        run: |
+          set -euo pipefail
+          ffmpeg -hide_banner -nostdin -loglevel error -y -i /tmp/sofiya-20261104/original.mov \
+            -map 0:v:0 -map 0:a:0 -sn -dn \
+            -c:v copy -c:a aac -b:a 120k -ar 48000 -ac 2 -movflags +faststart 'media/sofiya-bulatetskaya-20261104-reel-meta.mp4'
+          test "$(stat -c%s 'media/sofiya-bulatetskaya-20261104-reel-meta.mp4')" -lt 95000000
+          ffmpeg -v error -i /tmp/sofiya-20261104/original.mov -map 0:v:0 -c:v copy -f hash -hash SHA256 - > /tmp/sofiya-20261104/source-video.sha
+          ffmpeg -v error -i 'media/sofiya-bulatetskaya-20261104-reel-meta.mp4' -map 0:v:0 -c:v copy -f hash -hash SHA256 - > /tmp/sofiya-20261104/output-video.sha
+          diff -u /tmp/sofiya-20261104/source-video.sha /tmp/sofiya-20261104/output-video.sha
+          echo 'SOFIYA_H264_VIDEO_STREAM_BIT_IDENTICAL'
+      - name: Create Meta JPEG quality 100 without crop; preserve original PNG
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from PIL import Image
+          from pathlib import Path
+          src=Path('media/sofiya-bulatetskaya-20261104-reel-original-cover.png')
+          with Image.open(src) as im:
+            assert im.size==(941,1672) and im.mode=='RGBA'
+            assert im.getchannel('A').getextrema()==(255,255)
+            im.convert('RGB').save('media/sofiya-bulatetskaya-20261104-reel-meta-cover.jpg',format='JPEG',quality=100,subsampling=0,optimize=True)
+          with Image.open('media/sofiya-bulatetskaya-20261104-reel-meta-cover.jpg') as im:assert im.size==(941,1672) and im.format=='JPEG'
+          print('SOFIYA_META_COVER_QUALITY100_NO_LAYOUT_CHANGE')
+          PY
+      - name: Verify exact stream specs hashes and public-ready media
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          from fractions import Fraction
+          from datetime import datetime,timezone
+          import hashlib,json,subprocess
+          def probe(p):
+            return json.loads(subprocess.check_output(['ffprobe','-v','error','-show_entries',
+             'format=duration,size:stream=codec_type,codec_name,width,height,avg_frame_rate,bit_rate,sample_rate,channels,pix_fmt',
+             '-of','json',str(p)],timeout=75))
+          def sha(p):
+            with p.open('rb') as f:return hashlib.file_digest(f,'sha256').hexdigest()
+          orig=Path('/tmp/sofiya-20261104/original.mov');video=Path('media/sofiya-bulatetskaya-20261104-reel-meta.mp4')
+          cover=Path('media/sofiya-bulatetskaya-20261104-reel-original-cover.png');j=Path('media/sofiya-bulatetskaya-20261104-reel-meta-cover.jpg')
+          a=probe(orig);b=probe(video)
+          v=next(x for x in b['streams'] if x['codec_type']=='video')
+          audio=next(x for x in b['streams'] if x['codec_type']=='audio')
+          originalvideo=next(x for x in a['streams'] if x['codec_type']=='video')
+          assert originalvideo['codec_name']==v['codec_name']=='h264'
+          assert (v['width'],v['height'])==(1080,1920)
+          assert v['pix_fmt']=='yuv420p' and abs(float(Fraction(v['avg_frame_rate']))-25)<0.1
+          assert audio['codec_name']=='aac' and audio['sample_rate']=='48000' and audio['channels']==2
+          assert 0<int(audio['bit_rate'])<=128000
+          assert abs(float(a['format']['duration'])-float(b['format']['duration']))<0.15
+          assert 30<float(b['format']['duration'])<32
+          assert sha(orig)=='4965ddb004754d0c75d8806f8381fc76c341e3363b46889d4af7d86e8a96fe52' and sha(cover)=='1ebf16eaca7b8cc7c6de25043bf5d922361ec96087d5eb605c0670b7a3dbfaa1'
+          assert Path('/tmp/sofiya-20261104/source-video.sha').read_text()==Path('/tmp/sofiya-20261104/output-video.sha').read_text()
+          d={'id':'sofiya-bulatetskaya-20261104-reel','ok':True,'stagingOnly':True,'published':False,
+            'sourceMovSHA256':sha(orig),'coverPngSHA256':sha(cover),
+            'videoPath':str(video),'videoSHA256':sha(video),'videoBytes':video.stat().st_size,
+            'videoWidth':1080,'videoHeight':1920,'fps':25,'videoCodec':'h264',
+            'videoStreamUnchanged':True,'videoBitrate':int(v['bit_rate']),
+            'audioCodec':'aac','audioBitrate':int(audio['bit_rate']),
+            'durationSeconds':float(b['format']['duration']),'coverMetaPath':str(j),
+            'metaJPEGSHA256':sha(j),'metaJPEGBytes':j.stat().st_size,'metaJPEGQuality':100,
+            'sourceCoverResolution':'941x1672','sourceCoverUnchanged':True,
+            'preparedUTC':datetime.now(timezone.utc).isoformat()}
+          Path('results/verification/sofiya-bulatetskaya-20261104-reel-qa.json').write_text(json.dumps(d,ensure_ascii=False,indent=2)+'\n')
+          print('SOFIYA_VIDEO_QA_OK',json.dumps(d,ensure_ascii=False))
+          PY
+      - name: Save checked MP4 and original/Meta covers in repository
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name ls-sofiya-reel-stage
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -- 'media/sofiya-bulatetskaya-20261104-reel-meta.mp4' 'media/sofiya-bulatetskaya-20261104-reel-original-cover.png' 'media/sofiya-bulatetskaya-20261104-reel-meta-cover.jpg' 'results/verification/sofiya-bulatetskaya-20261104-reel-qa.json'
+          git commit -m 'Stage exact original Sofia H264 Reel and cover with AAC-compatible audio [skip ci]'
+          git pull --rebase origin main
+          git push origin HEAD:main
+  instagram_meta:
+    needs: stage
+    name: One-time direct Meta Sofia Reel with native @sofiya_bulat invitation, verified readback
+    if: github.repository == 'lsevmos-gpt/ls-vk' && github.ref == 'refs/heads/main' && github.actor == 'lsevmos-gpt'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      META_IG_ACCESS_TOKEN: ${{ secrets.META_IG_ACCESS_TOKEN }}
+      META_IG_USER_ID: ${{ secrets.META_IG_USER_ID }}
+      META_GRAPH_VERSION: v26.0
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Verify Meta secrets and request syntax; publish once
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$META_IG_ACCESS_TOKEN" && test -n "$META_IG_USER_ID"
+          python -m py_compile 'scripts/publish_sofiya_20261104_meta.py'
+          python -m scripts.instagram_collab validate 'requests/instagram-meta/sofiya-bulatetskaya-20261104-reel.json'
+          python -m scripts.publish_sofiya_20261104_meta
