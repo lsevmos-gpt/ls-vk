@@ -4,7 +4,7 @@
   "type": "clip",
   "groupId": 48198173,
   "runId": "41862263663",
-  "status": "wall_post_call_started",
+  "status": "vk_video_and_wall_api_accepted",
   "videoPath": "media/sofiya-bulatetskaya-20261104-reel-meta.mp4",
   "videoSHA256": "eeef216d93c29b4f0ebcbeba8e763466c411adb7b1d0a1c96d06c5b01b30a072",
   "videoResolution": "1080x1920",
@@ -14,10 +14,11 @@
   "createdAtUTC": "2026-11-04T16:02:32.168Z",
   "refreshScheme": "27-oct-shpagat-same-runner-vkid",
   "videoId": 456240841,
-  "wallPostId": null,
+  "wallPostId": 5366,
   "coverNote": "Original approved cover stored; platform cover upload not configured; do not claim custom VK thumbnail was applied",
   "note": "Exactly one provider video upload and one wall post. Never retry if outcome uncertain",
-  "updatedAtUTC": "2026-11-04T16:02:47.163Z",
+  "updatedAtUTC": "2026-11-04T16:02:50.526Z",
   "videoOwnerId": -48198173,
-  "attachment": "video-48198173_456240841"
+  "attachment": "video-48198173_456240841",
+  "submittedAtUTC": "2026-11-04T16:02:50.526Z"
 }
