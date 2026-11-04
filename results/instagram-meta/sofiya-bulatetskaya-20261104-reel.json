@@ -3,16 +3,18 @@
   "platform": "instagram-meta",
   "type": "REELS",
   "account": "liniya__sporta",
-  "status": "publish_call_started",
+  "status": "published_meta_id_received",
   "originalVideoSHA256": "4965ddb004754d0c75d8806f8381fc76c341e3363b46889d4af7d86e8a96fe52",
   "preparedVideoSHA256": "eeef216d93c29b4f0ebcbeba8e763466c411adb7b1d0a1c96d06c5b01b30a072",
   "resolution": "1080x1920",
   "videoStreamUnchanged": true,
   "collaboratorInvited": "sofiya_bulat",
-  "collaborationStatus": "native_invitation_requested_in_container_fields",
+  "collaborationStatus": "native_invitation_requested; acceptance_not_independently_confirmed",
   "caption": "Знакомьтесь — София Булатецкая! 👋\n\nВ команде «Линии спорта» новый тренер, для которого спорт — часть жизни уже 14 лет.\n\nСофия — кандидат в мастера спорта по эстетической гимнастике, призёр всероссийских соревнований и обладатель III спортивного разряда по тяжёлой атлетике.\n\nВ работе сочетает тренировки в зале, методики ЛФК и стретчинга — с вниманием к технике и целям каждого.\n\nПосмотрите ролик и познакомьтесь с Софией поближе!\n\n📍 «Линия спорта», Героев Сталинграда, 6Д.\n\n💬 По вопросам персональных тренировок и записи обращайтесь к администраторам клуба или пишите нам в сообщения.",
   "runId": "41859202708",
   "createdAtUTC": "2026-11-04T15:36:20.336477+00:00",
-  "updatedAtUTC": "2026-11-04T15:37:08.198333+00:00",
-  "creationId": "18022613777949669"
+  "updatedAtUTC": "2026-11-04T15:37:25.108902+00:00",
+  "creationId": "18022613777949669",
+  "mediaId": "18028305716704570",
+  "publishedAtUTC": "2026-11-04T15:37:25.108878+00:00"
 }
