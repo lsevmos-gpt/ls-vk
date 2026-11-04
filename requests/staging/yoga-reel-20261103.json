@@ -8,7 +8,8 @@
     "driveFileId": "1P4g1twKNQJwKneQqLwEzWhzwnae8QSdx",
     "name": "йога.mp4",
     "bytes": 466126262,
-    "url": "https://drive.google.com/file/d/1P4g1twKNQJwKneQqLwEzWhzwnae8QSdx/view"
+    "url": "https://drive.google.com/file/d/1P4g1twKNQJwKneQqLwEzWhzwnae8QSdx/view",
+    "sha256": "9f30f07afe04ddc881e390a8c54c6e055ed4745ce1d6e5dda72798d0c9aa9028"
   },
   "cover": {
     "uploadedName": "YOGA_RC25_A_4K(2).png",
@@ -48,5 +49,5 @@
   },
   "caption": "Ты когда-нибудь замечала, как тело становится другим, когда перестаёшь его заставлять и начинаешь с ним договариваться?🌿\n\nЙога в Линии спорта — про силу без надрыва, про гибкость без боли и про тишину, которой так не хватает.\n\nИногда самые настоящие изменения приходят не через усилие,а через бережное внимание к себе.\nПриходи. Твоё тело уже ждёт.",
   "guard": "Staging only. NO social provider calls and NO publication until owner gives date and time.",
-  "stagingRetryReason": "Correct shell numeric format for 95MB check after verified 2K encoder completed; no social posting"
+  "stagingRetryReason": "Accept valid full-range yuvj420p output. Exact 4K source SHA256 already verified. Publication remains disabled until scheduled release."
 }
