@@ -3,11 +3,12 @@
   "provider": "vk",
   "groupId": 48198173,
   "postType": "photo_story",
-  "status": "submitted_to_vk_verify_pending",
+  "status": "published_verified_by_vk",
   "sourceSha256": "bd0033fb6eb0a4b53a97be6ab5f7341a8921c10993bac9478f721f5a3139c863",
   "originalPNGUnchanged": true,
   "submittedOnce": true,
   "runId": "41820235599",
-  "updatedAtUTC": "2026-11-04T11:23:14.714Z",
-  "vkStoryId": 456240706
+  "updatedAtUTC": "2026-11-04T11:23:37.743Z",
+  "vkStoryId": 456240706,
+  "vkReadbackConfirmed": true
 }
