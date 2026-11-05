@@ -2,9 +2,12 @@
   "id": "bar-menu-20261105",
   "network": "instagram",
   "postType": "carousel",
-  "status": "published_readback_pending",
+  "status": "published_verified_by_meta",
   "runId": "42064664518",
   "sourceCount": 6,
-  "checkedAtUTC": "2026-11-05T16:30:12.734108+00:00",
-  "instagramMediaId": "18138754429733052"
+  "checkedAtUTC": "2026-11-05T16:30:14.718650+00:00",
+  "instagramMediaId": "18138754429733052",
+  "permalink": "https://www.instagram.com/p/DfXdsLKFN8y/",
+  "mediaType": "CAROUSEL_ALBUM",
+  "readbackConfirmed": true
 }
