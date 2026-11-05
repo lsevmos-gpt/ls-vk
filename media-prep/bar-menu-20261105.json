@@ -1,0 +1,43 @@
+{
+  "id": "bar-menu-20261105",
+  "approved": true,
+  "publicContent": true,
+  "images": [
+    {
+      "order": 1,
+      "name": "01-cover(2).png",
+      "url": "https://at.adobe.com/svgoLATd9o3i8YiO",
+      "sha256": "fe4783f3573f3e4cf00a9105823a0462864a1098eda119362968779e039f6835"
+    },
+    {
+      "order": 2,
+      "name": "02-berry-smoothie .png",
+      "url": "https://at.adobe.com/7b3zRXr58dWSyvDJ",
+      "sha256": "fd626d44953be072a78b4c4e934ed456e32ef446726c6b6edbcdd21011cf7265"
+    },
+    {
+      "order": 3,
+      "name": "03-citrus-fresh(2).png",
+      "url": "https://at.adobe.com/OPwbzqSkGXKrrdyD",
+      "sha256": "a8eed449743b56ff599a2cd19356940344f13a5d68901879bc567fbbd4aa8110"
+    },
+    {
+      "order": 4,
+      "name": "04-bumble-coffee(2).png",
+      "url": "https://at.adobe.com/2fU9vYBkaS65irKa",
+      "sha256": "fcc3e939654213b1e336d71ff0003dc9f247d50d21afe7d582b004a7d3edd086"
+    },
+    {
+      "order": 5,
+      "name": "05-breakfast(3).png",
+      "url": "https://at.adobe.com/IRxx6QblG5ub7aVV",
+      "sha256": "f504d35f35e493ef7666641de9e4359a9fceba2acd3608c835d56af39f540d1c"
+    },
+    {
+      "order": 6,
+      "name": "06-menu-in-bio(2).png",
+      "url": "https://at.adobe.com/ALqtcI2gQ8C5jQpG",
+      "sha256": "2276276d29daadb66dde9043b24e17748763973bc663b4e27ccf7984666cca6d"
+    }
+  ]
+}
