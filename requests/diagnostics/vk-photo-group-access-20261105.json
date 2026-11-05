@@ -1,0 +1,7 @@
+{
+  "id": "vk-photo-group-access-20261105",
+  "groupId": 48198173,
+  "readOnly": true,
+  "method": "photos.getWallUploadServer",
+  "reason": "Check whether group token can obtain a wall photo upload URL; no upload or post"
+}
