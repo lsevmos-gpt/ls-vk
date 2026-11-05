@@ -1,0 +1,55 @@
+{
+  "id": "bar-menu-20261105",
+  "ok": true,
+  "stagingOnly": true,
+  "images": [
+    {
+      "order": 1,
+      "original": "media/bar-menu-20261105-01-original.png",
+      "sha256": "fe4783f3573f3e4cf00a9105823a0462864a1098eda119362968779e039f6835",
+      "metaJPEG": "media/bar-menu-20261105-01-meta.jpg",
+      "metaSHA256": "766618f5db8970638258bf09f32bcce86d77d6167acb4984f5361fee82b5b651",
+      "noResize": true
+    },
+    {
+      "order": 2,
+      "original": "media/bar-menu-20261105-02-original.png",
+      "sha256": "fd626d44953be072a78b4c4e934ed456e32ef446726c6b6edbcdd21011cf7265",
+      "metaJPEG": "media/bar-menu-20261105-02-meta.jpg",
+      "metaSHA256": "f4bc1351586e1f42e7b82be50cf6d491b20390747c81bb8fbf3db41f9a892e3a",
+      "noResize": true
+    },
+    {
+      "order": 3,
+      "original": "media/bar-menu-20261105-03-original.png",
+      "sha256": "a8eed449743b56ff599a2cd19356940344f13a5d68901879bc567fbbd4aa8110",
+      "metaJPEG": "media/bar-menu-20261105-03-meta.jpg",
+      "metaSHA256": "abe874f2d98ab8ee2c510e299efd20df5d33726544f35cf2d4292c99a0c390e7",
+      "noResize": true
+    },
+    {
+      "order": 4,
+      "original": "media/bar-menu-20261105-04-original.png",
+      "sha256": "fcc3e939654213b1e336d71ff0003dc9f247d50d21afe7d582b004a7d3edd086",
+      "metaJPEG": "media/bar-menu-20261105-04-meta.jpg",
+      "metaSHA256": "8196f5fd8a4c822a137c05e6665104d3b8825217f2d972150d68bf8cceac1e77",
+      "noResize": true
+    },
+    {
+      "order": 5,
+      "original": "media/bar-menu-20261105-05-original.png",
+      "sha256": "f504d35f35e493ef7666641de9e4359a9fceba2acd3608c835d56af39f540d1c",
+      "metaJPEG": "media/bar-menu-20261105-05-meta.jpg",
+      "metaSHA256": "f386b386833753150f4cf860de58b81158ec26355c08d656f9e4e1d18981d43c",
+      "noResize": true
+    },
+    {
+      "order": 6,
+      "original": "media/bar-menu-20261105-06-original.png",
+      "sha256": "2276276d29daadb66dde9043b24e17748763973bc663b4e27ccf7984666cca6d",
+      "metaJPEG": "media/bar-menu-20261105-06-meta.jpg",
+      "metaSHA256": "d6086ed0c54b8fc91bf5ce29ee71c40fab2b055d8a04f7e410e2dbceda6e3e43",
+      "noResize": true
+    }
+  ]
+}
