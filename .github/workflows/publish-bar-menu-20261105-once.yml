@@ -1,0 +1,98 @@
+name: Publish bar menu carousel direct Meta and VK once
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'requests/campaigns/bar-menu-20261105-release.json'
+permissions:
+  contents: write
+concurrency:
+  group: bar-menu-20261105-direct-meta-vk-once
+  cancel-in-progress: false
+jobs:
+  readiness:
+    if: github.repository == 'lsevmos-gpt/ls-vk' && github.ref == 'refs/heads/main' && github.actor == 'lsevmos-gpt'
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Verify media and one-shot release
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m py_compile scripts/publish_bar_menu_20261105_instagram.py
+          node --check scripts/publish_bar_menu_20261105_vk.mjs
+          python3 - <<'PY'
+          import hashlib,json
+          from pathlib import Path
+          ident='bar-menu-20261105'
+          rel=json.loads(Path('requests/campaigns/'+ident+'-release.json').read_text())
+          qa=json.loads(Path('results/verification/'+ident+'-stage.json').read_text())
+          assert rel['id']==qa['id']==ident and rel['approved'] is True and rel['publicContent'] is True and rel['submitNow'] is True
+          assert rel['instagram']=='liniya__sporta' and rel['vkGroupId']==48198173
+          assert qa['ok'] is True and qa['stagingOnly'] is True and len(qa['images'])==6
+          assert [v['order'] for v in qa['images']]==[1,2,3,4,5,6]
+          assert rel['mediaOrder']==[v['original'] for v in qa['images']]
+          assert 'ТВОЯ ВКУСНАЯ ПАУЗА' in rel['text']
+          for row in qa['images']:
+              for key,sha in [('original','sha256'),('metaJPEG','metaSHA256')]:
+                  p=Path(row[key])
+                  assert p.is_file() and not p.is_symlink()
+                  with p.open('rb') as f: assert hashlib.file_digest(f,'sha256').hexdigest()==row[sha]
+          print('SIX_ORIGINAL_PNG_AND_SIX_META_JPEG_VERIFIED')
+          PY
+  instagram_meta:
+    needs: readiness
+    if: github.repository == 'lsevmos-gpt/ls-vk' && github.ref == 'refs/heads/main' && github.actor == 'lsevmos-gpt'
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    env:
+      META_IG_ACCESS_TOKEN: ${{ secrets.META_IG_ACCESS_TOKEN }}
+      META_IG_USER_ID: ${{ secrets.META_IG_USER_ID }}
+      META_GRAPH_VERSION: v26.0
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Direct Meta carousel, exactly one submission with readback
+        run: |
+          test -n "$META_IG_ACCESS_TOKEN" && test -n "$META_IG_USER_ID"
+          python -m scripts.publish_bar_menu_20261105_instagram
+  vk:
+    needs: readiness
+    if: github.repository == 'lsevmos-gpt/ls-vk' && github.ref == 'refs/heads/main' && github.actor == 'lsevmos-gpt'
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    env:
+      VK_GROUP_TOKEN: ${{ secrets.VK_GROUP_TOKEN }}
+      VK_USER_TOKEN: ${{ secrets.VK_USER_TOKEN }}
+      VK_GROUP_ID: '48198173'
+      VK_GROUP_SCREEN_NAME: liniya__sporta
+      VK_API_VERSION: '5.199'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install VK uploader
+        run: npm install --omit=dev --ignore-scripts --no-package-lock --no-audit --no-fund
+      - name: Upload original PNG and post 6-photo VK album with readback
+        run: |
+          test -n "$VK_GROUP_TOKEN"
+          node scripts/publish_bar_menu_20261105_vk.mjs
