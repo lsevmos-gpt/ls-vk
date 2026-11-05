@@ -1,0 +1,34 @@
+name: Diagnose VK group-token wall photo upload eligibility - NO PUBLISH
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'requests/diagnostics/vk-photo-group-access-20261105.json'
+permissions:
+  contents: read
+jobs:
+  diagnose:
+    if: github.repository == 'lsevmos-gpt/ls-vk' && github.ref == 'refs/heads/main' && github.actor == 'lsevmos-gpt'
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    env:
+      VK_GROUP_TOKEN: ${{ secrets.VK_GROUP_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Check group-token permission for photos.getWallUploadServer, no upload, no posts
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import os,json,urllib.request,urllib.parse
+          tok=os.environ['VK_GROUP_TOKEN']
+          assert tok
+          data=urllib.parse.urlencode({'group_id':'48198173','v':'5.199','access_token':tok}).encode()
+          with urllib.request.urlopen(urllib.request.Request('https://api.vk.ru/method/photos.getWallUploadServer',data=data),timeout=35) as r:
+              payload=json.load(r)
+          error=payload.get('error',{})
+          print('VK_GROUP_WALL_PHOTO_ACCESS',json.dumps({'allowed':bool(payload.get('response',{}).get('upload_url')),'error_code':error.get('error_code'),'error_msg':error.get('error_msg')},ensure_ascii=False))
+          PY
