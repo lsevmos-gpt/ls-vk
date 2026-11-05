@@ -1,10 +1,12 @@
 {
   "id": "bar-menu-20261105",
   "network": "vk",
-  "status": "submission_started",
+  "status": "manual_review_required",
   "groupId": 48198173,
   "runId": "42064664518",
   "sourceCount": 6,
   "originalPNGUnchanged": true,
-  "checkedAtUTC": "2026-11-05T16:28:04.355Z"
+  "checkedAtUTC": "2026-11-05T16:28:08.426Z",
+  "error": "VK API photos.getWallUploadServer: User authorization failed: access_token was given to another ip address",
+  "note": "Never blindly re-run; six uploads or wall.post may have partially succeeded"
 }
