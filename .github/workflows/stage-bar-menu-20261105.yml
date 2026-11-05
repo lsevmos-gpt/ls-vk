@@ -1,0 +1,68 @@
+name: Stage 05 Nov Bar Carousel Original PNG and Meta JPEG (NO PUBLISH)
+on:
+  push:
+    branches: [main]
+    paths:
+      - media-prep/bar-menu-20261105.json
+permissions:
+  contents: write
+concurrency:
+  group: stage-bar-menu-20261105-once
+  cancel-in-progress: false
+jobs:
+  stage:
+    if: github.repository == 'lsevmos-gpt/ls-vk' && github.ref == 'refs/heads/main' && github.actor == 'lsevmos-gpt'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install Pillow
+        run: python -m pip install --disable-pip-version-check 'Pillow>=11,<13'
+      - name: Download and verify user-approved originals; produce JPEG required by Meta
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json,hashlib,subprocess
+          from pathlib import Path
+          from PIL import Image
+          m=json.loads(Path('media-prep/bar-menu-20261105.json').read_text())
+          assert m['id']=='bar-menu-20261105' and m['approved'] is True and m['publicContent'] is True
+          images=m['images'];assert len(images)==6
+          assert [x['order'] for x in images]==[1,2,3,4,5,6]
+          assert images[4]['name']=='05-breakfast(3).png'
+          Path('media').mkdir(exist_ok=True)
+          qa=[]
+          for x in images:
+              i=x['order'];url=x['url'];assert url.startswith('https://at.adobe.com/')
+              source=Path(f'media/bar-menu-20261105-{i:02}-original.png')
+              jpg=Path(f'media/bar-menu-20261105-{i:02}-meta.jpg')
+              subprocess.run(['curl','-fLSs','--retry','2','--max-time','180',url,'-o',str(source)],check=True)
+              assert hashlib.sha256(source.read_bytes()).hexdigest()==x['sha256']
+              with Image.open(source) as im:
+                  assert im.format=='PNG' and im.size==(1080,1350)
+                  rgba=im.convert('RGBA');rgb=Image.new('RGB',rgba.size,(255,255,255))
+                  rgb.paste(rgba,mask=rgba.getchannel('A'))
+                  rgb.save(jpg,'JPEG',quality=100,subsampling=0,optimize=True)
+              qa.append({'order':i,'original':str(source),'sha256':x['sha256'],'metaJPEG':str(jpg),'metaSHA256':hashlib.sha256(jpg.read_bytes()).hexdigest(),'noResize':True})
+          Path('results/verification').mkdir(parents=True,exist_ok=True)
+          Path('results/verification/bar-menu-20261105-stage.json').write_text(json.dumps({'id':m['id'],'ok':True,'stagingOnly':True,'images':qa},indent=2)+'\n')
+          print('STAGED_SIX_EXACT_ORIGINAL_PNG_AND_META_JPEG')
+          PY
+      - name: Commit staged assets; do not publish
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name ls-social-bot
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add media/bar-menu-20261105-* results/verification/bar-menu-20261105-stage.json
+          git diff --cached --quiet && exit 0
+          git commit -m 'Stage approved bar menu images without publication [skip ci]'
+          git pull --rebase origin main
+          git push origin HEAD:main
