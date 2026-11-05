@@ -2,8 +2,10 @@
   "id": "bar-menu-20261105",
   "network": "instagram",
   "postType": "carousel",
-  "status": "submission_started",
+  "status": "manual_review_required",
   "runId": "42063749927",
   "sourceCount": 6,
-  "checkedAtUTC": "2026-11-05T16:23:18.577541+00:00"
+  "checkedAtUTC": "2026-11-05T16:23:22.259110+00:00",
+  "error": "Meta API HTTP 400 code=9004: Only photo or video can be accepted as media type.",
+  "note": "Do not retry: Meta outcome may be uncertain"
 }
