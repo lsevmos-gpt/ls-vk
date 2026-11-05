@@ -1,0 +1,54 @@
+name: Recover VK six-photo bar menu via same-runner VK ID refresh ONCE
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'requests/campaigns/bar-menu-20261105-vk-refresh-release.json'
+permissions:
+  contents: write
+concurrency:
+  group: bar-menu-20261105-vk-refresh-final-once
+  cancel-in-progress: false
+jobs:
+  vk:
+    if: github.repository == 'lsevmos-gpt/ls-vk' && github.ref == 'refs/heads/main' && github.actor == 'lsevmos-gpt'
+    runs-on: ubuntu-latest
+    timeout-minutes: 55
+    env:
+      VK_GROUP_ID: '48198173'
+      VK_GROUP_SCREEN_NAME: liniya__sporta
+      VK_GROUP_TOKEN: ${{ secrets.VK_GROUP_TOKEN }}
+      VK_REFRESH_TOKEN: ${{ secrets.VK_REFRESH_TOKEN }}
+      VK_DEVICE_ID: ${{ secrets.VK_DEVICE_ID }}
+      VK_SECRETS_WRITE_PAT: ${{ secrets.VK_SECRETS_WRITE_PAT }}
+      VK_API_VERSION: '5.199'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Verify VK refresh secrets and approved one-shot source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$VK_GROUP_TOKEN" && test -n "$VK_REFRESH_TOKEN" && test -n "$VK_DEVICE_ID" && test -n "$VK_SECRETS_WRITE_PAT"
+          node --check scripts/publish_bar_menu_20261105_vk_refresh.mjs
+          node --check scripts/vk-refresh-lib.mjs
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          rel=json.loads(Path('requests/campaigns/bar-menu-20261105-vk-refresh-release.json').read_text())
+          assert rel['approved'] is True and rel['submitNow'] is True and rel['groupId']==48198173
+          prior=json.loads(Path('results/campaigns/bar-menu-20261105-vk.json').read_text())
+          assert prior['status']=='manual_review_required' and 'another ip address' in prior['error']
+          assert not prior.get('attachments') and not prior.get('wallPostId')
+          assert not Path('results/campaigns/bar-menu-20261105-vk-refresh-recover.json').exists()
+          print('VK_ONLY_PRE_UPLOAD_FAILURE_CONFIRMED')
+          PY
+      - name: Install VK client
+        run: npm install --omit=dev --ignore-scripts --no-package-lock --no-audit --no-fund
+      - name: Refresh token on same runner and publish approved original PNG carousel exactly once
+        run: node scripts/publish_bar_menu_20261105_vk_refresh.mjs
