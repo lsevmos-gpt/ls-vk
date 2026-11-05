@@ -1,0 +1,61 @@
+name: Recover bar menu Instagram Meta and VK one-time after pre-provider failures
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'requests/campaigns/bar-menu-20261105-recovery.json'
+permissions:
+  contents: write
+concurrency:
+  group: bar-menu-20261105-direct-meta-vk-recovery-once
+  cancel-in-progress: false
+jobs:
+  instagram_meta:
+    if: github.repository == 'lsevmos-gpt/ls-vk' && github.ref == 'refs/heads/main' && github.actor == 'lsevmos-gpt'
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    env:
+      META_IG_ACCESS_TOKEN: ${{ secrets.META_IG_ACCESS_TOKEN }}
+      META_IG_USER_ID: ${{ secrets.META_IG_USER_ID }}
+      META_GRAPH_VERSION: v26.0
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Validate prior failed-before-publish receipt and Cloudflare six JPEG asset URLs; publish once via Meta
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$META_IG_ACCESS_TOKEN" && test -n "$META_IG_USER_ID"
+          python -m py_compile scripts/publish_bar_menu_20261105_instagram_recover.py
+          python -m scripts.publish_bar_menu_20261105_instagram_recover
+  vk:
+    if: github.repository == 'lsevmos-gpt/ls-vk' && github.ref == 'refs/heads/main' && github.actor == 'lsevmos-gpt'
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    env:
+      VK_GROUP_TOKEN: ${{ secrets.VK_GROUP_TOKEN }}
+      VK_USER_TOKEN: ${{ secrets.VK_USER_TOKEN }}
+      VK_GROUP_ID: '48198173'
+      VK_GROUP_SCREEN_NAME: liniya__sporta
+      VK_API_VERSION: '5.199'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install official VK upload dependencies
+        run: npm install --omit=dev --ignore-scripts --no-package-lock --no-audit --no-fund
+      - name: Verify no prior VK receipt, upload original six PNGs and post single wall album
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --check scripts/publish_bar_menu_20261105_vk.mjs
+          node scripts/publish_bar_menu_20261105_vk.mjs
