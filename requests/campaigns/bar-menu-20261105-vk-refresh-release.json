@@ -1,0 +1,14 @@
+{
+  "id": "bar-menu-20261105-vk-refresh",
+  "approved": true,
+  "publicContent": true,
+  "submitNow": true,
+  "groupId": 48198173,
+  "sourceId": "bar-menu-20261105",
+  "mediaCount": 6,
+  "previousRuns": [
+    42063749927,
+    42064664518
+  ],
+  "reason": "VK IP-bound user token rejected before photo upload, use established same-runner refresh without repeating any submitted posts"
+}
