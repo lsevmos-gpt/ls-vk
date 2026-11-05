@@ -1,0 +1,19 @@
+{
+  "id": "bar-menu-20261105-recovery",
+  "approved": true,
+  "publicContent": true,
+  "submitNow": true,
+  "previousRunId": 42063749927,
+  "instagramPreviousFailure": "Meta HTTP 400 9004 before first child container ID",
+  "vkPreviousFailure": "VK wall.get not allowed with group token; failed before reserve/upload",
+  "mediaCount": 6,
+  "sourceOrder": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6
+  ],
+  "note": "One-shot independent IG/VK recovery. Do not modify published content or automatically retry uncertain provider outcome."
+}
