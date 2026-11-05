@@ -1,10 +1,12 @@
 {
   "id": "bar-menu-20261105",
   "network": "vk",
-  "status": "upload_in_progress_1",
+  "status": "manual_reconciliation_required",
   "groupId": 48198173,
   "runId": "42065171739",
   "originalPNGs": true,
   "attachments": [],
-  "updatedAtUTC": "2026-11-05T16:31:34.302Z"
+  "updatedAtUTC": "2026-11-05T16:31:36.104Z",
+  "error": "VK API photos.getWallUploadServer: Access denied: no access to call this method. It cannot be called with current scopes.",
+  "note": "Do not replay after reserved upload outcome. Check provider and results."
 }
