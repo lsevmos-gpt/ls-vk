@@ -1,0 +1,104 @@
+name: Publish Yoga VK 2K Clip 06 Nov 2026 at 18:30 MSK WITHOUT coauthor ONCE
+on:
+  schedule:
+    # MSK = UTC+3. Early triggers allow source validation and VK video upload before 18:30.
+    - cron: '15,25,35,45,55 14 6 11 *'
+    - cron: '0,10,20,30,40 15 6 11 *'
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/publish-yoga-reel-20261106-1830-vk.yml'
+      - 'requests/campaigns/yoga-reel-20261106-1830-vk.json'
+      - 'scripts/publish_yoga_reel_20261106_1830_vk.mjs'
+  workflow_dispatch:
+    inputs:
+      operation:
+        description: 'READ ONLY readiness. Provider mutation runs only on date-scoped cron.'
+        required: true
+        type: choice
+        options: [check]
+        default: check
+permissions:
+  contents: write
+concurrency:
+  group: yoga-20261106-1830-vk-no-coauthor-exactly-once
+  cancel-in-progress: false
+jobs:
+  readiness_only:
+    name: Read-only VK Yoga 2K source, explicit no-coauthor release, secrets
+    if: github.repository == 'lsevmos-gpt/ls-vk' && github.ref == 'refs/heads/main' && github.event_name != 'schedule'
+    runs-on: ubuntu-latest
+    timeout-minutes: 14
+    env:
+      VK_GROUP_TOKEN: ${{ secrets.VK_GROUP_TOKEN }}
+      VK_REFRESH_TOKEN: ${{ secrets.VK_REFRESH_TOKEN }}
+      VK_DEVICE_ID: ${{ secrets.VK_DEVICE_ID }}
+      VK_SECRETS_WRITE_PAT: ${{ secrets.VK_SECRETS_WRITE_PAT }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Check publisher and VK token configuration WITHOUT token refresh or publication
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --check scripts/publish_yoga_reel_20261106_1830_vk.mjs
+          node --check scripts/vk-refresh-lib.mjs
+          test -n "$VK_GROUP_TOKEN" && test -n "$VK_REFRESH_TOKEN" && test -n "$VK_DEVICE_ID" && test -n "$VK_SECRETS_WRITE_PAT"
+          python3 - <<'PY'
+          import hashlib,json
+          from pathlib import Path
+          q=json.loads(Path('results/verification/yoga-reel-20261103-2k.json').read_text())
+          c=json.loads(Path('requests/campaigns/yoga-reel-20261106-1830.json').read_text())
+          r=json.loads(Path('requests/campaigns/yoga-reel-20261106-1830-vk.json').read_text())
+          assert r['id']=='yoga-reel-20261106-1830-vk' and r['approved'] is True and r['publicContent'] is True
+          assert r['authorizedByUser'] is True and r['noCollaborator'] is True and r['postToWall'] is True
+          assert r['vkGroupId']==48198173 and r['scheduledFor']=='2026-11-06T18:30:00+03:00'
+          assert c['approved'] is True and c['scheduledFor']==r['scheduledFor'] and c['caption']==r['caption']
+          assert c['instagram']['collaborators']==['sir_ena06']
+          assert q['ok'] is True and q['videoResolution']=='1440x2560'
+          p=Path(r['videoPath'])
+          assert r['videoPath']==q['videoPath'] and q['videoBytes']==p.stat().st_size==90609020
+          assert r['videoSHA256']==q['videoSHA256']
+          with p.open('rb') as f: assert hashlib.file_digest(f,'sha256').hexdigest()==r['videoSHA256']
+          assert not Path('results/campaigns/yoga-reel-20261106-1830-vk.json').exists()
+          print('YOGA_VK_2K_NO_COAUTHOR_DATE_1830_SOURCE_SHA_VALIDATED_NO_PUBLICATION')
+          PY
+  publish_vk_once:
+    name: 18:30 MSK VK original 2K Clip without coauthor, video + wall receipts
+    if: github.repository == 'lsevmos-gpt/ls-vk' && github.ref == 'refs/heads/main' && github.event_name == 'schedule'
+    runs-on: ubuntu-latest
+    timeout-minutes: 105
+    env:
+      VK_GROUP_ID: '48198173'
+      VK_GROUP_SCREEN_NAME: liniya__sporta
+      VK_GROUP_TOKEN: ${{ secrets.VK_GROUP_TOKEN }}
+      VK_REFRESH_TOKEN: ${{ secrets.VK_REFRESH_TOKEN }}
+      VK_DEVICE_ID: ${{ secrets.VK_DEVICE_ID }}
+      VK_SECRETS_WRITE_PAT: ${{ secrets.VK_SECRETS_WRITE_PAT }}
+      VK_API_VERSION: '5.199'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Validate exact release and installed upload library
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$VK_GROUP_TOKEN" && test -n "$VK_REFRESH_TOKEN" && test -n "$VK_DEVICE_ID" && test -n "$VK_SECRETS_WRITE_PAT"
+          node --check scripts/publish_yoga_reel_20261106_1830_vk.mjs
+          node --check scripts/vk-refresh-lib.mjs
+          npm install --omit=dev --ignore-scripts --no-package-lock --no-audit --no-fund
+      - name: Refresh VK ID token on same runner, upload video before 18:30, post once at scheduled time, verify
+        shell: bash
+        run: |
+          set -euo pipefail
+          node scripts/publish_yoga_reel_20261106_1830_vk.mjs
