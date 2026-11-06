@@ -13,17 +13,19 @@
   "scheduledFor": "2026-11-06T18:30:00+03:00",
   "caption": "Ты когда-нибудь замечала, как тело становится другим, когда перестаёшь его заставлять и начинаешь с ним договариваться?🌿\n\nЙога в Линии спорта — про силу без надрыва, про гибкость без боли и про тишину, которой так не хватает.\n\nИногда самые настоящие изменения приходят не через усилие,а через бережное внимание к себе.\nПриходи. Твоё тело уже ждёт.",
   "runId": "42244527936",
-  "status": "vk_video_wall_api_accepted",
+  "status": "published_verified_by_vk",
   "videoId": 456240842,
   "wallPostId": 5368,
   "noRetries": true,
   "createdAtUTC": "2026-11-06T15:36:23.757Z",
   "coverNote": "Custom VK cover not set through API; do not claim original cover applied",
-  "updatedAtUTC": "2026-11-06T15:36:38.892Z",
+  "updatedAtUTC": "2026-11-06T15:36:40.740Z",
   "videoOwnerId": -48198173,
   "attachment": "video-48198173_456240842",
   "videoUrl": "https://vk.com/video-48198173_456240842",
   "uploadedAtUTC": "2026-11-06T15:36:34.953Z",
   "wallUrl": "https://vk.com/wall-48198173_5368",
-  "postedAtUTC": "2026-11-06T15:36:38.892Z"
+  "postedAtUTC": "2026-11-06T15:36:38.892Z",
+  "videoReadbackConfirmed": true,
+  "wallReadbackConfirmed": true
 }
