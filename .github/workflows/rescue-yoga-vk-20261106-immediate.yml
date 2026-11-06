@@ -1,0 +1,58 @@
+name: Rescue scheduled Yoga VK clip 06 Nov only if never attempted
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'requests/campaigns/yoga-reel-20261106-1830-vk-rescue.json'
+permissions:
+  contents: write
+concurrency:
+  group: yoga-20261106-1830-vk-no-coauthor-exactly-once
+  cancel-in-progress: false
+jobs:
+  publish_if_not_attempted:
+    if: github.repository == 'lsevmos-gpt/ls-vk' && github.ref == 'refs/heads/main' && github.actor == 'lsevmos-gpt'
+    runs-on: ubuntu-latest
+    timeout-minutes: 26
+    env:
+      YOGA_APPROVED_RECOVERY: 'true'
+      VK_GROUP_ID: '48198173'
+      VK_GROUP_SCREEN_NAME: liniya__sporta
+      VK_GROUP_TOKEN: ${{ secrets.VK_GROUP_TOKEN }}
+      VK_REFRESH_TOKEN: ${{ secrets.VK_REFRESH_TOKEN }}
+      VK_DEVICE_ID: ${{ secrets.VK_DEVICE_ID }}
+      VK_SECRETS_WRITE_PAT: ${{ secrets.VK_SECRETS_WRITE_PAT }}
+      VK_API_VERSION: '5.199'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Verify owner-approved recovery, protected source and absence of prior publication attempt
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$VK_GROUP_TOKEN" && test -n "$VK_REFRESH_TOKEN" && test -n "$VK_DEVICE_ID" && test -n "$VK_SECRETS_WRITE_PAT"
+          node --check scripts/publish_yoga_reel_20261106_1830_vk.mjs
+          node --check scripts/vk-refresh-lib.mjs
+          python3 - <<'PY'
+          import json,hashlib
+          from pathlib import Path
+          v=Path('results/campaigns/yoga-reel-20261106-1830-vk.json')
+          assert not v.exists(), 'Existing receipt: no duplicate'
+          r=json.loads(Path('requests/campaigns/yoga-reel-20261106-1830-vk-rescue.json').read_text())
+          assert r['id']=='yoga-reel-20261106-1830-vk-rescue' and r['approved'] is True and r['noCollaborator'] is True
+          assert r['action']=='publish_now_if_not_attempted'
+          qa=json.loads(Path('results/verification/yoga-reel-20261103-2k.json').read_text())
+          p=Path('media/yoga-reel-20261103-2k-ig-vk.mp4')
+          assert p.stat().st_size==qa['videoBytes']==90609020 and qa['videoResolution']=='1440x2560'
+          with p.open('rb') as f: assert hashlib.file_digest(f,'sha256').hexdigest()==qa['videoSHA256']
+          print('VK_YOGA_RECOVERY_EXACT_2K_APPROVAL_AND_UNPOSTED_RECEIPT_OK')
+          PY
+      - name: Install existing VK uploader dependencies
+        run: npm install --omit=dev --ignore-scripts --no-package-lock --no-audit --no-fund
+      - name: Refresh VK ID on same runner and publish no-coauthor yoga clip once
+        run: node scripts/publish_yoga_reel_20261106_1830_vk.mjs
