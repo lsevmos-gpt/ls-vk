@@ -14,7 +14,7 @@ const QA='results/verification/yoga-reel-20261103-2k.json';
 const VIDEO='media/yoga-reel-20261103-2k-ig-vk.mp4';
 const RECEIPT='results/campaigns/'+JOB+'.json';
 const EXPECTED_SHA='d225a0b0f5598e9c9a0a40d9a77d0828acdd8cdde63c31511a48c0bd035388ec';
-const READY_FROM=Date.parse('2026-11-06T14:50:00Z'); // 17:50 MSK: prepare VK upload
+const READY_FROM=Date.parse('2026-11-06T15:10:00Z'); // 18:10 MSK: minimize early VK video visibility
 const PUBLISH_AT=Date.parse('2026-11-06T15:30:00Z'); // 18:30 MSK
 const DEADLINE=Date.parse('2026-11-06T15:45:00Z'); // don't publish too late
 const wait=ms=>new Promise(r=>setTimeout(r,ms));
