@@ -1,0 +1,12 @@
+{
+  "id": "yoga-reel-20261106-1830-vk-rescue",
+  "approved": true,
+  "publicContent": true,
+  "noCollaborator": true,
+  "action": "publish_now_if_not_attempted",
+  "scope": "VK group 48198173 only",
+  "video": "media/yoga-reel-20261103-2k-ig-vk.mp4",
+  "scheduledFor": "2026-11-06T18:30:00+03:00",
+  "reason": "GitHub date-scoped cron did not trigger by 18:34 MSK; user reports VK missing, Instagram published; check no VK receipt, never retry uncertain results",
+  "instagram": "no changes"
+}
