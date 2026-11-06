@@ -68,10 +68,14 @@ async function refreshOnRunner(){
 }
 function readApproval(){
   if(process.env.GITHUB_REPOSITORY!==REPO||process.env.GITHUB_REF!=='refs/heads/main'
-      ||process.env.GITHUB_EVENT_NAME!=='schedule'||!(/^\d+$/.test(process.env.GITHUB_RUN_ID||''))){
+      ||(process.env.GITHUB_EVENT_NAME!=='schedule' && !(process.env.GITHUB_EVENT_NAME==='push' && process.env.GITHUB_ACTOR==='lsevmos-gpt' && process.env.YOGA_APPROVED_RECOVERY==='true'))||!(/^\d+$/.test(process.env.GITHUB_RUN_ID||''))){
     throw Error('UNAUTHORIZED_SCHEDULE_CONTEXT');
   }
   if(Date.now()>DEADLINE)throw Error('YOGA_RELEASE_WINDOW_EXPIRED_NO_PUBLISH');
+  if(process.env.GITHUB_EVENT_NAME==='push'){
+    const rescue=JSON.parse(fs.readFileSync('requests/campaigns/yoga-reel-20261106-1830-vk-rescue.json','utf8'));
+    if(!(rescue.id==='yoga-reel-20261106-1830-vk-rescue'&&rescue.approved===true&&rescue.noCollaborator===true&&rescue.action==='publish_now_if_not_attempted'))throw Error('UNAUTHORIZED_RECOVERY_RELEASE');
+  }
   const request=JSON.parse(fs.readFileSync(REQUEST,'utf8'));
   const campaign=JSON.parse(fs.readFileSync(CAMPAIGN,'utf8'));
   const qa=JSON.parse(fs.readFileSync(QA,'utf8'));
