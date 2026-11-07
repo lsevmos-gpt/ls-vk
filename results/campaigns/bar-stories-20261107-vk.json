@@ -5,7 +5,7 @@
   "releaseMode": "immediate",
   "runId": "42355218485",
   "createdAtUTC": "2026-11-07T08:23:52.304Z",
-  "status": "partial_submitted_to_vk",
+  "status": "submission_started",
   "published": [
     {
       "index": 1,
@@ -23,5 +23,7 @@
     }
   ],
   "note": "Exactly three approved stories; never retry provider save after uncertainty.",
-  "updatedAtUTC": "2026-11-07T08:24:08.861Z"
+  "updatedAtUTC": "2026-11-07T08:24:15.194Z",
+  "attemptingIndex": 3,
+  "attemptingItem": "fresh-orange-grapefruit"
 }
