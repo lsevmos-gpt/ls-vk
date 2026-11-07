@@ -15,5 +15,11 @@
   "storyText": "Embedded in source video only; no added text, disclaimers and brand details stay unobscured",
   "quality": "VK original MP4 unchanged; Meta original H264 bitstream unchanged, AAC 120k",
   "noRetries": true,
-  "approvedByUser": "Publish these stories to Instagram and VK as soon as preparation completes"
+  "approvedByUser": "Publish these stories to Instagram and VK as soon as preparation completes",
+  "recovery": {
+    "reason": "Previous run 42355076914 failed in local staging-field preflight before any Meta or VK provider call; both receipts absent",
+    "approved": true,
+    "attempt": "preprovider-mapping-fix-1",
+    "change": "sourceSHA256 check aligned with verified stage QA"
+  }
 }
