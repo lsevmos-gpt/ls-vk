@@ -52,7 +52,7 @@ function preflight() {
         throw Error("VK approved source/QA mismatch");
   for(let index=0;index<MEDIA.length;index++) {
     const media=MEDIA[index], staged=qa.sequence[index], original=doc.sequence[index];
-    if(staged.originalVKPath!==media.file || staged.sourceDriveSHA256!==original.sourceSHA256)
+    if(staged.originalVKPath!==media.file || staged.sourceSHA256!==original.sourceSHA256)
       throw Error("VK source identity mismatch: "+media.id);
     if(!fs.existsSync(media.file) || !fs.statSync(media.file).isFile() ||
        fs.statSync(media.file).size!==staged.originalVKBytes || hash(media.file)!==staged.originalVKSHA256)
