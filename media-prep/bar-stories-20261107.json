@@ -1,0 +1,45 @@
+{
+  "id": "bar-stories-20261107",
+  "approved": true,
+  "publicContent": true,
+  "publishMode": "immediate_after_staging",
+  "instagram": "liniya__sporta",
+  "vkGroupId": 48198173,
+  "sequence": [
+    {
+      "id": "intro-bar",
+      "driveFileId": "1SoexOQPc8MA_gIZQQ1iUF9FjNppA-cqy",
+      "fileName": "интро бар.mp4",
+      "url": "https://at.adobe.com/tOw13M9dJjsSvl9r",
+      "sourceBytes": 3017051,
+      "sourceSHA256": "1158b8e13b776740476522512843bf3b24bf4a78a764fcdcc693dadf85af1d7b",
+      "durationSeconds": 5.05,
+      "vkPath": "media/bar-20261107-intro-vk.mp4",
+      "metaPath": "media/bar-20261107-intro-meta.mp4"
+    },
+    {
+      "id": "haunt",
+      "driveFileId": "1BGLNemXY_lGWjOR2K2RDex0KrXgN4ml8",
+      "fileName": "HAUNT.mp4",
+      "url": "https://at.adobe.com/uIhmIPuWRdzcR9Uj",
+      "sourceBytes": 20025613,
+      "sourceSHA256": "8c3cc7b7915582716743b6d97bc98cde1cd4173415a7308b771197b26f0c0f8f",
+      "durationSeconds": 9.770667,
+      "vkPath": "media/bar-20261107-haunt-vk.mp4",
+      "metaPath": "media/bar-20261107-haunt-meta.mp4"
+    },
+    {
+      "id": "fresh-orange-grapefruit",
+      "driveFileId": "1HA_FtQlYGsyVWHSvYCkuaSiXUBlgmTyc",
+      "fileName": "фреш апельсин и грейпфрукт.mp4",
+      "url": "https://at.adobe.com/wG5XhAeMpYRbrE1r",
+      "sourceBytes": 10339746,
+      "sourceSHA256": "940fded02356f53e95284dc2e202fc1bad12d911d2e43104b0956e35972ee7ce",
+      "durationSeconds": 15,
+      "vkPath": "media/bar-20261107-fresh-vk.mp4",
+      "metaPath": "media/bar-20261107-fresh-meta.mp4"
+    }
+  ],
+  "quality": "No crop/no resize; H264 stream bit-for-bit unchanged for Meta; 120k AAC Meta only; exact unmodified originals for VK",
+  "noRetries": true
+}
