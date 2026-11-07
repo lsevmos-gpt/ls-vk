@@ -3,7 +3,7 @@
   "provider": "meta",
   "account": "liniya__sporta",
   "releaseMode": "immediate",
-  "status": "partial_published",
+  "status": "submission_started",
   "runId": "42355218485",
   "createdAtUTC": "2026-11-07T08:23:18.417004+00:00",
   "published": [
@@ -17,5 +17,7 @@
     }
   ],
   "note": "Only three explicitly approved Stories. No provider mutation retries.",
-  "updatedAtUTC": "2026-11-07T08:24:08.704231+00:00"
+  "updatedAtUTC": "2026-11-07T08:24:12.852689+00:00",
+  "attemptingIndex": 2,
+  "attemptingItem": "haunt"
 }
