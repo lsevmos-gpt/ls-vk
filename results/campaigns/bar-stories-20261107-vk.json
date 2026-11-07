@@ -5,7 +5,7 @@
   "releaseMode": "immediate",
   "runId": "42355218485",
   "createdAtUTC": "2026-11-07T08:23:52.304Z",
-  "status": "submission_started",
+  "status": "submitted_to_vk",
   "published": [
     {
       "index": 1,
@@ -20,10 +20,15 @@
       "vkStoryId": 456240719,
       "ownerId": -48198173,
       "publishedAtUTC": "2026-11-07T08:24:08.861Z"
+    },
+    {
+      "index": 3,
+      "name": "fresh-orange-grapefruit",
+      "vkStoryId": 456240720,
+      "ownerId": -48198173,
+      "publishedAtUTC": "2026-11-07T08:24:21.856Z"
     }
   ],
   "note": "Exactly three approved stories; never retry provider save after uncertainty.",
-  "updatedAtUTC": "2026-11-07T08:24:15.194Z",
-  "attemptingIndex": 3,
-  "attemptingItem": "fresh-orange-grapefruit"
+  "updatedAtUTC": "2026-11-07T08:24:21.856Z"
 }
