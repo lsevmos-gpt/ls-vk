@@ -4,6 +4,7 @@ on:
     branches: [main]
     paths:
       - 'media-prep/bar-stories-20261107.json'
+      - '.github/workflows/stage-bar-stories-20261107.yml'
 permissions:
   contents: write
 concurrency:
@@ -41,6 +42,16 @@ jobs:
               with p.open('rb') as f:assert hashlib.file_digest(f,'sha256').hexdigest()==row['sourceSHA256']
               print('ORIGINAL_EXACT',row['id'],p.stat().st_size,flush=True)
           PY
+      - name: Ensure ffmpeg and ffprobe are installed on current runner
+        shell: bash
+        run: |
+          set -euo pipefail
+          if ! command -v ffmpeg >/dev/null 2>&1 || ! command -v ffprobe >/dev/null 2>&1; then
+            sudo apt-get update -qq
+            sudo apt-get install -y -qq ffmpeg
+          fi
+          ffmpeg -version | head -1
+          ffprobe -version | head -1
       - name: Retain H264 video streams bit for bit; adapt audio for Meta only
         shell: bash
         run: |
