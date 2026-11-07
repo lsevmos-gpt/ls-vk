@@ -1,0 +1,124 @@
+name: Publish 07 Nov Bar Intro HAUNT Fresh Stories directly Meta and VK once
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'requests/campaigns/bar-stories-20261107-release.json'
+permissions:
+  contents: write
+concurrency:
+  group: bar-20261107-haunt-fresh-meta-vk-immediate-one-shot
+  cancel-in-progress: false
+jobs:
+  readiness:
+    name: Verify three source PNG-free video assets and Meta variants, DO NOT POST
+    if: github.repository == 'lsevmos-gpt/ls-vk' && github.ref == 'refs/heads/main' && github.actor == 'lsevmos-gpt'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Validate publisher syntax, source order and SHA256, no social mutations
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m py_compile scripts/publish_bar_stories_20261107_ig.py
+          node --check scripts/publish_bar_stories_20261107_vk.mjs
+          python3 - <<'PY'
+          import json,hashlib
+          from pathlib import Path
+          release=json.loads(Path('requests/campaigns/bar-stories-20261107-release.json').read_text())
+          manifest=json.loads(Path('media-prep/bar-stories-20261107.json').read_text())
+          qa=json.loads(Path('results/verification/bar-stories-20261107-stage.json').read_text())
+          order=['intro-bar','haunt','fresh-orange-grapefruit']
+          assert release['id']=='bar-stories-20261107-release'
+          assert release['approved'] is True and release['publicContent'] is True and release['submitNow'] is True
+          assert release['instagram']=='liniya__sporta' and release['vkGroupId']==48198173 and release['stories']==order
+          assert manifest['id']==qa['id']=='bar-stories-20261107' and manifest['approved'] is True
+          assert qa['ok'] is True and qa['stagingOnly'] is True and qa['published'] is False and qa['sourceOriginalsVerified'] is True
+          assert [x['id'] for x in qa['sequence']]==order
+          assert [x['id'] for x in manifest['sequence']]==order
+          assert len(qa['sequence'])==len(manifest['sequence'])==3
+          assert not Path('results/campaigns/bar-stories-20261107-instagram.json').exists()
+          assert not Path('results/campaigns/bar-stories-20261107-vk.json').exists()
+          for approved,row in zip(manifest['sequence'],qa['sequence']):
+              assert row['sourceDriveFileId']==approved['driveFileId'] and row['sourceSHA256']==approved['sourceSHA256']
+              assert row['originalVKPath']==approved['vkPath'] and row['metaPath']==approved['metaPath']
+              assert row['resolution']=='1080x1920' and row['fps']==24
+              assert row['metaVideoStreamUnchanged'] is True and 0<row['metaAudioBitrate']<=128000
+              assert row['originalVkBytesUnchanged'] is True and row['originalVKBytes']==approved['sourceBytes']
+              for path,size,sha in [(row['originalVKPath'],row['originalVKBytes'],row['originalVKSHA256']),
+                                    (row['metaPath'],row['metaBytes'],row['metaSHA256'])]:
+                  p=Path(path);assert p.is_file() and not p.is_symlink() and p.stat().st_size==size
+                  with p.open('rb') as handle: assert hashlib.file_digest(handle,'sha256').hexdigest()==sha
+          assert qa['sequence'][1]['metaVideoStreamUnchanged'] is True, 'HAUNT warnings must not be cropped'
+          print('SIX_APPROVED_VIDEOS_EXACT_VIDEO_STREAMS_AND_CAPTIONS_READY')
+          PY
+      - name: Verify all three public video URLs reachable for Meta
+        shell: bash
+        run: |
+          set -euo pipefail
+          for name in intro haunt fresh; do
+            curl --fail --silent --show-error --location --head --max-time 45 "https://raw.githubusercontent.com/lsevmos-gpt/ls-vk/main/media/bar-20261107-${name}-meta.mp4" >/dev/null
+          done
+          echo 'ALL_THREE_META_STORY_URLS_REACHABLE'
+  instagram_meta:
+    needs: readiness
+    name: Send three original-video Stories directly via Meta, readback, never duplicate
+    if: github.repository == 'lsevmos-gpt/ls-vk' && github.ref == 'refs/heads/main' && github.actor == 'lsevmos-gpt'
+    runs-on: ubuntu-latest
+    timeout-minutes: 55
+    env:
+      META_IG_ACCESS_TOKEN: ${{ secrets.META_IG_ACCESS_TOKEN }}
+      META_IG_USER_ID: ${{ secrets.META_IG_USER_ID }}
+      META_GRAPH_VERSION: v26.0
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Publish only once through official Meta Graph API in correct order
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$META_IG_ACCESS_TOKEN" && test -n "$META_IG_USER_ID"
+          python -m scripts.publish_bar_stories_20261107_ig
+  vk:
+    needs: readiness
+    name: Send same three original HQ clips as VK Stories, readback, never duplicate
+    if: github.repository == 'lsevmos-gpt/ls-vk' && github.ref == 'refs/heads/main' && github.actor == 'lsevmos-gpt'
+    runs-on: ubuntu-latest
+    timeout-minutes: 55
+    env:
+      VK_GROUP_TOKEN: ${{ secrets.VK_GROUP_TOKEN }}
+      VK_GROUP_ID: '48198173'
+      VK_GROUP_SCREEN_NAME: liniya__sporta
+      VK_API_VERSION: '5.199'
+      SOCIAL_PLATFORM: vk
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install VK API upload dependencies
+        run: npm install --omit=dev --ignore-scripts --no-package-lock --no-audit --no-fund
+      - name: Publish exactly three VK stories in sequence and verify IDs
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$VK_GROUP_TOKEN"
+          node scripts/publish_bar_stories_20261107_vk.mjs
