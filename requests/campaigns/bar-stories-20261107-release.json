@@ -1,0 +1,19 @@
+{
+  "id": "bar-stories-20261107-release",
+  "approved": true,
+  "publicContent": true,
+  "submitNow": true,
+  "releaseMode": "immediate",
+  "instagram": "liniya__sporta",
+  "vkGroupId": 48198173,
+  "stories": [
+    "intro-bar",
+    "haunt",
+    "fresh-orange-grapefruit"
+  ],
+  "sourceStage": "results/verification/bar-stories-20261107-stage.json",
+  "storyText": "Embedded in source video only; no added text, disclaimers and brand details stay unobscured",
+  "quality": "VK original MP4 unchanged; Meta original H264 bitstream unchanged, AAC 120k",
+  "noRetries": true,
+  "approvedByUser": "Publish these stories to Instagram and VK as soon as preparation completes"
+}
