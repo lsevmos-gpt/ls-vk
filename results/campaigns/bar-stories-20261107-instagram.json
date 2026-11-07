@@ -3,7 +3,7 @@
   "provider": "meta",
   "account": "liniya__sporta",
   "releaseMode": "immediate",
-  "status": "submission_started",
+  "status": "partial_published",
   "runId": "42355218485",
   "createdAtUTC": "2026-11-07T08:23:18.417004+00:00",
   "published": [
@@ -14,10 +14,16 @@
       "publishedAtUTC": "2026-11-07T08:24:08.704211+00:00",
       "permalink": "https://www.instagram.com/stories/liniya__sporta/4025020090751131583",
       "metaReadbackConfirmed": true
+    },
+    {
+      "index": 2,
+      "name": "haunt",
+      "instagramMediaId": "18114991061141451",
+      "publishedAtUTC": "2026-11-07T08:25:29.270051+00:00",
+      "permalink": "https://www.instagram.com/stories/liniya__sporta/4025020836096148977",
+      "metaReadbackConfirmed": true
     }
   ],
   "note": "Only three explicitly approved Stories. No provider mutation retries.",
-  "updatedAtUTC": "2026-11-07T08:24:12.852689+00:00",
-  "attemptingIndex": 2,
-  "attemptingItem": "haunt"
+  "updatedAtUTC": "2026-11-07T08:25:29.270072+00:00"
 }
