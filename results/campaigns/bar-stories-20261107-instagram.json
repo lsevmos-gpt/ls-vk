@@ -3,7 +3,7 @@
   "provider": "meta",
   "account": "liniya__sporta",
   "releaseMode": "immediate",
-  "status": "submission_started",
+  "status": "published",
   "runId": "42355218485",
   "createdAtUTC": "2026-11-07T08:23:18.417004+00:00",
   "published": [
@@ -22,10 +22,16 @@
       "publishedAtUTC": "2026-11-07T08:25:29.270051+00:00",
       "permalink": "https://www.instagram.com/stories/liniya__sporta/4025020836096148977",
       "metaReadbackConfirmed": true
+    },
+    {
+      "index": 3,
+      "name": "fresh-orange-grapefruit",
+      "instagramMediaId": "17955938580042614",
+      "publishedAtUTC": "2026-11-07T08:26:12.376543+00:00",
+      "permalink": "https://www.instagram.com/stories/liniya__sporta/4025021201252347757",
+      "metaReadbackConfirmed": true
     }
   ],
   "note": "Only three explicitly approved Stories. No provider mutation retries.",
-  "updatedAtUTC": "2026-11-07T08:25:33.485615+00:00",
-  "attemptingIndex": 3,
-  "attemptingItem": "fresh-orange-grapefruit"
+  "updatedAtUTC": "2026-11-07T08:26:12.376562+00:00"
 }
