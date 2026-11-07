@@ -1,0 +1,12 @@
+{
+  "id": "bar-stories-20261107-vk",
+  "provider": "vk",
+  "groupId": 48198173,
+  "releaseMode": "immediate",
+  "runId": "42355218485",
+  "createdAtUTC": "2026-11-07T08:23:52.304Z",
+  "status": "reserved_before_provider_call",
+  "published": [],
+  "note": "Exactly three approved stories; never retry provider save after uncertainty.",
+  "updatedAtUTC": "2026-11-07T08:23:52.304Z"
+}
