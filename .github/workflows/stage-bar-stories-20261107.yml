@@ -1,0 +1,99 @@
+name: Stage 07 Nov Bar Stories originals and Meta compatible video - NO PUBLISH
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'media-prep/bar-stories-20261107.json'
+permissions:
+  contents: write
+concurrency:
+  group: bar-stories-20261107-stage-once
+  cancel-in-progress: false
+jobs:
+  stage:
+    if: github.repository == 'lsevmos-gpt/ls-vk' && github.ref == 'refs/heads/main' && github.actor == 'lsevmos-gpt'
+    runs-on: ubuntu-latest
+    timeout-minutes: 28
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - name: Validate approved order and original-source hashes, download without changes
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json,hashlib,subprocess
+          from pathlib import Path
+          m=json.loads(Path('media-prep/bar-stories-20261107.json').read_text())
+          ids=['intro-bar','haunt','fresh-orange-grapefruit']
+          assert m['id']=='bar-stories-20261107' and m['approved'] is True and m['publicContent'] is True
+          assert m['instagram']=='liniya__sporta' and m['vkGroupId']==48198173 and m['publishMode']=='immediate_after_staging'
+          assert [i['id'] for i in m['sequence']]==ids
+          assert not Path('results/verification/bar-stories-20261107-stage.json').exists()
+          Path('media').mkdir(exist_ok=True)
+          for row in m['sequence']:
+              assert row['url'].startswith('https://at.adobe.com/') and row['fileName'].endswith('.mp4')
+              p=Path(row['vkPath']);assert str(p).startswith('media/bar-20261107-') and not p.exists()
+              subprocess.run(['curl','--fail','--location','--silent','--show-error','--retry','2','--max-time','180',row['url'],'--output',str(p)],check=True)
+              assert p.stat().st_size==row['sourceBytes']
+              with p.open('rb') as f:assert hashlib.file_digest(f,'sha256').hexdigest()==row['sourceSHA256']
+              print('ORIGINAL_EXACT',row['id'],p.stat().st_size,flush=True)
+          PY
+      - name: Retain H264 video streams bit for bit; adapt audio for Meta only
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import hashlib,json,subprocess
+          from pathlib import Path
+          m=json.loads(Path('media-prep/bar-stories-20261107.json').read_text())
+          def probe(p):
+              return json.loads(subprocess.check_output(['ffprobe','-v','error','-show_entries','format=duration:stream=codec_type,codec_name,width,height,r_frame_rate,bit_rate,sample_rate','-of','json',str(p)]))
+          def video_sha(p):
+              line=subprocess.check_output(['ffmpeg','-v','error','-i',str(p),'-map','0:v:0','-c','copy','-f','hash','-hash','sha256','-']).decode().strip()
+              assert line.startswith('SHA256=')
+              return line[7:]
+          out=[]
+          for row in m['sequence']:
+              vk=Path(row['vkPath']);meta=Path(row['metaPath'])
+              before=probe(vk)
+              v=next(s for s in before['streams'] if s['codec_type']=='video')
+              a=next(s for s in before['streams'] if s['codec_type']=='audio')
+              assert v['codec_name']=='h264' and (v['width'],v['height'],v['r_frame_rate'])==(1080,1920,'24/1')
+              assert a['codec_name']=='aac' and a['sample_rate']=='48000'
+              assert abs(float(before['format']['duration'])-row['durationSeconds'])<0.1
+              subprocess.run(['ffmpeg','-hide_banner','-nostdin','-loglevel','error','-y','-i',str(vk),
+                 '-map','0:v:0','-map','0:a:0','-c:v','copy','-c:a','aac','-b:a','120k','-ar','48000','-ac','2','-movflags','+faststart',str(meta)],check=True,timeout=100)
+              after=probe(meta)
+              mv=next(s for s in after['streams'] if s['codec_type']=='video')
+              ma=next(s for s in after['streams'] if s['codec_type']=='audio')
+              assert (mv['width'],mv['height'],mv['r_frame_rate'])==(1080,1920,'24/1')
+              assert 0<int(ma['bit_rate'])<=128000
+              vhash=video_sha(vk)
+              assert video_sha(meta)==vhash, 'Video bitstream must be unchanged to preserve all HAUNT warnings'
+              with vk.open('rb') as f: origSHA=hashlib.file_digest(f,'sha256').hexdigest()
+              with meta.open('rb') as f: metaSHA=hashlib.file_digest(f,'sha256').hexdigest()
+              out.append(dict(id=row['id'],sourceDriveFileId=row['driveFileId'],
+                 sourceSHA256=row['sourceSHA256'],originalVKPath=str(vk),originalVKBytes=vk.stat().st_size,
+                 originalVKSHA256=origSHA,metaPath=str(meta),metaBytes=meta.stat().st_size,
+                 metaSHA256=metaSHA,videoBitstreamSHA256=vhash,resolution='1080x1920',fps=24,
+                 metaAudioBitrate=int(ma['bit_rate']),metaVideoStreamUnchanged=True,
+                 originalVkBytesUnchanged=True,durationSeconds=row['durationSeconds']))
+              print('STAGED_VIDEO_BITSTREAM_UNCHANGED',row['id'],vk.stat().st_size,meta.stat().st_size,flush=True)
+          p=Path('results/verification/bar-stories-20261107-stage.json');p.parent.mkdir(exist_ok=True,parents=True)
+          p.write_text(json.dumps(dict(id=m['id'],ok=True,stagingOnly=True,published=False,sourceOriginalsVerified=True,
+                        sequence=out),ensure_ascii=False,indent=2)+'\n')
+          print('THREE_STORIES_STAGED_NO_SOCIAL_PUBLISH',flush=True)
+          PY
+      - name: Commit exact originals, Meta-audio copies and quality receipt; never publish
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name ls-social-media-bot
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -- media/bar-20261107-*.mp4 results/verification/bar-stories-20261107-stage.json
+          git commit -m 'Stage exact Nov07 bar story originals, preserved video, Meta audio [skip ci]'
+          git pull --rebase origin main
+          git push origin HEAD:main
