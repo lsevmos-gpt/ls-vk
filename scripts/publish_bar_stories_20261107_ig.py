@@ -74,7 +74,7 @@ def preflight() -> MetaClient:
     if [x["id"] for x in qa["sequence"]] != list(ORDER):
         raise RuntimeError("Prepared story order changed")
     for approved, staged, rel in zip(job["sequence"], qa["sequence"], URL_PATHS):
-        if staged["metaPath"] != rel or staged["sourceDriveSHA256"] != approved["sourceSHA256"]:
+        if staged["metaPath"] != rel or staged["sourceSHA256"] != approved["sourceSHA256"]:
             raise RuntimeError("Wrong Meta asset mapping")
         path = ROOT / rel
         if not path.is_file() or path.is_symlink() or path.stat().st_size != staged["metaBytes"]:
