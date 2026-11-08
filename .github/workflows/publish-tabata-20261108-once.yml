@@ -1,23 +1,95 @@
-name: Publish approved TABATA 18+ via Instagram Meta native Collab and VK ONCE
+name: TABATA 18+ prepare then publish 08 Nov at 18:30 MSK (Meta native Collab and VK)
 on:
   push:
     branches: [main]
     paths:
       - 'requests/campaigns/tabata-20261108.json'
+  schedule:
+    - cron: '50 14 8 11 *'
+    - cron: '0,10,20,25 15 8 11 *'
 permissions:
   contents: write
 concurrency:
-  group: tabata-20261108-native-meta-vk-once
+  group: tabata-20261108-1830-msk-unique
   cancel-in-progress: false
 jobs:
-  release:
+  prepare_2k_only:
+    name: PREPARE approved 2K video and original cover (DO NOT PUBLISH)
     if: github.repository == 'lsevmos-gpt/ls-vk' && github.ref == 'refs/heads/main' && github.event_name == 'push' && github.actor == 'lsevmos-gpt'
     runs-on: ubuntu-latest
-    timeout-minutes: 115
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Confirm release time, exact original, caption and native collaborator
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          req=json.loads(Path('requests/campaigns/tabata-20261108.json').read_text())
+          ig=json.loads(Path('requests/instagram-meta/tabata-20261108-polonskayaaleksandra.json').read_text())
+          assert req['id']=='tabata-20261108' and req['approved'] is True and req['publicContent'] is True
+          assert req['postNow'] is False and req['scheduledFor']=='2026-11-08T18:30:00+03:00'
+          assert req['sourceSHA256']=='9455b7574ca79cc684b9d92d2458b3b09c97e63b79cbf2dcf1ebf04659529f71'
+          assert req['coverSHA256']=='46ba40861605ade03564f3413ccb40ea2a3533f29d5ceaca06453b612a29243b'
+          assert req['instagram']=={'handle':'liniya__sporta','collaborators':['polonskayaaleksandra'],'nativeInviteRequired':True}
+          assert req['vk']=={'groupId':48198173,'publishWall':True,'noCoauthor':True}
+          assert ig['text']==req['caption'] and ig['collaborators']==['polonskayaaleksandra']
+          for p in ('results/campaigns/tabata-20261108-meta.json','results/campaigns/tabata-20261108-vk.json','results/verification/tabata-20261108-2k.json'):
+              assert not Path(p).exists(),'Already staged or published; do not repeat'
+          print('TABATA_EXACT_1830_MSK_PREPARE_ONLY_APPROVED')
+          PY
+          python -m py_compile scripts/publish_tabata_20261108_meta.py
+          node --check scripts/publish_tabata_20261108_vk.mjs
+          python -m scripts.instagram_collab validate requests/instagram-meta/tabata-20261108-polonskayaaleksandra.json
+      - name: Download exact source 4K and approved cover, encode high-quality verified 2K
+        shell: bash
+        run: bash scripts/stage_tabata_20261108_2k.sh
+  publish_meta:
+    name: 18:30 MSK Meta Reel plus native @polonskayaaleksandra invitation ONCE
+    if: github.repository == 'lsevmos-gpt/ls-vk' && github.ref == 'refs/heads/main' && github.event_name == 'schedule'
+    runs-on: ubuntu-latest
+    timeout-minutes: 83
     env:
       META_IG_ACCESS_TOKEN: ${{ secrets.META_IG_ACCESS_TOKEN }}
       META_IG_USER_ID: ${{ secrets.META_IG_USER_ID }}
       META_GRAPH_VERSION: v26.0
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Verify 2K media is prepared and exact collab job is valid
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f media/tabata-20261108-2k-ig-vk.mp4
+          test -f media/tabata-20261108-meta-cover.jpg
+          test -f results/verification/tabata-20261108-2k.json
+          test -n "$META_IG_ACCESS_TOKEN"
+          test -n "$META_IG_USER_ID"
+          python -m py_compile scripts/publish_tabata_20261108_meta.py
+          python -m scripts.instagram_collab validate requests/instagram-meta/tabata-20261108-polonskayaaleksandra.json
+      - name: Prepare native Meta container before 18:30 and release at 18:30 MSK only
+        shell: bash
+        run: python -m scripts.publish_tabata_20261108_meta
+  publish_vk:
+    name: 18:30 MSK VK 2K clip and wall release ONCE
+    if: github.repository == 'lsevmos-gpt/ls-vk' && github.ref == 'refs/heads/main' && github.event_name == 'schedule'
+    runs-on: ubuntu-latest
+    timeout-minutes: 83
+    env:
       VK_GROUP_ID: '48198173'
       VK_GROUP_SCREEN_NAME: liniya__sporta
       VK_GROUP_TOKEN: ${{ secrets.VK_GROUP_TOKEN }}
@@ -29,56 +101,23 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
-      - name: Verify owner-approved release, native collaborator and unique IDs
+      - name: Verify authentic 2K video and configure VK upload tools
         shell: bash
         run: |
           set -euo pipefail
-          python3 - <<'PY'
-          import json
-          from pathlib import Path
-          req=json.loads(Path('requests/campaigns/tabata-20261108.json').read_text())
-          ig=json.loads(Path('requests/instagram-meta/tabata-20261108-polonskayaaleksandra.json').read_text())
-          assert req['id']=='tabata-20261108' and req['approved'] is True and req['publicContent'] is True and req['postNow'] is True
-          assert req['sourceSHA256']=='9455b7574ca79cc684b9d92d2458b3b09c97e63b79cbf2dcf1ebf04659529f71'
-          assert req['coverSHA256']=='46ba40861605ade03564f3413ccb40ea2a3533f29d5ceaca06453b612a29243b'
-          assert req['instagram']=={'handle':'liniya__sporta','collaborators':['polonskayaaleksandra'],'nativeInviteRequired':True}
-          assert req['vk']=={'groupId':48198173,'publishWall':True,'noCoauthor':True}
-          assert ig['text']==req['caption'] and ig['collaborators']==['polonskayaaleksandra']
-          for p in ['results/campaigns/tabata-20261108-meta.json','results/campaigns/tabata-20261108-vk.json','results/verification/tabata-20261108-2k.json']:
-            assert not Path(p).exists(), 'Already staged or attempted; do not retry'
-          print('TABATA_RELEASE_APPROVED_AND_UNIQUE')
-          PY
-          python -m py_compile scripts/publish_tabata_20261108_meta.py
+          test -f media/tabata-20261108-2k-ig-vk.mp4
+          test -f media/tabata-20261108-meta-cover.jpg
+          test -f results/verification/tabata-20261108-2k.json
+          test -n "$VK_GROUP_TOKEN"
+          test -n "$VK_REFRESH_TOKEN"
+          test -n "$VK_DEVICE_ID"
+          test -n "$VK_SECRETS_WRITE_PAT"
           node --check scripts/publish_tabata_20261108_vk.mjs
           node --check scripts/vk-refresh-lib.mjs
-          python -m scripts.instagram_collab validate requests/instagram-meta/tabata-20261108-polonskayaaleksandra.json
-      - name: Stage exact user-approved cover and original 4K video to real high quality 2K
-        shell: bash
-        run: bash scripts/stage_tabata_20261108_2k.sh
-      - name: Instagram direct Meta publish with native @polonskayaaleksandra invitation
-        id: meta
-        continue-on-error: true
-        shell: bash
-        run: python -m scripts.publish_tabata_20261108_meta
-      - name: Install established VK video uploader dependency set
-        shell: bash
-        run: npm install --omit=dev --ignore-scripts --no-package-lock --no-audit --no-fund
-      - name: VK original 2K Clip and wall post via refreshed VK ID
-        id: vk
-        continue-on-error: true
+          npm install --omit=dev --ignore-scripts --no-package-lock --no-audit --no-fund
+      - name: Prepare VK video ahead and post to wall not before 18:30 MSK
         shell: bash
         run: node scripts/publish_tabata_20261108_vk.mjs
-      - name: Report incomplete results without repeat attempts
-        if: always() && (steps.meta.outcome != 'success' || steps.vk.outcome != 'success')
-        shell: bash
-        run: |
-          echo "::error::TABATA publication incomplete; inspect provider receipts before any retry"
-          echo "Instagram outcome: ${{ steps.meta.outcome }}"
-          echo "VK outcome: ${{ steps.vk.outcome }}"
-          exit 1
