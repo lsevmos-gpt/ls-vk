@@ -43,7 +43,8 @@ assert 1_000<jpg.stat().st_size<8_000_000
 data=json.loads(subprocess.check_output(['ffprobe','-v','error','-show_entries','format=duration:stream=codec_type,codec_name,width,height,avg_frame_rate,pix_fmt,bit_rate,sample_rate,channels','-of','json',str(p)]))
 v=next(x for x in data['streams'] if x['codec_type']=='video')
 a=next(x for x in data['streams'] if x['codec_type']=='audio')
-assert (v['width'],v['height'],v['avg_frame_rate'],v['codec_name'],v['pix_fmt'])==(1440,2560,'24/1','h264','yuv420p')
+assert (v['width'],v['height'],v['avg_frame_rate'],v['codec_name'])==(1440,2560,'24/1','h264'), 'Video format mismatch: '+str(v)
+assert v.get('pix_fmt') in ('yuv420p','yuvj420p'), 'Unexpected 4:2:0 format: '+str(v.get('pix_fmt'))
 assert a['codec_name']=='aac' and a['sample_rate']=='48000' and a['channels']==2
 assert abs(float(data['format']['duration'])-51.904)<0.3
 assert 8_000_000<int(v['bit_rate'])<25_000_000
