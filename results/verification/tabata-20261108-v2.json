@@ -1,0 +1,21 @@
+{
+  "id": "tabata-20261108-v2",
+  "ok": true,
+  "stagingOnly": true,
+  "published": false,
+  "sourceSha256": "9455b7574ca79cc684b9d92d2458b3b09c97e63b79cbf2dcf1ebf04659529f71",
+  "videoSha256": "f8bd7069cfb34cc9286f69c36015d634e23780209efb3da3ce9e830562d5d969",
+  "videoBytes": 86051299,
+  "videoResolution": "1440x2560",
+  "videoFps": 24,
+  "videoBitrate": 13152625,
+  "videoCodec": "h264",
+  "audioCodec": "aac",
+  "coverOriginalSha256": "947919e203f619e7c0c1de9695d4162ab19c23df8f4ba7d593a6cd100216ff2b",
+  "coverOriginalResolution": "941x1672",
+  "coverMetaSha256": "1d1b0d1da3af0358f3b6c089b27f289cc27e4f91e9a0d89779ce9044320f80de",
+  "coverMetaResolution": "1080x1920",
+  "coverMetaBytes": 1556473,
+  "captionSha256": "9c0e341a33b9658be38bb21fa8052ca1aa07af389dadac2e41a9b9f579c1d54a",
+  "collaborator": "polonskayaaleksandra"
+}
