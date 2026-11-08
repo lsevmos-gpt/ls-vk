@@ -1,0 +1,16 @@
+{
+  "id": "tabata-20261108-v2",
+  "provider": "instagram",
+  "account": "liniya__sporta",
+  "collaborator": "polonskayaaleksandra",
+  "collaboratorAcceptanceConfirmed": false,
+  "coverSha256": "1d1b0d1da3af0358f3b6c089b27f289cc27e4f91e9a0d89779ce9044320f80de",
+  "videoSha256": "f8bd7069cfb34cc9286f69c36015d634e23780209efb3da3ce9e830562d5d969",
+  "videoResolution": "1440x2560",
+  "runId": "42498419419",
+  "status": "submission_started_before_Meta_API",
+  "publishedMediaId": null,
+  "noRetries": true,
+  "createdAtUTC": "2026-11-08T16:10:06.093225+00:00",
+  "updatedAtUTC": "2026-11-08T16:10:06.093248+00:00"
+}
