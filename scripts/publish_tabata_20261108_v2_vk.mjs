@@ -125,6 +125,8 @@ async function main(){
     }catch(e){
       d.coverStatus="unconfirmed";
       d.coverErrorClass=e?.name||"Error";
+      await checkpoint(d);
+      throw Error("VK_CUSTOM_NEW_COVER_FAILED_DO_NOT_POST_WITH_OLD_PREVIEW");
     }
     d.status="cover_checked_before_wall";await checkpoint(d);
     d.status="wall_post_call_started";await checkpoint(d);
