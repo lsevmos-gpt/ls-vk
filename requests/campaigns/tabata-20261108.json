@@ -1,0 +1,27 @@
+{
+  "id": "tabata-20261108",
+  "approved": true,
+  "publicContent": true,
+  "postNow": true,
+  "authorization": "Publish the approved first TABATA 18+ cover and the provided video now in Instagram with native coauthor invitation @polonskayaaleksandra, and in VK as a clip and wall post; maximum verified 2K quality",
+  "sourceFileName": "табата1.mp4",
+  "sourceBytes": 501411605,
+  "sourceSHA256": "9455b7574ca79cc684b9d92d2458b3b09c97e63b79cbf2dcf1ebf04659529f71",
+  "coverFileName": "Liniya_Sporta_Tabata18_Cover_2160x3840.png",
+  "coverBytes": 4549624,
+  "coverSHA256": "46ba40861605ade03564f3413ccb40ea2a3533f29d5ceaca06453b612a29243b",
+  "instagram": {
+    "handle": "liniya__sporta",
+    "collaborators": [
+      "polonskayaaleksandra"
+    ],
+    "nativeInviteRequired": true
+  },
+  "vk": {
+    "groupId": 48198173,
+    "publishWall": true,
+    "noCoauthor": true
+  },
+  "caption": "«Слабый пол»? А ты попробуй за нами повторить! 😉🔥\n\nТАБАТА 18+ — тренировка, где проверяют не слова, а характер!\n\n⚡ Интенсивный темп и мощная энергия\n💪 Силовые и функциональные упражнения\n🔥 Работа на выносливость\n🤝 Поддержка тренера и атмосфера, которая заряжает\n\nЗдесь не нужно быть сильнее других. Главное — становиться сильнее себя вчерашнего.\n\nИ да, девушки в этом ролике точно знают, что такое настоящая нагрузка! 😉\n\nГотов испытать себя? Напиши нам «ТАБАТА» в личные сообщения — расскажем, как присоединиться к тренировкам.\n\nСпортивный клуб «Линия спорта» 💚\n\n#ЛинияСпорта #Табата #ГрупповыеТренировки #ФитнесСимферополь",
+  "noRetries": true
+}
