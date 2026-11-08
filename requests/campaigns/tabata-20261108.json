@@ -2,8 +2,8 @@
   "id": "tabata-20261108",
   "approved": true,
   "publicContent": true,
-  "postNow": true,
-  "authorization": "Publish the approved first TABATA 18+ cover and the provided video now in Instagram with native coauthor invitation @polonskayaaleksandra, and in VK as a clip and wall post; maximum verified 2K quality",
+  "postNow": false,
+  "authorization": "Публикация 8 ноября 2026 в 18:30 по Москве: Instagram Reels @liniya__sporta через Meta с приглашением @polonskayaaleksandra, ВК — клип и пост. Первая утверждённая 2K-обложка и согласованный текст, максимальное качество, без ранней публикации и дублей.",
   "sourceFileName": "табата1.mp4",
   "sourceBytes": 501411605,
   "sourceSHA256": "9455b7574ca79cc684b9d92d2458b3b09c97e63b79cbf2dcf1ebf04659529f71",
@@ -24,6 +24,8 @@
   },
   "caption": "«Слабый пол»? А ты попробуй за нами повторить! 😉🔥\n\nТАБАТА 18+ — тренировка, где проверяют не слова, а характер!\n\n⚡ Интенсивный темп и мощная энергия\n💪 Силовые и функциональные упражнения\n🔥 Работа на выносливость\n🤝 Поддержка тренера и атмосфера, которая заряжает\n\nЗдесь не нужно быть сильнее других. Главное — становиться сильнее себя вчерашнего.\n\nИ да, девушки в этом ролике точно знают, что такое настоящая нагрузка! 😉\n\nГотов испытать себя? Напиши нам «ТАБАТА» в личные сообщения — расскажем, как присоединиться к тренировкам.\n\nСпортивный клуб «Линия спорта» 💚\n\n#ЛинияСпорта #Табата #ГрупповыеТренировки #ФитнесСимферополь",
   "noRetries": true,
-  "preProviderStagingAttempt": 2,
-  "preProviderStagingRetryReason": "Prior GitHub runner missing ffmpeg; no provider upload, publish or receipts were attempted"
+  "preProviderStagingAttempt": 3,
+  "preProviderStagingRetryReason": "Earlier 2 attempted stages failed before provider calls; corrected H.264 full-range yuvj420p pixel-format QA and changed to scheduled publishing",
+  "scheduledFor": "2026-11-08T18:30:00+03:00",
+  "timeZone": "Europe/Moscow"
 }
