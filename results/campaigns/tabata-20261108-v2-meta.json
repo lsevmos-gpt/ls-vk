@@ -8,10 +8,12 @@
   "videoSha256": "f8bd7069cfb34cc9286f69c36015d634e23780209efb3da3ce9e830562d5d969",
   "videoResolution": "1440x2560",
   "runId": "42498419419",
-  "status": "meta_api_published_readback_pending",
+  "status": "published_readback_confirmed",
   "publishedMediaId": "18051395330827969",
   "noRetries": true,
   "createdAtUTC": "2026-11-08T16:10:06.093225+00:00",
-  "updatedAtUTC": "2026-11-08T16:11:14.473599+00:00",
-  "creationId": "18023144234949669"
+  "updatedAtUTC": "2026-11-08T16:11:16.375143+00:00",
+  "creationId": "18023144234949669",
+  "permalink": "https://www.instagram.com/reel/DffJ1LCjlKc/",
+  "mediaType": "VIDEO"
 }
