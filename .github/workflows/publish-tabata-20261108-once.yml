@@ -1,0 +1,84 @@
+name: Publish approved TABATA 18+ via Instagram Meta native Collab and VK ONCE
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'requests/campaigns/tabata-20261108.json'
+permissions:
+  contents: write
+concurrency:
+  group: tabata-20261108-native-meta-vk-once
+  cancel-in-progress: false
+jobs:
+  release:
+    if: github.repository == 'lsevmos-gpt/ls-vk' && github.ref == 'refs/heads/main' && github.event_name == 'push' && github.actor == 'lsevmos-gpt'
+    runs-on: ubuntu-latest
+    timeout-minutes: 115
+    env:
+      META_IG_ACCESS_TOKEN: ${{ secrets.META_IG_ACCESS_TOKEN }}
+      META_IG_USER_ID: ${{ secrets.META_IG_USER_ID }}
+      META_GRAPH_VERSION: v26.0
+      VK_GROUP_ID: '48198173'
+      VK_GROUP_SCREEN_NAME: liniya__sporta
+      VK_GROUP_TOKEN: ${{ secrets.VK_GROUP_TOKEN }}
+      VK_REFRESH_TOKEN: ${{ secrets.VK_REFRESH_TOKEN }}
+      VK_DEVICE_ID: ${{ secrets.VK_DEVICE_ID }}
+      VK_SECRETS_WRITE_PAT: ${{ secrets.VK_SECRETS_WRITE_PAT }}
+      VK_API_VERSION: '5.199'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Verify owner-approved release, native collaborator and unique IDs
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          req=json.loads(Path('requests/campaigns/tabata-20261108.json').read_text())
+          ig=json.loads(Path('requests/instagram-meta/tabata-20261108-polonskayaaleksandra.json').read_text())
+          assert req['id']=='tabata-20261108' and req['approved'] is True and req['publicContent'] is True and req['postNow'] is True
+          assert req['sourceSHA256']=='9455b7574ca79cc684b9d92d2458b3b09c97e63b79cbf2dcf1ebf04659529f71'
+          assert req['coverSHA256']=='46ba40861605ade03564f3413ccb40ea2a3533f29d5ceaca06453b612a29243b'
+          assert req['instagram']=={'handle':'liniya__sporta','collaborators':['polonskayaaleksandra'],'nativeInviteRequired':True}
+          assert req['vk']=={'groupId':48198173,'publishWall':True,'noCoauthor':True}
+          assert ig['text']==req['caption'] and ig['collaborators']==['polonskayaaleksandra']
+          for p in ['results/campaigns/tabata-20261108-meta.json','results/campaigns/tabata-20261108-vk.json','results/verification/tabata-20261108-2k.json']:
+            assert not Path(p).exists(), 'Already staged or attempted; do not retry'
+          print('TABATA_RELEASE_APPROVED_AND_UNIQUE')
+          PY
+          python -m py_compile scripts/publish_tabata_20261108_meta.py
+          node --check scripts/publish_tabata_20261108_vk.mjs
+          node --check scripts/vk-refresh-lib.mjs
+          python -m scripts.instagram_collab validate requests/instagram-meta/tabata-20261108-polonskayaaleksandra.json
+      - name: Stage exact user-approved cover and original 4K video to real high quality 2K
+        shell: bash
+        run: bash scripts/stage_tabata_20261108_2k.sh
+      - name: Instagram direct Meta publish with native @polonskayaaleksandra invitation
+        id: meta
+        continue-on-error: true
+        shell: bash
+        run: python -m scripts.publish_tabata_20261108_meta
+      - name: Install established VK video uploader dependency set
+        shell: bash
+        run: npm install --omit=dev --ignore-scripts --no-package-lock --no-audit --no-fund
+      - name: VK original 2K Clip and wall post via refreshed VK ID
+        id: vk
+        continue-on-error: true
+        shell: bash
+        run: node scripts/publish_tabata_20261108_vk.mjs
+      - name: Report incomplete results without repeat attempts
+        if: always() && (steps.meta.outcome != 'success' || steps.vk.outcome != 'success')
+        shell: bash
+        run: |
+          echo "::error::TABATA publication incomplete; inspect provider receipts before any retry"
+          echo "Instagram outcome: ${{ steps.meta.outcome }}"
+          echo "VK outcome: ${{ steps.vk.outcome }}"
+          exit 1
