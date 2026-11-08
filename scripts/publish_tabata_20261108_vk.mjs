@@ -15,6 +15,10 @@ const COVER="media/tabata-20261108-meta-cover.jpg";
 const RECEIPT="results/campaigns/tabata-20261108-vk.json";
 const SRC_SHA="9455b7574ca79cc684b9d92d2458b3b09c97e63b79cbf2dcf1ebf04659529f71";
 const COVER_SHA="46ba40861605ade03564f3413ccb40ea2a3533f29d5ceaca06453b612a29243b";
+const PUBLISH_AT=Date.parse("2026-11-08T15:30:00Z"); // 18:30 MSK
+const UPLOAD_FROM=Date.parse("2026-11-08T15:12:00Z"); // 18:12 MSK
+const DEADLINE_AT=Date.parse("2026-11-08T15:45:00Z");
+const awaitTime=async when=>{while(Date.now()<when)await new Promise(r=>setTimeout(r,Math.min(12000,when-Date.now())));};
 const iso=()=>new Date().toISOString();
 const pause=ms=>new Promise(r=>setTimeout(r,ms));
 function git(...args) {
@@ -75,13 +79,13 @@ async function uploadThumb(uploadURL,filename){
 }
 async function main(){
   if(process.env.GITHUB_REPOSITORY!==REPO||process.env.GITHUB_REF!=="refs/heads/main"
-    ||process.env.GITHUB_EVENT_NAME!=="push"||!/^\d+$/.test(process.env.GITHUB_RUN_ID||""))
+    ||process.env.GITHUB_EVENT_NAME!=="schedule"||!/^\d+$/.test(process.env.GITHUB_RUN_ID||""))
     throw Error("UNAUTHORIZED_CONTEXT");
   git("pull","--ff-only","origin","main");
   if(fs.existsSync(RECEIPT)){console.log("TABATA_VK_ALREADY_ATTEMPTED_NO_REPEAT");return;}
   const req=JSON.parse(fs.readFileSync(REQ,"utf8"));
   const q=JSON.parse(fs.readFileSync(QA,"utf8"));
-  if(!(req.id===JOB&&req.approved===true&&req.publicContent===true&&req.postNow===true
+  if(!(req.id===JOB&&req.approved===true&&req.publicContent===true&&req.postNow===false&&req.scheduledFor==="2026-11-08T18:30:00+03:00"
     &&req.sourceSHA256===SRC_SHA&&req.coverSHA256===COVER_SHA
     &&req.vk?.groupId===GROUP&&req.vk?.publishWall===true&&req.vk?.noCoauthor===true
     &&q.ok===true&&q.sourceSha256===SRC_SHA&&q.coverOriginalSha256===COVER_SHA
@@ -89,6 +93,8 @@ async function main(){
     &&q.videoSha256===sha(VIDEO)&&fs.statSync(VIDEO).size<95000000&&q.coverMetaSha256===sha(COVER)))
     throw Error("VIDEO_SOURCE_OR_APPROVAL_MISMATCH");
   required("VK_GROUP_TOKEN");required("VK_REFRESH_TOKEN");required("VK_DEVICE_ID");required("VK_SECRETS_WRITE_PAT");
+  if(Date.now()>DEADLINE_AT)throw Error("VK_1830_RELEASE_WINDOW_CLOSED");
+  await awaitTime(UPLOAD_FROM);
   const token=await refreshVideoToken();
   process.env.VK_USER_TOKEN=token;
   const {getGroupId,vkCall,uploadWallVideo,publishWallPost}=await import("../src/vk.js");
@@ -127,6 +133,10 @@ async function main(){
       d.coverErrorClass=e?.name||"Error";
     }
     d.status="cover_checked_before_wall";await checkpoint(d);
+    d.status="video_and_cover_ready_waiting_for_1830";
+    await checkpoint(d);
+    await awaitTime(PUBLISH_AT);
+    if(Date.now()>DEADLINE_AT)throw Error("VK_1830_RELEASE_WINDOW_CLOSED_BEFORE_WALL");
     d.status="wall_post_call_started";await checkpoint(d);
     const post=await publishWallPost({text:req.caption,attachments:[u.attachment]});
     const pid=Number(post?.post_id);
