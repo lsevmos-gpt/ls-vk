@@ -2,8 +2,12 @@
 set -euo pipefail
 mkdir -p media results/verification /tmp/ls-tabata
 python -m pip install --disable-pip-version-check 'Pillow>=10,<13'
-command -v ffmpeg >/dev/null
-command -v ffprobe >/dev/null
+if ! command -v ffmpeg >/dev/null || ! command -v ffprobe >/dev/null; then
+  sudo apt-get update -qq
+  sudo apt-get install -y -qq ffmpeg
+fi
+command -v ffmpeg
+command -v ffprobe
 echo 'Downloading exact native 4K TABATA video'
 curl -fSsL --retry 2 --connect-timeout 20 --max-time 550 'https://at.adobe.com/zfg5Ao6KoN01Q9Sz' -o /tmp/ls-tabata/original.mp4
 test "$(stat -c%s /tmp/ls-tabata/original.mp4)" -eq 501411605
