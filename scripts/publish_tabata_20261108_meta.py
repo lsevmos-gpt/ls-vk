@@ -37,10 +37,19 @@ def checkpoint(d, initial=False):
             if i==7: raise
             time.sleep(i+1)
 
+PUBLISH_AT = datetime(2026,11,8,15,30,tzinfo=timezone.utc)  # 18:30 Moscow
+PREPARE_AT = datetime(2026,11,8,15,0,tzinfo=timezone.utc)  # 18:00 Moscow
+DEADLINE_AT = datetime(2026,11,8,15,45,tzinfo=timezone.utc)
+
+def utc_now(): return datetime.now(timezone.utc)
+def sleep_until(target):
+    while utc_now()<target:
+        time.sleep(min(15,max(0.2,(target-utc_now()).total_seconds())))
+
 def main():
     if (os.getenv("GITHUB_REPOSITORY")!="lsevmos-gpt/ls-vk" or
         os.getenv("GITHUB_REF")!="refs/heads/main" or
-        os.getenv("GITHUB_EVENT_NAME")!="push" or
+        os.getenv("GITHUB_EVENT_NAME")!="schedule" or
         not os.getenv("GITHUB_RUN_ID","").isdigit()):
         raise RuntimeError("unauthorized_github_context")
     git("pull","--ff-only","origin","main")
@@ -54,7 +63,7 @@ def main():
     checks=(
         req.get("id")=="tabata-20261108" and
         req.get("approved") is True and req.get("publicContent") is True and
-        req.get("postNow") is True and req.get("sourceSHA256")==SRC_SHA and
+        req.get("postNow") is False and req.get("scheduledFor")=="2026-11-08T18:30:00+03:00" and req.get("sourceSHA256")==SRC_SHA and
         req.get("coverSHA256")==COVER_SHA and
         req.get("instagram")=={"handle":"liniya__sporta","collaborators":["polonskayaaleksandra"],"nativeInviteRequired":True} and
         job["id"]=="tabata-20261108-polonskayaaleksandra" and
@@ -86,9 +95,32 @@ def main():
        "noRetries":True}
     checkpoint(record,initial=True)
     try:
-        result=client.publish_reel(job,attempts=48,interval_seconds=10)
-        record["creationId"]=result["creation_id"]
-        record["publishedMediaId"]=result["published_media_id"]
+        sleep_until(PREPARE_AT)
+        if utc_now()>DEADLINE_AT: raise RuntimeError("meta_1830_window_expired_no_publish")
+        created=client._api("POST", client.ig_user_id+"/media", MetaClient.create_fields(job))
+        creation_id=str(created.get("id",""))
+        if not creation_id.isdigit(): raise RuntimeError("meta_container_id_missing")
+        record["creationId"]=creation_id
+        record["status"]="meta_container_created"
+        checkpoint(record)
+        for attempt in range(110):
+            state=client._api("GET",creation_id,{"fields":"status_code,status"})
+            status=str(state.get("status_code","")).upper()
+            if status=="FINISHED": break
+            if status in ("ERROR","EXPIRED"): raise RuntimeError("meta_container_"+status)
+            if utc_now()>DEADLINE_AT: raise RuntimeError("meta_processing_after_deadline")
+            time.sleep(12)
+        else: raise RuntimeError("meta_container_timeout")
+        record["status"]="meta_container_ready_waiting_1830_msk"
+        checkpoint(record)
+        sleep_until(PUBLISH_AT)
+        if utc_now()>DEADLINE_AT: raise RuntimeError("meta_publish_deadline_expired")
+        record["status"]="meta_publish_call_started"
+        checkpoint(record)
+        published=client._api("POST", client.ig_user_id+"/media_publish",{"creation_id":creation_id})
+        media_id=str(published.get("id",""))
+        if not media_id.isdigit(): raise RuntimeError("meta_media_publish_returned_no_id")
+        record["publishedMediaId"]=media_id
         record["status"]="meta_api_published_readback_pending"
         checkpoint(record)
         try:
