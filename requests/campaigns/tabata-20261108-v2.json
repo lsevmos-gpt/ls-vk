@@ -1,0 +1,33 @@
+{
+  "id": "tabata-20261108-v2",
+  "approved": true,
+  "publicContent": true,
+  "publishNow": true,
+  "authorizedByUser": true,
+  "authorization": "Immediately publish revised TABATA video with newly approved cover and exactly updated caption on Instagram Meta with native @polonskayaaleksandra collaborator and VK original 2K video+wall; require confirmed VK custom cover and no duplicate publishing",
+  "previousCampaign": "tabata-20261108",
+  "previousCampaignSubmitted": false,
+  "sourceFileName": "табата1.mp4",
+  "sourceSHA256": "9455b7574ca79cc684b9d92d2458b3b09c97e63b79cbf2dcf1ebf04659529f71",
+  "videoPath": "media/tabata-20261108-2k-ig-vk.mp4",
+  "videoResolution": "1440x2560",
+  "videoSha256": "f8bd7069cfb34cc9286f69c36015d634e23780209efb3da3ce9e830562d5d969",
+  "coverOriginalFileName": "табата_18_линия_спорта.png",
+  "coverSHA256": "947919e203f619e7c0c1de9695d4162ab19c23df8f4ba7d593a6cd100216ff2b",
+  "coverOriginalResolution": "941x1672",
+  "coverMetaResolution": "1080x1920",
+  "instagram": {
+    "handle": "liniya__sporta",
+    "collaborators": [
+      "polonskayaaleksandra"
+    ],
+    "nativeInviteRequired": true
+  },
+  "vk": {
+    "groupId": 48198173,
+    "publishWall": true,
+    "noCoauthor": true
+  },
+  "caption": "🔥 НЕ ИЩИ В СЕБЕ СЛАБОСТЬ. ОТКРОЙ В СЕБЕ СИЛУ!\n\nТабата — не про лёгкий режим. Высокая интенсивность, характер, усилия и реальные результаты! 💪\n\nЗдесь ты не одна! Групповые тренировки среди единомышленников, взаимная поддержка, энергия команды помогут выйти на свой Прайм!\n\nПочему «Линия спорта»?\n\n🔒 Закрытое пространство без посторонних взглядов.\n🏆 Профессиональный тренер Александра.\n💪 Грамотное введение в дисциплину, контроль техники и нагрузки.\n\nНе нужно быть сильной, чтобы начать. Нужно начать, чтобы стать сильнее!\n\n🔥 Табата | 18+\n📍 Спортивный клуб «Линия спорта»\n\nГотова бросить себе вызов? Ждём на тренировке!",
+  "noRetries": true
+}
