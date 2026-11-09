@@ -1,0 +1,15 @@
+{
+  "id": "vlad-news-20261109",
+  "provider": "instagram",
+  "account": "liniya__sporta",
+  "videoSha256": "a8735219c69cf76c88d733d851f95e719250a3e30f853bc3198c643a7d1e1b21",
+  "coverSha256": "ddf00e496a70c287fc0a92c3d17fde0d8cbee4de768425e61e7cdfc0a02f507a",
+  "videoResolution": "1080x1920",
+  "runId": "42665037404",
+  "status": "submission_started_before_meta_api",
+  "creationId": null,
+  "publishedMediaId": null,
+  "noRetries": true,
+  "createdAtUTC": "2026-11-09T17:29:30.820123+00:00",
+  "updatedAtUTC": "2026-11-09T17:29:30.820140+00:00"
+}
