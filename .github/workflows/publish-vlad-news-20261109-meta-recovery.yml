@@ -1,0 +1,57 @@
+name: Recover Vlad approved Meta Reel ONLY (no VK replay)
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'requests/instagram-meta/vlad-news-20261109-recovery.json'
+permissions:
+  contents: write
+concurrency:
+  group: vlad-news-20261109-direct-meta-vk-one-shot
+  cancel-in-progress: false
+jobs:
+  meta_only:
+    name: Direct Meta Reel after local preflight correction; no VK operations
+    if: github.repository == 'lsevmos-gpt/ls-vk' && github.ref == 'refs/heads/main' && github.event_name == 'push' && github.actor == 'lsevmos-gpt'
+    runs-on: ubuntu-latest
+    timeout-minutes: 50
+    env:
+      META_IG_ACCESS_TOKEN: ${{ secrets.META_IG_ACCESS_TOKEN }}
+      META_IG_USER_ID: ${{ secrets.META_IG_USER_ID }}
+      META_GRAPH_VERSION: v26.0
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Validate prior pre-Meta local failure and exact existing approved media
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m py_compile scripts/publish_vlad_news_20261109_meta.py
+          python3 - <<'PY'
+          import json,hashlib
+          from pathlib import Path
+          r=json.loads(Path('requests/campaigns/vlad-news-20261109.json').read_text(encoding='utf8'))
+          recovery=json.loads(Path('requests/instagram-meta/vlad-news-20261109-recovery.json').read_text(encoding='utf8'))
+          qa=json.loads(Path('results/verification/vlad-news-20261109.json').read_text(encoding='utf8'))
+          vk=json.loads(Path('results/campaigns/vlad-news-20261109-vk.json').read_text(encoding='utf8'))
+          old=json.loads(Path('results/instagram-drive/vlad-news-20261109-ig-reel.json').read_text(encoding='utf8'))
+          assert recovery['approved'] is True and recovery['publishNow'] is True
+          assert recovery['previousRunId']==42664412232
+          assert recovery['firstRunFailedBeforeMetaAPI'] is True
+          assert r['approved'] and r['publicContent'] and r['authorizedByUser']
+          assert vk['status']=='published_verified_by_vk' and vk['videoReadbackConfirmed'] and vk['wallReadbackConfirmed']
+          assert old['status']=='superseded_no_provider_submission'
+          assert qa['ok'] and qa['videoStreamUnchanged'] and qa['videoResolution']=='1080x1920'
+          assert not Path('results/campaigns/vlad-news-20261109-meta.json').exists(),'Meta may already have been submitted; stop'
+          for path,expected in [('media/vlad-news-20261109-reel-1080x1920.mp4',qa['videoSha256']),('media/vlad-news-20261109-cover-meta.jpg',qa['coverMetaSha256'])]:
+              with open(path,'rb') as handle:assert hashlib.file_digest(handle,'sha256').hexdigest()==expected
+          print('VLAD_META_ONLY_QUALITY_CHECK_OK_PRIOR_STOP_BEFORE_PROVIDER_NO_VK_REPLAY')
+          PY
+      - name: Publish already staged approved 1080p Reels and original cover via DIRECT Meta once
+        shell: bash
+        run: python -m scripts.publish_vlad_news_20261109_meta
