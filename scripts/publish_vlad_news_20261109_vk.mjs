@@ -1,4 +1,4 @@
-/* One-shot VLAD 18+ VK vertical video and wall post, with approved original cover.
+/* One-shot Vlad club updates VK vertical video and wall post, with approved original cover.
    Mirrors proven same-runner VK ID refresh and safe one-attempt receipt flow. */
 import fs from "node:fs";
 import https from "node:https";
@@ -11,7 +11,7 @@ const REPO="lsevmos-gpt/ls-vk", GROUP=48198173, JOB="vlad-news-20261109";
 const REQ="requests/campaigns/vlad-news-20261109.json";
 const QA="results/verification/vlad-news-20261109.json";
 const VIDEO="media/vlad-news-20261109-reel-1080x1920.mp4";
-const COVER="media/vlad-news-20261109-meta-cover.jpg";
+const COVER="media/vlad-news-20261109-cover-meta.jpg";
 const RECEIPT="results/campaigns/vlad-news-20261109-vk.json";
 const SRC_SHA="0ae828d45a93f1cb194294ab4c34ac60a3a91ea9785081987ea5e81d7b95ef74";
 const COVER_SHA="e9325f8f0df778a4ce33c99fe2d0d5dd703cae5968ed01f14c2d0941d7e657bd";
@@ -98,7 +98,7 @@ async function main(){
   if(Number(actual?.id)!==GROUP||actual?.screen_name!=="liniya__sporta")throw Error("VK_GROUP_MISMATCH");
   git("pull","--ff-only","origin","main");
   if(fs.existsSync(RECEIPT)){console.log("VLAD_VK_ALREADY_RESERVED_NO_REPEAT");return;}
-  git("config","user.name","ls-tabata-vk-publisher");
+  git("config","user.name","ls-vlad-vk-publisher");
   git("config","user.email","41898282+github-actions[bot]@users.noreply.github.com");
   const d={id:JOB,provider:"vk",account:"liniya__sporta",groupId:GROUP,
     videoSha256:q.videoSha256,videoResolution:q.videoResolution,caption:req.caption,
