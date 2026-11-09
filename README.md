@@ -1,5 +1,15 @@
 # LS VK
 
+## ⚠ Текущая обязательная политика публикаций (с 09.11.2026)
+
+Источник действующих правил: **[SOCIAL_PUBLISHING_CHANNELS_POLICY.md](SOCIAL_PUBLISHING_CHANNELS_POLICY.md)** и **[AGENTS.md](AGENTS.md)**.
+
+- Instagram `@liniya__sporta`: **прямой Meta Graph API** через действующие GitHub Actions. Подтверждённая публикация: [Reels Влада](https://www.instagram.com/reel/Dfh3tf7nB9Y/).
+- ВК `liniya__sporta`, group `48198173`: **прямой VK API** через действующие GitHub Actions с проверкой VK ID-токена для видео. Подтверждённая публикация: [клип Влада](https://vk.com/video-48198173_456240847), [пост](https://vk.com/wall-48198173_5372).
+- **Никаких иных каналов, сервисов, fallback и подключений без явного предварительного разрешения владельца.**
+- Рабочий пример 09.11: `.github/workflows/publish-vlad-news-20261109-once.yml`, `.github/workflows/publish-vlad-news-20261109-meta-recovery.yml`, `scripts/publish_vlad_news_20261109_meta.py`, `scripts/publish_vlad_news_20261109_vk.mjs`. **Не запускать разовый пример повторно**.
+- Разделы README ниже описывают первоначальную архитектуру и исторические ограничения; инструкции для старой очереди `.github/workflows/vk-publish.yml` и других старых каналов **не являются актуальным маршрутом**. Факт загрузки видео из GitHub в VK подтверждён 09.11.2026; более ранние замечания «ещё не тестировалось» устарели.
+
 Приватный шлюз публикации контента во ВКонтакте для «Линии спорта».
 
 ## Что реализовано
