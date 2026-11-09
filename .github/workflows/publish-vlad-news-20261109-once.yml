@@ -1,0 +1,94 @@
+name: Publish Vlad Club Updates Reels via DIRECT Meta and VK ONCE
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'requests/campaigns/vlad-news-20261109.json'
+permissions:
+  contents: write
+concurrency:
+  group: vlad-news-20261109-direct-meta-vk-one-shot
+  cancel-in-progress: false
+jobs:
+  publish_once:
+    name: Stage exact original and approved cover, publish direct Meta and VK once
+    if: github.repository == 'lsevmos-gpt/ls-vk' && github.ref == 'refs/heads/main' && github.event_name == 'push' && github.actor == 'lsevmos-gpt'
+    runs-on: ubuntu-latest
+    timeout-minutes: 110
+    env:
+      META_IG_ACCESS_TOKEN: ${{ secrets.META_IG_ACCESS_TOKEN }}
+      META_IG_USER_ID: ${{ secrets.META_IG_USER_ID }}
+      META_GRAPH_VERSION: v26.0
+      VK_GROUP_ID: '48198173'
+      VK_GROUP_SCREEN_NAME: liniya__sporta
+      VK_GROUP_TOKEN: ${{ secrets.VK_GROUP_TOKEN }}
+      VK_REFRESH_TOKEN: ${{ secrets.VK_REFRESH_TOKEN }}
+      VK_DEVICE_ID: ${{ secrets.VK_DEVICE_ID }}
+      VK_SECRETS_WRITE_PAT: ${{ secrets.VK_SECRETS_WRITE_PAT }}
+      VK_API_VERSION: '5.199'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Preflight exact consent, identities, quality, duplicate protection and script syntax
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m py_compile scripts/publish_vlad_news_20261109_meta.py
+          node --check scripts/publish_vlad_news_20261109_vk.mjs
+          node --check scripts/vk-refresh-lib.mjs
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path('requests/campaigns/vlad-news-20261109.json')
+          r=json.loads(p.read_text(encoding='utf8'))
+          assert r['id']=='vlad-news-20261109'
+          assert r['approved'] is True and r['publicContent'] is True and r['publishNow'] is True
+          assert r['authorizedByUser'] is True
+          assert r['sourceSHA256']=='0ae828d45a93f1cb194294ab4c34ac60a3a91ea9785081987ea5e81d7b95ef74'
+          assert r['coverSHA256']=='e9325f8f0df778a4ce33c99fe2d0d5dd703cae5968ed01f14c2d0941d7e657bd'
+          assert r['instagram']=={'handle':'liniya__sporta','shareToFeed':True,'collaborators':[]}
+          assert r['vk']=={'groupId':48198173,'publishWall':True,'noCoauthor':True}
+          assert 20<len(r['caption'])<2200
+          assert not Path('results/campaigns/vlad-news-20261109-meta.json').exists()
+          assert not Path('results/campaigns/vlad-news-20261109-vk.json').exists()
+          assert Path('results/instagram-drive/vlad-news-20261109-ig-reel.json').exists(), 'Old blocked route must be superseded'
+          print('VLAD_RELEASE_APPROVED_AND_NO_DUPLICATE_PROVIDER_RECEIPTS')
+          PY
+      - name: Install tools for source media analysis and native audio-only conversion
+        shell: bash
+        run: |
+          set -euo pipefail
+          if ! command -v ffmpeg >/dev/null || ! command -v ffprobe >/dev/null; then
+            sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg
+          fi
+          ffprobe -version | head -1
+          npm install --omit=dev --ignore-scripts --no-package-lock --no-audit --no-fund
+      - name: Stage approved original through yesterday's verified media transport, preserve H264 video quality
+        shell: bash
+        run: bash scripts/stage_vlad_news_20261109_media.sh
+      - name: Publish exact approved Reels with cover via Meta Graph API v26
+        id: meta
+        continue-on-error: true
+        shell: bash
+        run: python -m scripts.publish_vlad_news_20261109_meta
+      - name: Publish exact approved VK Clip with custom cover and wall post via VK ID refresh
+        id: vk
+        continue-on-error: true
+        shell: bash
+        run: node scripts/publish_vlad_news_20261109_vk.mjs
+      - name: Prevent false success; report partial publication without automatic retry
+        if: always() && (steps.meta.outcome != 'success' || steps.vk.outcome != 'success')
+        shell: bash
+        run: |
+          echo "::error::VLAD_PUBLISH_PARTIAL_OR_UNCONFIRMED; inspect provider receipts before any replay"
+          echo "Meta status: ${{ steps.meta.outcome }}"
+          echo "VK status: ${{ steps.vk.outcome }}"
+          exit 1
