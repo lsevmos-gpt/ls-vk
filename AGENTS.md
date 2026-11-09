@@ -1,5 +1,16 @@
 # AGENTS.md — LS-VK AI workflow policy
 
+## ОБЯЗАТЕЛЬНО: активные каналы публикации Instagram и ВК (решение владельца 09.11.2026)
+
+**Перед ЛЮБЫМ заданием публикации «Линии спорта» обязательно прочитать [SOCIAL_PUBLISHING_CHANNELS_POLICY.md](SOCIAL_PUBLISHING_CHANNELS_POLICY.md).** Это постоянное правило до явного изменения владельцем и имеет приоритет над архивными инструкциями, отдельными сценариями и любой автоматической оптимизацией.
+
+- **Instagram @liniya__sporta: только прямой Meta Graph API** через действующие GitHub Actions/Secrets в `lsevmos-gpt/ls-vk`. Подтверждение: `results/campaigns/vlad-news-20261109-meta.json`, опубликованный Reels 09.11.2026.
+- **ВК, сообщество 48198173: только прямой VK API** через действующие GitHub Actions, обновление VK ID-токена для видео на том же runner и штатный group token для стены. Подтверждение: `results/campaigns/vlad-news-20261109-vk.json`.
+- Подтверждённый маршрут передачи исходников для этих публикаций: существующий Adobe media handoff → проверенный staging в GitHub → прямой Meta/VK API. **Не заменять** на другой транспорт/хостинг без отдельного разрешения.
+- **Запрещено без конкретного согласования с владельцем** использовать Buffer, Metricool, Google Drive→Meta, Cloudflare, другие публикационные API, сторонние агрегаторы, новую интеграцию/токен или fallback. Ранее созданные схемы — не разрешение использовать их.
+- Если прямой маршрут неисправен, **сообщить о проблеме и не переключать сервис самостоятельно**. Проверить фактический статус размещения до повторной попытки; избегать дублей. Разрешение на выбор канала не заменяет явного поручения на каждую конкретную публикацию.
+- Новое правило / новая интеграция активируется только после **нового прямого решения владельца** с обновлением `SOCIAL_PUBLISHING_CHANNELS_POLICY.md`.
+
 This repository publishes approved social content. Do not change publishing, credentials, API access, schedules or the live environment merely because a prompt is being drafted.
 
 ## MANDATORY Seedance trigger
