@@ -58,7 +58,7 @@ def main():
             and r.get("authorizedByUser") is True
             and r.get("sourceSHA256")==SOURCE_SHA and r.get("coverSHA256")==COVER_SHA
             and r.get("instagram")=={"handle":"liniya__sporta","shareToFeed":True,"collaborators":[]}
-            and r.get("vk")=={"groupId":48198173,"publishWall":True}
+            and r.get("vk")=={"groupId":48198173,"publishWall":True,"noCoauthor":True}
             and isinstance(r.get("caption"),str) and 20<len(r["caption"])<=2200
             and q.get("ok") is True and q.get("stagingOnly") is True
             and q.get("sourceSha256")==SOURCE_SHA and q.get("coverOriginalSha256")==COVER_SHA
