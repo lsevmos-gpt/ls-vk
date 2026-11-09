@@ -1,0 +1,6 @@
+{
+  "id": "vlad-news-20261109-ig-reel",
+  "status": "superseded_no_provider_submission",
+  "supersededBy": "vlad-news-20261109",
+  "reason": "Initial Drive-Meta route stopped before provider submission because GOOGLE_DRIVE_SERVICE_ACCOUNT_JSON missing. Authorized direct Meta/VK release uses yesterday's Adobe->GitHub media staging."
+}
