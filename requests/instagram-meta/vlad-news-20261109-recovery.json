@@ -1,0 +1,12 @@
+{
+  "id": "vlad-news-20261109-meta-recovery",
+  "approved": true,
+  "publicContent": true,
+  "publishNow": true,
+  "previousRunId": 42664412232,
+  "firstRunFailedBeforeMetaAPI": true,
+  "provider": "instagram",
+  "approvedCampaign": "vlad-news-20261109",
+  "noVkReplay": true,
+  "note": "First attempt failed in local exact manifest check before the first Meta API call. Use previously staged approved video and cover. Original immediate-publication authorization remains in campaign request."
+}
