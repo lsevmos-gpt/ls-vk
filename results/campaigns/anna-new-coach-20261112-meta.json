@@ -6,10 +6,12 @@
   "coverSha256": "1e2e5a610a16835c90f19060216cef80f84981aa38e36abf28d19a5835d1be2f",
   "videoResolution": "1080x1920",
   "runId": "43228171565",
-  "status": "meta_api_published_readback_pending",
+  "status": "published_readback_confirmed",
   "creationId": "18023723540949669",
   "publishedMediaId": "18116920442332433",
   "noRetries": true,
   "createdAtUTC": "2026-11-12T13:33:21.202758+00:00",
-  "updatedAtUTC": "2026-11-12T15:30:14.106343+00:00"
+  "updatedAtUTC": "2026-11-12T15:30:15.607202+00:00",
+  "permalink": "https://www.instagram.com/reel/DfpLEaqDyJ8/",
+  "mediaType": "VIDEO"
 }
