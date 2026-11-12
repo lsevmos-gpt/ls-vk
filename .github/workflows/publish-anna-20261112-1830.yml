@@ -1,0 +1,107 @@
+name: Publish approved Anna Reels 12 Nov 2026 18:30 MSK via DIRECT Meta and VK once
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'requests/campaigns/anna-new-coach-20261112.json'
+permissions:
+  contents: write
+concurrency:
+  group: anna-new-coach-20261112-direct-meta-vk-one-shot
+  cancel-in-progress: false
+jobs:
+  stage:
+    name: Stage exact approved Anna video and cover WITHOUT publication
+    if: github.repository == 'lsevmos-gpt/ls-vk' && github.ref == 'refs/heads/main' && github.event_name == 'push' && github.actor == 'lsevmos-gpt'
+    runs-on: ubuntu-latest
+    timeout-minutes: 65
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Validate approved source caption destinations and scheduled time
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m py_compile scripts/publish_anna_20261112_meta.py
+          python3 - <<'PY'
+          import json,datetime
+          from pathlib import Path
+          p=Path('requests/campaigns/anna-new-coach-20261112.json')
+          r=json.loads(p.read_text(encoding='utf8'))
+          assert r['id']=='anna-new-coach-20261112'
+          assert r['approved'] is True and r['publicContent'] is True and r['authorizedByUser'] is True
+          assert r['publishNow'] is False and r['publishAt']=='2026-11-12T18:30:00+03:00'
+          assert r['sourceSHA256']=='3feefb603e8112d907e1f7c09f4abfb903552fe8b732296008501a972f8a5366'
+          assert r['coverSHA256']=='c8f39bdce905dbe0db1085432e179e7132e2e801f4ecbe08c15db6f128f8ae59'
+          assert r['instagram']=={'handle':'liniya__sporta','shareToFeed':True,'collaborators':[]}
+          assert r['vk']=={'groupId':48198173,'publishWall':True,'noCoauthor':True}
+          assert 20<len(r['caption'])<2200 and '#' not in r['caption']
+          assert datetime.datetime.now(datetime.timezone.utc) < datetime.datetime.fromisoformat(r['publishAt'])
+          assert not Path('results/campaigns/anna-new-coach-20261112-meta.json').exists()
+          assert not Path('results/campaigns/anna-new-coach-20261112-vk.json').exists()
+          print('ANNA_TIME_CAPTION_AUTHORIZATION_APPROVED_UNPUBLISHED')
+          PY
+          node --check scripts/publish_anna_20261112_vk.mjs
+      - name: Ensure ffmpeg and ffprobe available
+        run: |
+          if ! command -v ffprobe >/dev/null || ! command -v ffmpeg >/dev/null; then
+            sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg
+          fi
+      - name: Stage true 1080p H264 stream and approved cover via existing Adobe transport
+        run: bash scripts/stage_anna_20261112_media.sh
+
+  meta:
+    name: Direct Meta Graph Reels precisely at release time after media container ready
+    needs: [stage]
+    if: needs.stage.result == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 210
+    env:
+      META_IG_ACCESS_TOKEN: ${{ secrets.META_IG_ACCESS_TOKEN }}
+      META_IG_USER_ID: ${{ secrets.META_IG_USER_ID }}
+      META_GRAPH_VERSION: v26.0
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Publish exactly once via direct Meta API at 18:30 MSK; read back permalink
+        run: python -m scripts.publish_anna_20261112_meta
+
+  vk:
+    name: Direct VK video with original cover and wall scheduled at 18:30 MSK
+    needs: [stage]
+    if: needs.stage.result == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 210
+    env:
+      VK_GROUP_ID: '48198173'
+      VK_GROUP_SCREEN_NAME: liniya__sporta
+      VK_GROUP_TOKEN: ${{ secrets.VK_GROUP_TOKEN }}
+      VK_REFRESH_TOKEN: ${{ secrets.VK_REFRESH_TOKEN }}
+      VK_DEVICE_ID: ${{ secrets.VK_DEVICE_ID }}
+      VK_SECRETS_WRITE_PAT: ${{ secrets.VK_SECRETS_WRITE_PAT }}
+      VK_API_VERSION: '5.199'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Validate direct VK video script and install existing dependencies
+        run: |
+          node --check scripts/publish_anna_20261112_vk.mjs
+          node --check scripts/vk-refresh-lib.mjs
+          npm install --omit=dev --ignore-scripts --no-package-lock --no-audit --no-fund
+      - name: Upload original video, apply cover and schedule VK wall at 18:30 MSK
+        run: node scripts/publish_anna_20261112_vk.mjs
