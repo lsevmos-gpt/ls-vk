@@ -6,10 +6,10 @@
   "coverSha256": "1e2e5a610a16835c90f19060216cef80f84981aa38e36abf28d19a5835d1be2f",
   "videoResolution": "1080x1920",
   "runId": "43228171565",
-  "status": "meta_publish_call_started",
+  "status": "meta_api_published_readback_pending",
   "creationId": "18023723540949669",
-  "publishedMediaId": null,
+  "publishedMediaId": "18116920442332433",
   "noRetries": true,
   "createdAtUTC": "2026-11-12T13:33:21.202758+00:00",
-  "updatedAtUTC": "2026-11-12T15:30:00.000171+00:00"
+  "updatedAtUTC": "2026-11-12T15:30:14.106343+00:00"
 }
