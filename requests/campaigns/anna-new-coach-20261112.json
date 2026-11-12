@@ -1,0 +1,27 @@
+{
+  "id": "anna-new-coach-20261112",
+  "approved": true,
+  "publicContent": true,
+  "publishNow": false,
+  "publishAt": "2026-11-12T18:30:00+03:00",
+  "authorizedByUser": true,
+  "authorization": "Owner explicitly requested publishing the uploaded 29.12s 'Новый тренер Анна.mov', exactly the newly uploaded cover featuring Anna with eyes open/mouth closed, and the already approved Instagram/VK no-hashtags caption, on Instagram @liniya__sporta and VK community 48198173 at 18:30 MSK on 12 Nov 2026, only via existing direct Meta Graph API and VK API GitHub Actions routes.",
+  "sourceFileName": "Новый тренер Анна.mov",
+  "sourceSHA256": "3feefb603e8112d907e1f7c09f4abfb903552fe8b732296008501a972f8a5366",
+  "coverOriginalFileName": "3863cb16-3293-4da3-ab76-ab20df01f487.png",
+  "coverSHA256": "c8f39bdce905dbe0db1085432e179e7132e2e801f4ecbe08c15db6f128f8ae59",
+  "videoPath": "media/anna-new-coach-20261112-reel-1080x1920.mp4",
+  "coverPath": "media/anna-new-coach-20261112-cover-meta.jpg",
+  "instagram": {
+    "handle": "liniya__sporta",
+    "shareToFeed": true,
+    "collaborators": []
+  },
+  "vk": {
+    "groupId": 48198173,
+    "publishWall": true,
+    "noCoauthor": true
+  },
+  "caption": "💚 ЗНАКОМЬТЕСЬ — АННА! НОВЫЙ ТРЕНЕР «ЛИНИИ СПОРТА»\n\nЗа красивой фигурой и спортивными результатами стоят не только усилия, но и грамотный подход к тренировкам. 💪\n\nЗнакомьтесь, Анна — тренер, которая знает спорт не понаслышке!\n\n🏆 Спортивные достижения Анны:\n• Кандидат в мастера спорта по пауэрлифтингу\n• Первый спортивный разряд по тяжёлой атлетике\n• Вице-чемпионка по фитнес-бикини в Крыму\n\nЕё опыт поможет вам уверенно двигаться к своим целям: стать сильнее, улучшить физическую форму, освоить правильную технику упражнений и создать фигуру своей мечты.\n\nНеважно, только начинаете вы тренироваться или уже имеете опыт. Главное — желание работать над собой!\n\n🎁 А НАЧАТЬ МОЖНО БЕСПЛАТНО!\n\nПервая тренировка с Анной — абсолютно бесплатная! Отличная возможность познакомиться с тренером и сделать первый шаг к своим целям.\n\n📩 Записывайтесь в личных сообщениях «Линии спорта»!\n\n💚 Найди свою линию!",
+  "noRetries": true
+}
