@@ -5,7 +5,7 @@
   "releaseMode": "immediate",
   "runId": "43415115100",
   "createdAtUTC": "2026-11-13T11:13:00.866Z",
-  "status": "partial_submitted_to_vk",
+  "status": "submission_started",
   "published": [
     {
       "index": 1,
@@ -23,5 +23,7 @@
     }
   ],
   "note": "Exactly three approved stories; never retry provider save after uncertainty.",
-  "updatedAtUTC": "2026-11-13T11:13:14.026Z"
+  "updatedAtUTC": "2026-11-13T11:13:18.015Z",
+  "attemptingIndex": 3,
+  "attemptingItem": "protein"
 }
