@@ -1,0 +1,132 @@
+name: Publish 13 Nov Bar Intro Berry Protein Stories direct Meta and VK once
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'requests/campaigns/bar-stories-20261113-release.json'
+permissions:
+  contents: write
+concurrency:
+  group: bar-20261113-intro-berry-protein-direct-once
+  cancel-in-progress: false
+jobs:
+  stage:
+    name: Stage exact owner-previewed files using existing Adobe handoff
+    if: github.repository == 'lsevmos-gpt/ls-vk' && github.ref == 'refs/heads/main' && github.actor == 'lsevmos-gpt'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 1
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /scripts/
+            /src/
+            /package.json
+            /media-prep/
+            /requests/campaigns/bar-stories-20261113-release.json
+            /results/
+            /media/bar-20261113-*.mp4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Validate release code and install probe only if needed
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m py_compile scripts/publish_bar_stories_20261113_ig.py scripts/stage_bar_stories_20261113.py
+          node --check scripts/publish_bar_stories_20261113_vk.mjs
+          if ! command -v ffprobe >/dev/null 2>&1; then
+            sudo apt-get update -qq
+            sudo apt-get install -y -qq ffmpeg
+          fi
+      - name: Download exact files and verify hashes and formats; no reencoding and no publishing
+        run: python scripts/stage_bar_stories_20261113.py
+      - name: Commit exact approved media and quality receipt for direct API handoff
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name ls-social-media-bot
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add --sparse -- media/bar-20261113-*.mp4 results/verification/bar-stories-20261113-stage.json
+          git commit -m 'Stage exact owner-previewed Nov13 bar story files and QA [skip ci]'
+          git pull --rebase origin main
+          git push origin HEAD:main
+      - name: Check actual Meta public files
+        shell: bash
+        run: |
+          set -euo pipefail
+          for name in intro berry protein; do
+            curl --fail --silent --show-error --location --head --max-time 45 "https://raw.githubusercontent.com/lsevmos-gpt/ls-vk/main/media/bar-20261113-${name}-meta.mp4" >/dev/null
+          done
+  instagram_meta:
+    needs: stage
+    name: Publish three approved Stories via Meta and confirm each Story ID
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      META_IG_ACCESS_TOKEN: ${{ secrets.META_IG_ACCESS_TOKEN }}
+      META_IG_USER_ID: ${{ secrets.META_IG_USER_ID }}
+      META_GRAPH_VERSION: v26.0
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 1
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /scripts/
+            /media-prep/
+            /requests/campaigns/bar-stories-20261113-release.json
+            /results/
+            /media/bar-20261113-*.mp4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Publish approved Instagram sequence once and read back exact media
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$META_IG_ACCESS_TOKEN" && test -n "$META_IG_USER_ID"
+          python -m scripts.publish_bar_stories_20261113_ig
+  vk:
+    needs: stage
+    name: Publish three approved Stories via direct VK API and confirm live IDs
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      VK_GROUP_TOKEN: ${{ secrets.VK_GROUP_TOKEN }}
+      VK_GROUP_ID: '48198173'
+      VK_GROUP_SCREEN_NAME: liniya__sporta
+      VK_API_VERSION: '5.199'
+      SOCIAL_PLATFORM: vk
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 1
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /scripts/
+            /src/
+            /package.json
+            /media-prep/
+            /requests/campaigns/bar-stories-20261113-release.json
+            /results/
+            /media/bar-20261113-*.mp4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install existing VK upload dependencies
+        run: npm install --omit=dev --ignore-scripts --no-package-lock --no-audit --no-fund
+      - name: Publish approved VK sequence once and verify live Stories
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$VK_GROUP_TOKEN"
+          node scripts/publish_bar_stories_20261113_vk.mjs
