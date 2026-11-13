@@ -3,7 +3,7 @@
   "provider": "meta",
   "account": "liniya__sporta",
   "releaseMode": "immediate",
-  "status": "published",
+  "status": "published_readback_confirmed",
   "runId": "43415115100",
   "createdAtUTC": "2026-11-13T11:12:56.299842+00:00",
   "published": [
@@ -36,5 +36,5 @@
     }
   ],
   "note": "Only three explicitly approved Stories. No provider mutation retries.",
-  "updatedAtUTC": "2026-11-13T11:14:55.459573+00:00"
+  "updatedAtUTC": "2026-11-13T11:14:57.204903+00:00"
 }
