@@ -5,7 +5,7 @@
   "releaseMode": "immediate",
   "runId": "43415115100",
   "createdAtUTC": "2026-11-13T11:13:00.866Z",
-  "status": "submission_started",
+  "status": "partial_submitted_to_vk",
   "published": [
     {
       "index": 1,
@@ -13,10 +13,15 @@
       "vkStoryId": 456240725,
       "ownerId": -48198173,
       "publishedAtUTC": "2026-11-13T11:13:06.534Z"
+    },
+    {
+      "index": 2,
+      "name": "berry-smoothie",
+      "vkStoryId": 456240726,
+      "ownerId": -48198173,
+      "publishedAtUTC": "2026-11-13T11:13:14.026Z"
     }
   ],
   "note": "Exactly three approved stories; never retry provider save after uncertainty.",
-  "updatedAtUTC": "2026-11-13T11:13:10.049Z",
-  "attemptingIndex": 2,
-  "attemptingItem": "berry-smoothie"
+  "updatedAtUTC": "2026-11-13T11:13:14.026Z"
 }
