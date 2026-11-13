@@ -5,8 +5,10 @@
   "releaseMode": "immediate",
   "runId": "43415115100",
   "createdAtUTC": "2026-11-13T11:13:00.866Z",
-  "status": "reserved_before_provider_call",
+  "status": "submission_started",
   "published": [],
   "note": "Exactly three approved stories; never retry provider save after uncertainty.",
-  "updatedAtUTC": "2026-11-13T11:13:00.867Z"
+  "updatedAtUTC": "2026-11-13T11:13:02.065Z",
+  "attemptingIndex": 1,
+  "attemptingItem": "intro-bar"
 }
