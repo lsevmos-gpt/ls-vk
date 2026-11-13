@@ -1,0 +1,17 @@
+{
+  "id": "bar-stories-20261113-release",
+  "approved": true,
+  "publicContent": true,
+  "submitNow": true,
+  "instagram": "liniya__sporta",
+  "vkGroupId": 48198173,
+  "stories": [
+    "intro-bar",
+    "berry-smoothie",
+    "protein"
+  ],
+  "ownerApproval": "Публикуй.",
+  "dateMoscow": "2026-11-13",
+  "channelPolicy": "SOCIAL_PUBLISHING_CHANNELS_POLICY.md",
+  "sequence": "Three separate ordered Stories per platform. No crossposting providers, no new authorization, no retries of uncertain provider writes."
+}
