@@ -1,0 +1,224 @@
+{
+  "id": "bar-stories-20261113",
+  "ok": true,
+  "stagingOnly": true,
+  "published": false,
+  "sourceOriginalsVerified": true,
+  "exactPreparedCopiesVerified": true,
+  "sequence": [
+    {
+      "id": "intro-bar",
+      "sourceDriveFileId": "1SoexOQPc8MA_gIZQQ1iUF9FjNppA-cqy",
+      "sourceSHA256": "1158b8e13b776740476522512843bf3b24bf4a78a764fcdcc693dadf85af1d7b",
+      "sourceOriginalVerifiedBeforeHandoff": true,
+      "metaVideoStreamUnchanged": true,
+      "vkOriginalBytesUnchanged": true,
+      "fps": 24,
+      "metaPath": "media/bar-20261113-intro-meta.mp4",
+      "metaBytes": 2921685,
+      "metaSHA256": "7a89735a96675fd071f9fcdadccea850c877639b30a2089ffef55333ee365fbb",
+      "metaResolution": "1080x1920",
+      "metaProbe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "h264",
+            "codec_type": "video",
+            "width": 1080,
+            "height": 1920,
+            "r_frame_rate": "24/1",
+            "bit_rate": "4503402"
+          },
+          {
+            "codec_name": "aac",
+            "codec_type": "audio",
+            "sample_rate": "48000",
+            "r_frame_rate": "0/0",
+            "bit_rate": "123934"
+          }
+        ],
+        "format": {
+          "duration": "5.056000",
+          "size": "2921685"
+        }
+      },
+      "metaAudioBitrate": 123934,
+      "vkPath": "media/bar-20261113-intro-vk.mp4",
+      "vkBytes": 3017051,
+      "vkSHA256": "1158b8e13b776740476522512843bf3b24bf4a78a764fcdcc693dadf85af1d7b",
+      "vkResolution": "1080x1920",
+      "vkProbe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "h264",
+            "codec_type": "video",
+            "width": 1080,
+            "height": 1920,
+            "r_frame_rate": "24/1",
+            "bit_rate": "4503402"
+          },
+          {
+            "codec_name": "aac",
+            "codec_type": "audio",
+            "sample_rate": "48000",
+            "r_frame_rate": "0/0",
+            "bit_rate": "274506"
+          }
+        ],
+        "format": {
+          "duration": "5.050000",
+          "size": "3017051"
+        }
+      }
+    },
+    {
+      "id": "berry-smoothie",
+      "sourceDriveFileId": "1gvrJJNjfKPz5g_zmDM_HI5GW3NhoJi5h",
+      "sourceSHA256": "edc6d12b52992e66b730dc4c925906288855822968f2f500a4a63980d1ee48fb",
+      "sourceOriginalVerifiedBeforeHandoff": true,
+      "metaVideoStreamUnchanged": true,
+      "vkOriginalBytesUnchanged": true,
+      "fps": 24,
+      "metaPath": "media/bar-20261113-berry-meta.mp4",
+      "metaBytes": 7807404,
+      "metaSHA256": "867508eeef5436fee324cb5d57204a2577cae1383b1673b618d9a33f11f56075",
+      "metaResolution": "1080x1920",
+      "metaProbe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "h264",
+            "codec_type": "video",
+            "width": 1080,
+            "height": 1920,
+            "r_frame_rate": "24/1",
+            "bit_rate": "5071933"
+          },
+          {
+            "codec_name": "aac",
+            "codec_type": "audio",
+            "sample_rate": "48000",
+            "r_frame_rate": "0/0",
+            "bit_rate": "126148"
+          }
+        ],
+        "format": {
+          "duration": "12.010000",
+          "size": "7807404"
+        }
+      },
+      "metaAudioBitrate": 126148,
+      "vkPath": "media/bar-20261113-berry-vk.mp4",
+      "vkBytes": 8088261,
+      "vkSHA256": "edc6d12b52992e66b730dc4c925906288855822968f2f500a4a63980d1ee48fb",
+      "vkResolution": "1080x1920",
+      "vkProbe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "h264",
+            "codec_type": "video",
+            "width": 1080,
+            "height": 1920,
+            "r_frame_rate": "24/1",
+            "bit_rate": "5071933"
+          },
+          {
+            "codec_name": "aac",
+            "codec_type": "audio",
+            "sample_rate": "48000",
+            "r_frame_rate": "0/0",
+            "bit_rate": "313199"
+          }
+        ],
+        "format": {
+          "duration": "12.000000",
+          "size": "8088261"
+        }
+      }
+    },
+    {
+      "id": "protein",
+      "sourceDriveFileId": "1zLN7sTESlUqiWi3VotOuStWM2PESifXo",
+      "sourceSHA256": "15ba704e46108b16cf2a1aa32055f5cfed2c20de74bd492033083624f4131e99",
+      "sourceOriginalVerifiedBeforeHandoff": true,
+      "metaVideoStreamUnchanged": false,
+      "vkOriginalBytesUnchanged": false,
+      "fps": 24,
+      "metaPath": "media/bar-20261113-protein-meta.mp4",
+      "metaBytes": 21241565,
+      "metaSHA256": "bb71a4c57b632008794ee6b045138834f00b01b94ea6d773a05c356ed1a90057",
+      "metaResolution": "1440x2560",
+      "metaProbe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "h264",
+            "codec_type": "video",
+            "width": 1440,
+            "height": 2560,
+            "r_frame_rate": "24/1",
+            "bit_rate": "21003812"
+          },
+          {
+            "codec_name": "aac",
+            "codec_type": "audio",
+            "sample_rate": "48000",
+            "r_frame_rate": "0/0",
+            "bit_rate": "120561"
+          },
+          {
+            "codec_type": "data",
+            "r_frame_rate": "0/0",
+            "bit_rate": "3"
+          }
+        ],
+        "format": {
+          "duration": "8.042000",
+          "size": "21241565"
+        }
+      },
+      "metaAudioBitrate": 120561,
+      "vkPath": "media/bar-20261113-protein-vk.mp4",
+      "vkBytes": 14950334,
+      "vkSHA256": "3e4f60d7d2bc7b0c50ae2528db2b52202e46e3072f88d6027915b4b039e1e95f",
+      "vkResolution": "1080x1920",
+      "vkProbe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "h264",
+            "codec_type": "video",
+            "width": 1080,
+            "height": 1920,
+            "r_frame_rate": "24/1",
+            "bit_rate": "14545782"
+          },
+          {
+            "codec_name": "aac",
+            "codec_type": "audio",
+            "sample_rate": "48000",
+            "r_frame_rate": "0/0",
+            "bit_rate": "320000"
+          },
+          {
+            "codec_type": "data",
+            "r_frame_rate": "0/0",
+            "bit_rate": "3"
+          }
+        ],
+        "format": {
+          "duration": "8.042667",
+          "size": "14950334"
+        }
+      }
+    }
+  ]
+}
