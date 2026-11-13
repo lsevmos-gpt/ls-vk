@@ -3,7 +3,7 @@
   "provider": "meta",
   "account": "liniya__sporta",
   "releaseMode": "immediate",
-  "status": "submission_started",
+  "status": "published",
   "runId": "43415115100",
   "createdAtUTC": "2026-11-13T11:12:56.299842+00:00",
   "published": [
@@ -24,10 +24,17 @@
       "permalink": "https://www.instagram.com/stories/liniya__sporta/4029454442906879232",
       "metaReadbackConfirmed": true,
       "mediaProductType": "STORY"
+    },
+    {
+      "index": 3,
+      "name": "protein",
+      "instagramMediaId": "18132892729693066",
+      "publishedAtUTC": "2026-11-13T11:14:55.459554+00:00",
+      "permalink": "https://www.instagram.com/stories/liniya__sporta/4029454793097215799",
+      "metaReadbackConfirmed": true,
+      "mediaProductType": "STORY"
     }
   ],
   "note": "Only three explicitly approved Stories. No provider mutation retries.",
-  "updatedAtUTC": "2026-11-13T11:14:18.835397+00:00",
-  "attemptingIndex": 3,
-  "attemptingItem": "protein"
+  "updatedAtUTC": "2026-11-13T11:14:55.459573+00:00"
 }
