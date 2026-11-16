@@ -3,7 +3,7 @@
   "provider": "meta",
   "account": "liniya__sporta",
   "releaseMode": "immediate",
-  "status": "partial_published",
+  "status": "submission_started",
   "runId": "43889243232",
   "createdAtUTC": "2026-11-16T14:47:41.146649+00:00",
   "published": [
@@ -18,5 +18,7 @@
     }
   ],
   "note": "Only three explicitly approved Stories. No provider mutation retries.",
-  "updatedAtUTC": "2026-11-16T14:48:23.478915+00:00"
+  "updatedAtUTC": "2026-11-16T14:48:28.467340+00:00",
+  "attemptingIndex": 2,
+  "attemptingItem": "creatine"
 }
