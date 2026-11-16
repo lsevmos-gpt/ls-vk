@@ -7,7 +7,7 @@
   "videoResolution": "1440x2560",
   "caption": "Хочешь глубже раскрыть тело и снять напряжение?✨\n\nАэростретчинг — это растяжка с помощью гамака, которая работает мягко, но очень эффективно. 🧘‍♀️🕊️\n\nВсего несколько упражнений дают мощное вытяжение позвоночника, помогают расслабить спину и снять накопившуюся усталость. 🌿💫\nТело становится свободнее, дыхание — глубже, а ощущение лёгкости остаётся надолго. 🌬️✨\n\nВ «Линии Спорта» аэростретчинг — это возможность почувствовать настоящее расслабление и восстановление.🧡 \n\nПриходи и попробуй сама 🔥",
   "runId": "43899630979",
-  "status": "vk_wall_post_api_accepted",
+  "status": "published_verified_by_vk",
   "videoId": 456240855,
   "wallPostId": 5377,
   "coverStatus": "api_accepted",
@@ -16,9 +16,11 @@
   "noCollaborator": true,
   "noRetries": true,
   "createdAtUTC": "2026-11-16T15:44:56.070Z",
-  "updatedAtUTC": "2026-11-16T15:45:05.964Z",
+  "updatedAtUTC": "2026-11-16T15:45:12.445Z",
   "ownerId": -48198173,
   "videoUrl": "https://vk.com/video-48198173_456240855",
   "wallUrl": "https://vk.com/wall-48198173_5377",
-  "publishNow": true
+  "publishNow": true,
+  "wallReadbackConfirmed": true,
+  "videoReadbackConfirmed": true
 }
