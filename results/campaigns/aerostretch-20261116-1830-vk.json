@@ -10,11 +10,12 @@
   "status": "video_uploaded_api_confirmed",
   "videoId": 456240855,
   "wallPostId": null,
-  "coverStatus": "not_attempted",
+  "coverStatus": "unconfirmed",
   "noCollaborator": true,
   "noRetries": true,
   "createdAtUTC": "2026-11-16T14:42:01.622Z",
-  "updatedAtUTC": "2026-11-16T14:42:13.112Z",
+  "updatedAtUTC": "2026-11-16T14:42:35.717Z",
   "ownerId": -48198173,
-  "videoUrl": "https://vk.com/video-48198173_456240855"
+  "videoUrl": "https://vk.com/video-48198173_456240855",
+  "coverErrorClass": "VkApiError"
 }
