@@ -1,0 +1,40 @@
+name: Aero VK existing-video final cover repair after provider 10, publish wall ONCE
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/aero-vk-final-repair-20261116.yml'
+permissions:
+  contents: write
+concurrency:
+  group: aerostretch-20261116-1830-direct-meta-vk-one-shot
+  cancel-in-progress: false
+jobs:
+  cover_and_wall:
+    if: github.repository == 'lsevmos-gpt/ls-vk' && github.actor == 'lsevmos-gpt' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 24
+    env:
+      VK_GROUP_ID: '48198173'
+      VK_GROUP_SCREEN_NAME: liniya__sporta
+      VK_GROUP_TOKEN: ${{ secrets.VK_GROUP_TOKEN }}
+      VK_REFRESH_TOKEN: ${{ secrets.VK_REFRESH_TOKEN }}
+      VK_DEVICE_ID: ${{ secrets.VK_DEVICE_ID }}
+      VK_SECRETS_WRITE_PAT: ${{ secrets.VK_SECRETS_WRITE_PAT }}
+      VK_API_VERSION: '5.199'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Verify no-reupload recovery code, official VK dependencies
+        run: |
+          set -euo pipefail
+          node --check scripts/publish_aero_20261116_vk_final_repair.mjs
+          node --check scripts/vk-refresh-lib.mjs
+          npm install --omit=dev --ignore-scripts --no-package-lock --no-audit --no-fund
+      - name: Read existing VK video, recover the approved custom cover, publish wall now, verify IDs
+        run: node scripts/publish_aero_20261116_vk_final_repair.mjs
