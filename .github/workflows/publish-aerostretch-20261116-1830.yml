@@ -1,0 +1,87 @@
+name: Publish approved AeroStretch 16 Nov 2026 18:30 MSK via DIRECT Meta & VK ONCE
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'requests/campaigns/aerostretch-20261116-1830.json'
+permissions:
+  contents: write
+concurrency:
+  group: aerostretch-20261116-1830-direct-meta-vk-one-shot
+  cancel-in-progress: false
+jobs:
+  stage:
+    name: Fetch exact approved Google Drive original, verify and stage highest feasible 2K, NO publishing
+    if: github.repository == 'lsevmos-gpt/ls-vk' && github.ref == 'refs/heads/main' && github.event_name == 'push' && github.actor == 'lsevmos-gpt'
+    runs-on: ubuntu-latest
+    timeout-minutes: 57
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Original-safe source preflight and video tools
+        run: |
+          set -euo pipefail
+          python -m py_compile scripts/stage_aero_20261116.py scripts/publish_aero_20261116_meta.py
+          python -m pip install --disable-pip-version-check 'gdown==5.2.0' 'Pillow>=10,<13'
+          if ! command -v ffprobe >/dev/null || ! command -v ffmpeg >/dev/null; then
+            sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg
+          fi
+      - name: Stage source аэро.mp4 using exact Google Drive source ID, verify native content quality
+        run: python -m scripts.stage_aero_20261116
+
+  meta:
+    name: Native Instagram Meta Reels with @ulianakabanova246 coauthor at 18:30 MSK
+    needs: stage
+    if: needs.stage.result == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    env:
+      META_IG_ACCESS_TOKEN: ${{ secrets.META_IG_ACCESS_TOKEN }}
+      META_IG_USER_ID: ${{ secrets.META_IG_USER_ID }}
+      META_GRAPH_VERSION: v26.0
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Publish exact Reel via direct Meta Graph API with native invitation, cover and caption
+        run: python -m scripts.publish_aero_20261116_meta
+
+  vk:
+    name: VK native video + cover and scheduled wall via direct VK API at 18:30 MSK
+    needs: stage
+    if: needs.stage.result == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    env:
+      VK_GROUP_ID: '48198173'
+      VK_GROUP_SCREEN_NAME: liniya__sporta
+      VK_GROUP_TOKEN: ${{ secrets.VK_GROUP_TOKEN }}
+      VK_REFRESH_TOKEN: ${{ secrets.VK_REFRESH_TOKEN }}
+      VK_DEVICE_ID: ${{ secrets.VK_DEVICE_ID }}
+      VK_SECRETS_WRITE_PAT: ${{ secrets.VK_SECRETS_WRITE_PAT }}
+      VK_API_VERSION: '5.199'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Verify approved VK publisher and existing uploader dependencies
+        run: |
+          set -euo pipefail
+          node --check scripts/publish_aero_20261116_vk.mjs
+          node --check scripts/vk-refresh-lib.mjs
+          npm install --omit=dev --ignore-scripts --no-package-lock --no-audit --no-fund
+      - name: Upload exact video and custom cover, schedule VK wall at 18:30 MSK
+        run: node scripts/publish_aero_20261116_vk.mjs
