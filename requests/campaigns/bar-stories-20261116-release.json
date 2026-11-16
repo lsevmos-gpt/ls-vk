@@ -15,5 +15,7 @@
   "source": "User approved Intro Bar + two long-unpublished videos from Bar. Verified recent Protein was 13 November and replaced with Pretrain per original selection criterion; user informed before release.",
   "channelPolicy": "SOCIAL_PUBLISHING_CHANNELS_POLICY.md",
   "sequence": "Three individual Stories per platform in order Intro Bar, Creatine, Pretrain. Direct official Meta/VK APIs via GitHub Actions, no fallback, durable no-duplicate receipts, highest previously approved HQ video assets.",
-  "noRetries": true
+  "noRetries": true,
+  "releaseRevision": 2,
+  "readinessRepair": "Initial run 43889068317 failed solely because ffprobe was unavailable on the runner. Both social provider jobs were skipped. Same approved three media files and same channels; no provider attempt occurred."
 }
