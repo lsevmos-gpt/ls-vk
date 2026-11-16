@@ -10,11 +10,15 @@
   "status": "video_uploaded_api_confirmed",
   "videoId": 456240855,
   "wallPostId": null,
-  "coverStatus": "not_attempted",
+  "coverStatus": "unconfirmed",
   "noCollaborator": true,
   "noRetries": true,
   "createdAtUTC": "2026-11-16T15:41:51.365Z",
-  "updatedAtUTC": "2026-11-16T15:41:54.634Z",
+  "updatedAtUTC": "2026-11-16T15:41:59.218Z",
   "ownerId": -48198173,
-  "videoUrl": "https://vk.com/video-48198173_456240855"
+  "videoUrl": "https://vk.com/video-48198173_456240855",
+  "coverErrorClass": "VkApiError",
+  "coverErrorCode": 10,
+  "coverErrorMethod": "video.saveUploadedThumb",
+  "coverErrorMessage": "VK API video.saveUploadedThumb: Internal server error"
 }
