@@ -9,11 +9,13 @@
   "collaborator": "ulianakabanova246",
   "collaboratorAccepted": false,
   "scheduledAt": "2026-11-16T18:30:00+03:00",
-  "status": "meta_container_created_collaborator_invited_pending_acceptance",
+  "status": "manual_reconciliation_required",
   "runId": "43887242792",
   "mediaId": null,
   "containerId": "18024354821949669",
   "noRetries": true,
   "createdAtUTC": "2026-11-16T14:41:51.217264+00:00",
-  "updatedAtUTC": "2026-11-16T14:41:55.864220+00:00"
+  "updatedAtUTC": "2026-11-16T14:42:47.946157+00:00",
+  "errorClass": "RuntimeError",
+  "note": "Meta API may have accepted mutation. No retry until provider readback."
 }
