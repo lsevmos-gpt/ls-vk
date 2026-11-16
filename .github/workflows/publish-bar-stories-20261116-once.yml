@@ -1,0 +1,162 @@
+name: Publish 16 Nov Bar Intro Creatine Pretrain Stories via DIRECT Meta and VK ONCE
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'requests/campaigns/bar-stories-20261116-release.json'
+permissions:
+  contents: write
+concurrency:
+  group: bar-stories-20261116-ig-vk-once
+  cancel-in-progress: false
+
+jobs:
+  readiness:
+    name: Verify six existing Adobe-staged video files and approved order; NO PUBLISH
+    if: github.repository == 'lsevmos-gpt/ls-vk' && github.ref == 'refs/heads/main' && github.actor == 'lsevmos-gpt'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /scripts/
+            /src/
+            /package.json
+            /media-prep/
+            /requests/campaigns/bar-stories-20261116-release.json
+            /results/
+            /media/bar-20261113-intro-meta.mp4
+            /media/bar-20261113-intro-vk.mp4
+            /media/bar-20261021-creatine-meta-audio.mp4
+            /media/bar-20261021-creatine-meta-vk-hq.mp4
+            /media/bar-20261027-pretrain-meta.mp4
+            /media/bar-20261027-pretrain-vk.mp4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Syntax, exact approved originals, SHA-256 and highest existing compatible video/audio
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m py_compile scripts/publish_bar_stories_20261116_ig.py
+          node --check scripts/publish_bar_stories_20261116_vk.mjs
+          command -v ffprobe >/dev/null || { echo "::error::ffprobe unavailable"; exit 1; }
+          python3 - <<'PY'
+          import hashlib,json,subprocess
+          from pathlib import Path
+          release=json.loads(Path('requests/campaigns/bar-stories-20261116-release.json').read_text())
+          m=json.loads(Path('media-prep/bar-stories-20261116.json').read_text())
+          q=json.loads(Path('results/verification/bar-stories-20261116-stage.json').read_text())
+          order=['intro-bar','creatine','pretrain']
+          assert release['id']=='bar-stories-20261116-release'
+          assert release['approved'] is True and release['publicContent'] is True and release['submitNow'] is True
+          assert release['instagram']=='liniya__sporta' and release['vkGroupId']==48198173 and release['stories']==order
+          assert m['id']==q['id']=='bar-stories-20261116' and m['approved'] and m['publicContent'] and q['ok'] and q['sourceOriginalsVerified']
+          assert [r['id'] for r in m['sequence']]==order==[r['id'] for r in q['sequence']]
+          assert not Path('results/campaigns/bar-stories-20261116-instagram.json').exists()
+          assert not Path('results/campaigns/bar-stories-20261116-vk.json').exists()
+          for source,record in zip(m['sequence'],q['sequence']):
+              assert source['sourceSHA256']==record['sourceSHA256'] and source['driveFileId']==record['sourceDriveFileId']
+              for platform in ('meta','vk'):
+                  f=Path(record[platform+'Path'])
+                  assert f.is_file() and not f.is_symlink() and str(f).startswith('media/')
+                  assert f.stat().st_size==source[platform+'Bytes']==record[platform+'Bytes']
+                  with f.open('rb') as handle: sha=hashlib.file_digest(handle,'sha256').hexdigest()
+                  assert sha==source[platform+'SHA256']==record[platform+'SHA256'],f'SHA mismatch {f}'
+                  data=json.loads(subprocess.check_output(['ffprobe','-v','error','-show_entries','format=duration,size:stream=codec_type,codec_name,width,height,r_frame_rate,bit_rate,sample_rate','-of','json',str(f)]))
+                  v=next(x for x in data['streams'] if x['codec_type']=='video')
+                  a=next(x for x in data['streams'] if x['codec_type']=='audio')
+                  assert v['codec_name']=='h264' and v['width']==1080 and v['height']==1920 and v['r_frame_rate']=='24/1'
+                  assert a['codec_name']=='aac'
+                  assert float(data['format']['duration'])<=15.2
+                  if platform=='meta':assert 0<int(a['bit_rate'])<=128000
+                  print('EXACT_VIDEO_SOURCE_VERIFIED',source['id'],platform,f.stat().st_size,flush=True)
+          print('ALL_SIX_APPROVED_VIDEO_ASSETS_PASS_SHA_AND_QUALITY; NO_PROVIDER_WRITES',flush=True)
+          PY
+      - name: Check official Meta can fetch all three assets without authentication
+        shell: bash
+        run: |
+          set -euo pipefail
+          for path in bar-20261113-intro-meta.mp4 bar-20261021-creatine-meta-audio.mp4 bar-20261027-pretrain-meta.mp4; do
+            curl --fail --silent --show-error --location --head --max-time 45 "https://raw.githubusercontent.com/lsevmos-gpt/ls-vk/main/media/${path}" >/dev/null
+          done
+          echo 'THREE_META_VIDEO_URLS_OK'
+
+  instagram_meta:
+    needs: readiness
+    name: Publish intro, creatine, pretrain directly via Meta Graph API with ID readback
+    runs-on: ubuntu-latest
+    timeout-minutes: 50
+    env:
+      META_IG_ACCESS_TOKEN: ${{ secrets.META_IG_ACCESS_TOKEN }}
+      META_IG_USER_ID: ${{ secrets.META_IG_USER_ID }}
+      META_GRAPH_VERSION: v26.0
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /scripts/
+            /media-prep/
+            /requests/campaigns/bar-stories-20261116-release.json
+            /results/
+            /media/bar-20261113-intro-meta.mp4
+            /media/bar-20261021-creatine-meta-audio.mp4
+            /media/bar-20261027-pretrain-meta.mp4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Publish exactly three ordered Stories without retries, confirm Story media IDs
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$META_IG_ACCESS_TOKEN" && test -n "$META_IG_USER_ID"
+          python -m scripts.publish_bar_stories_20261116_ig
+
+  vk:
+    needs: readiness
+    name: Publish intro, creatine, pretrain directly via VK API with live story readback
+    runs-on: ubuntu-latest
+    timeout-minutes: 50
+    env:
+      VK_GROUP_TOKEN: ${{ secrets.VK_GROUP_TOKEN }}
+      VK_GROUP_ID: '48198173'
+      VK_GROUP_SCREEN_NAME: liniya__sporta
+      VK_API_VERSION: '5.199'
+      SOCIAL_PLATFORM: vk
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /scripts/
+            /src/
+            /package.json
+            /media-prep/
+            /requests/campaigns/bar-stories-20261116-release.json
+            /results/
+            /media/bar-20261113-intro-vk.mp4
+            /media/bar-20261021-creatine-meta-vk-hq.mp4
+            /media/bar-20261027-pretrain-vk.mp4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install existing VK API dependencies without lifecycle hooks
+        run: npm install --omit=dev --ignore-scripts --no-package-lock --no-audit --no-fund
+      - name: Publish exactly three VK Stories, verify exact community IDs
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$VK_GROUP_TOKEN"
+          node scripts/publish_bar_stories_20261116_vk.mjs
