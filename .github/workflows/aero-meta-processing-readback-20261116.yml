@@ -1,0 +1,44 @@
+name: Read only Meta processing failure details for Aero 16 Nov 2026
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/aero-meta-processing-readback-20261116.yml'
+permissions:
+  contents: read
+jobs:
+  readback:
+    if: github.repository == 'lsevmos-gpt/ls-vk' && github.actor == 'lsevmos-gpt' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      META_IG_ACCESS_TOKEN: ${{ secrets.META_IG_ACCESS_TOKEN }}
+    steps:
+      - name: Read existing failed container status only (NO publishing, NO retries)
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json, os, urllib.request, urllib.error
+          container_id='18024354821949669'
+          url='https://graph.facebook.com/v26.0/'+container_id+'?fields=id,status_code,status'
+          req=urllib.request.Request(url,method='GET',headers={
+            'Authorization':'Bearer '+os.environ['META_IG_ACCESS_TOKEN'],
+            'Accept':'application/json'})
+          try:
+            with urllib.request.urlopen(req,timeout=35) as r:
+              payload=json.load(r)
+              print('META_STATUS_HTTP',r.status)
+              print('META_CONTAINER_READBACK',json.dumps({key:payload.get(key) for key in ('id','status_code','status')},ensure_ascii=False))
+          except urllib.error.HTTPError as e:
+            data=e.read().decode('utf-8','replace')
+            try:
+              body=json.loads(data)
+              error=body.get('error') or {}
+              clean={key:error.get(key) for key in ('type','code','error_subcode','message','error_user_title','error_user_msg') if error.get(key) is not None}
+              print('META_READBACK_ERROR',json.dumps({'http':e.code,'error':clean},ensure_ascii=False))
+            except ValueError:
+              print('META_READBACK_HTTP_ERROR',e.code)
+          except Exception as e:
+            print('META_READBACK_TRANSPORT_ERROR',type(e).__name__)
+          PY
