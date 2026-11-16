@@ -8,9 +8,9 @@
   "nativeCollaborator": "ulianakabanova246",
   "collaboratorAcceptanceConfirmed": false,
   "runId": "43898761930",
-  "status": "media_publish_call_started",
-  "publishedMediaId": null,
+  "status": "meta_api_published_id_received",
+  "publishedMediaId": "18110528003250459",
   "noRetries": true,
   "createdAtUTC": "2026-11-16T15:40:13.154341+00:00",
-  "updatedAtUTC": "2026-11-16T15:40:16.473506+00:00"
+  "updatedAtUTC": "2026-11-16T15:40:33.353805+00:00"
 }
