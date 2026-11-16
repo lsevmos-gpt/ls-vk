@@ -5,7 +5,7 @@
   "releaseMode": "immediate",
   "runId": "43889243232",
   "createdAtUTC": "2026-11-16T14:47:45.383Z",
-  "status": "submission_started",
+  "status": "partial_submitted_to_vk",
   "published": [
     {
       "index": 1,
@@ -13,10 +13,15 @@
       "vkStoryId": 456240731,
       "ownerId": -48198173,
       "publishedAtUTC": "2026-11-16T14:47:50.964Z"
+    },
+    {
+      "index": 2,
+      "name": "creatine",
+      "vkStoryId": 456240732,
+      "ownerId": -48198173,
+      "publishedAtUTC": "2026-11-16T14:47:59.278Z"
     }
   ],
   "note": "Exactly three approved stories; never retry provider save after uncertainty.",
-  "updatedAtUTC": "2026-11-16T14:47:54.748Z",
-  "attemptingIndex": 2,
-  "attemptingItem": "creatine"
+  "updatedAtUTC": "2026-11-16T14:47:59.278Z"
 }
