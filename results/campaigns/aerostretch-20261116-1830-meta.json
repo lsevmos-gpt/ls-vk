@@ -1,0 +1,19 @@
+{
+  "id": "aerostretch-20261116-1830",
+  "provider": "instagram",
+  "account": "liniya__sporta",
+  "sourceDriveFileId": "1tCWqXsjp1jeZTZVSkg73IGuCvHbxwvh-",
+  "videoSha256": "0bd97bf4018d9bda59ef4fcf6c644a8286278b488a5fe96aad22671496ef0fd8",
+  "coverMetaSha256": "b2ae50f669a1a32f172fc703a19a1f4ed28277247a0fa6668a59eea817fcfaa1",
+  "videoResolution": "1440x2560",
+  "collaborator": "ulianakabanova246",
+  "collaboratorAccepted": false,
+  "scheduledAt": "2026-11-16T18:30:00+03:00",
+  "status": "reserved_before_any_meta_api_mutation",
+  "runId": "43887242792",
+  "mediaId": null,
+  "containerId": null,
+  "noRetries": true,
+  "createdAtUTC": "2026-11-16T14:41:51.217264+00:00",
+  "updatedAtUTC": "2026-11-16T14:41:51.217282+00:00"
+}
