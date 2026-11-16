@@ -5,7 +5,7 @@
   "releaseMode": "immediate",
   "runId": "43889243232",
   "createdAtUTC": "2026-11-16T14:47:45.383Z",
-  "status": "partial_submitted_to_vk",
+  "status": "submission_started",
   "published": [
     {
       "index": 1,
@@ -16,5 +16,7 @@
     }
   ],
   "note": "Exactly three approved stories; never retry provider save after uncertainty.",
-  "updatedAtUTC": "2026-11-16T14:47:50.964Z"
+  "updatedAtUTC": "2026-11-16T14:47:54.748Z",
+  "attemptingIndex": 2,
+  "attemptingItem": "creatine"
 }
