@@ -9,11 +9,11 @@
   "collaborator": "ulianakabanova246",
   "collaboratorAccepted": false,
   "scheduledAt": "2026-11-16T18:30:00+03:00",
-  "status": "reserved_before_any_meta_api_mutation",
+  "status": "meta_container_call_started",
   "runId": "43887242792",
   "mediaId": null,
   "containerId": null,
   "noRetries": true,
   "createdAtUTC": "2026-11-16T14:41:51.217264+00:00",
-  "updatedAtUTC": "2026-11-16T14:41:51.217282+00:00"
+  "updatedAtUTC": "2026-11-16T14:41:53.472969+00:00"
 }
