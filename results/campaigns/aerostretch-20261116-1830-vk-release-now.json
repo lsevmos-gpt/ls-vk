@@ -7,18 +7,19 @@
   "videoResolution": "1440x2560",
   "caption": "Хочешь глубже раскрыть тело и снять напряжение?✨\n\nАэростретчинг — это растяжка с помощью гамака, которая работает мягко, но очень эффективно. 🧘‍♀️🕊️\n\nВсего несколько упражнений дают мощное вытяжение позвоночника, помогают расслабить спину и снять накопившуюся усталость. 🌿💫\nТело становится свободнее, дыхание — глубже, а ощущение лёгкости остаётся надолго. 🌬️✨\n\nВ «Линии Спорта» аэростретчинг — это возможность почувствовать настоящее расслабление и восстановление.🧡 \n\nПриходи и попробуй сама 🔥",
   "runId": "43899040002",
-  "status": "video_uploaded_api_confirmed",
+  "status": "manual_reconciliation_required",
   "videoId": 456240855,
   "wallPostId": null,
   "coverStatus": "unconfirmed",
   "noCollaborator": true,
   "noRetries": true,
   "createdAtUTC": "2026-11-16T15:41:51.365Z",
-  "updatedAtUTC": "2026-11-16T15:41:59.218Z",
+  "updatedAtUTC": "2026-11-16T15:42:00.919Z",
   "ownerId": -48198173,
   "videoUrl": "https://vk.com/video-48198173_456240855",
   "coverErrorClass": "VkApiError",
   "coverErrorCode": 10,
   "coverErrorMethod": "video.saveUploadedThumb",
-  "coverErrorMessage": "VK API video.saveUploadedThumb: Internal server error"
+  "coverErrorMessage": "VK API video.saveUploadedThumb: Internal server error",
+  "error": "VK_CUSTOM_NEW_COVER_FAILED_DO_NOT_POST_WITH_OLD_PREVIEW"
 }
