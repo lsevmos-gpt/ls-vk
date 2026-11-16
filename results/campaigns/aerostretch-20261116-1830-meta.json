@@ -9,11 +9,11 @@
   "collaborator": "ulianakabanova246",
   "collaboratorAccepted": false,
   "scheduledAt": "2026-11-16T18:30:00+03:00",
-  "status": "meta_container_call_started",
+  "status": "meta_container_created_collaborator_invited_pending_acceptance",
   "runId": "43887242792",
   "mediaId": null,
-  "containerId": null,
+  "containerId": "18024354821949669",
   "noRetries": true,
   "createdAtUTC": "2026-11-16T14:41:51.217264+00:00",
-  "updatedAtUTC": "2026-11-16T14:41:53.472969+00:00"
+  "updatedAtUTC": "2026-11-16T14:41:55.864220+00:00"
 }
