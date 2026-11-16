@@ -1,0 +1,31 @@
+{
+  "id": "aerostretch-20261116-1830",
+  "approved": true,
+  "publicContent": true,
+  "authorizedByUser": true,
+  "publishNow": false,
+  "publishAt": "2026-11-16T18:30:00+03:00",
+  "authorization": "User explicitly requested publishing original 'аэро.mp4' from shared Google Drive folder 'линия спорта', exact last cover and provided caption, with Instagram native collaboration invitation @ulianakabanova246, at 18:30 MSK 16 Nov 2026; ONLY existing direct Meta Graph API and direct VK API via GitHub Actions in lsevmos-gpt/ls-vk; no Metricool, Buffer or alternate publishing channel.",
+  "sourceFileName": "аэро.mp4",
+  "sourceDriveFileId": "1tCWqXsjp1jeZTZVSkg73IGuCvHbxwvh-",
+  "sourceBytes": 703019625,
+  "coverFileName": "AeroStretch_Last_Cover_Meta_1080x1920.png",
+  "coverDriveFileId": "1b5yTEOnpvngGDXZgj51T3jLKskndRwCM",
+  "coverSHA256": "16b2bc2df6265488b256cfb114c0bb70cd4b0c8599b4a78b2e55fdc9902acb07",
+  "instagram": {
+    "handle": "liniya__sporta",
+    "collaborators": [
+      "ulianakabanova246"
+    ],
+    "nativeInviteRequired": true,
+    "shareToFeed": true
+  },
+  "vk": {
+    "groupId": 48198173,
+    "publishWall": true,
+    "noCoauthor": true
+  },
+  "caption": "Хочешь глубже раскрыть тело и снять напряжение?✨\n\nАэростретчинг — это растяжка с помощью гамака, которая работает мягко, но очень эффективно. 🧘‍♀️🕊️\n\nВсего несколько упражнений дают мощное вытяжение позвоночника, помогают расслабить спину и снять накопившуюся усталость. 🌿💫\nТело становится свободнее, дыхание — глубже, а ощущение лёгкости остаётся надолго. 🌬️✨\n\nВ «Линии Спорта» аэростретчинг — это возможность почувствовать настоящее расслабление и восстановление.🧡 \n\nПриходи и попробуй сама 🔥",
+  "noRetries": true,
+  "quality": "Use best verified 1440x2560 or true source resolution possible within GitHub media publishing size. No fake upscaling; 2-pass H264 high-quality for GitHub 100MB constraint; 192kbps AAC; original cover JPEG quality 100 for Meta/VK; no face/body changes."
+}
