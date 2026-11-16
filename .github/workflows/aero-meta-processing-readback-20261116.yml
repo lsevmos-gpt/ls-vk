@@ -1,4 +1,4 @@
-name: Read only Meta processing failure details for Aero 16 Nov 2026
+name: Read only Meta processing failure details for Aero 16 Nov 2026 (diagnostic)
 on:
   push:
     branches: [main]
