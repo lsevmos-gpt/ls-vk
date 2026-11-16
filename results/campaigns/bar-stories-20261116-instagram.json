@@ -3,7 +3,7 @@
   "provider": "meta",
   "account": "liniya__sporta",
   "releaseMode": "immediate",
-  "status": "submission_started",
+  "status": "partial_published",
   "runId": "43889243232",
   "createdAtUTC": "2026-11-16T14:47:41.146649+00:00",
   "published": [
@@ -15,10 +15,17 @@
       "permalink": "https://www.instagram.com/stories/liniya__sporta/4031736530033265123",
       "metaReadbackConfirmed": true,
       "mediaProductType": "STORY"
+    },
+    {
+      "index": 2,
+      "name": "creatine",
+      "instagramMediaId": "17950291938072104",
+      "publishedAtUTC": "2026-11-16T14:49:18.261977+00:00",
+      "permalink": "https://www.instagram.com/stories/liniya__sporta/4031736956424570664",
+      "metaReadbackConfirmed": true,
+      "mediaProductType": "STORY"
     }
   ],
   "note": "Only three explicitly approved Stories. No provider mutation retries.",
-  "updatedAtUTC": "2026-11-16T14:48:28.467340+00:00",
-  "attemptingIndex": 2,
-  "attemptingItem": "creatine"
+  "updatedAtUTC": "2026-11-16T14:49:18.261997+00:00"
 }
