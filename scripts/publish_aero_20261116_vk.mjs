@@ -86,7 +86,7 @@ async function main(){
     &&req.vk?.groupId===GROUP&&req.vk?.publishWall===true&&req.vk?.noCoauthor===true
     &&q.ok===true&&q.sourceDriveFileId===req.sourceDriveFileId&&typeof q.sourceSha256==='string'&&q.sourceSha256.length===64&&q.coverOriginalSha256===COVER_SHA
     &&["1440x2560","1080x1920"].includes(q.videoResolution)&&q.videoBytes===fs.statSync(VIDEO).size
-    &&q.videoSha256===sha(VIDEO)&&fs.statSync(VIDEO).size<95000000&&q.coverMetaSha256===sha(COVER)))
+    &&q.videoSha256===sha(VIDEO)&&fs.statSync(VIDEO).size<98000000&&q.coverMetaSha256===sha(COVER)))
     throw Error("VIDEO_SOURCE_OR_APPROVAL_MISMATCH");
   required("VK_GROUP_TOKEN");required("VK_REFRESH_TOKEN");required("VK_DEVICE_ID");required("VK_SECRETS_WRITE_PAT");
   const token=await refreshVideoToken();
