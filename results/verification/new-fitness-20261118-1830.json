@@ -1,0 +1,22 @@
+{
+  "id": "new-fitness-20261118-1830",
+  "ok": true,
+  "stagingOnly": true,
+  "published": false,
+  "videoPath": "media/new-fitness-20261118-1830-reel-1080x1920.mp4",
+  "videoSha256": "5321de6d1f92bd548f5912bce9fdd1971f5e9ead32213daee3282e582606b868",
+  "videoBytes": 35095341,
+  "videoResolution": "1080x1920",
+  "videoFps": 25,
+  "videoCodec": "h264",
+  "audioCodec": "aac",
+  "videoStreamUnchanged": true,
+  "sourceSha256": "5321de6d1f92bd548f5912bce9fdd1971f5e9ead32213daee3282e582606b868",
+  "coverOriginalPath": "media/new-fitness-20261118-1830-cover-original-2160x3840.png",
+  "coverOriginalSha256": "058eb6d440a4c712336a6a6c16c3164f430945c458d30259b6cd04ab1f5716b4",
+  "coverOriginalResolution": "2160x3840",
+  "coverMetaPath": "media/new-fitness-20261118-1830-cover-meta.jpg",
+  "coverMetaSha256": "6d3c5b22fde6821840c2534bafbf41ce07d19985f06759c730e62f4229f2e1c4",
+  "publishAt": "2026-11-18T18:30:00+03:00",
+  "noExternalPublishing": true
+}
