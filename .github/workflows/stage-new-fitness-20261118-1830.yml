@@ -1,0 +1,121 @@
+name: Stage approved New Fitness 18 Nov 2026 media using existing Adobe handoff (NO PUBLISH)
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'requests/campaigns/new-fitness-20261118-1830.json'
+permissions:
+  contents: write
+concurrency:
+  group: stage-new-fitness-20261118-1830
+  cancel-in-progress: false
+jobs:
+  stage_exact_media:
+    if: github.repository == 'lsevmos-gpt/ls-vk' && github.ref == 'refs/heads/main' && github.event_name == 'push' && github.actor == 'lsevmos-gpt'
+    runs-on: ubuntu-latest
+    timeout-minutes: 55
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Validate user-approved time and exact source identity (no publication)
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path("requests/campaigns/new-fitness-20261118-1830.json")
+          d=json.loads(p.read_text("utf-8"))
+          assert d["id"]=="new-fitness-20261118-1830"
+          assert d["approved"] is True and d["authorizedByUser"] is True and d["publicContent"] is True
+          assert d["publishNow"] is False and d["publishAt"]=="2026-11-18T18:30:00+03:00"
+          assert d["sourceSHA256"]=="5321de6d1f92bd548f5912bce9fdd1971f5e9ead32213daee3282e582606b868"
+          assert d["coverSHA256"]=="058eb6d440a4c712336a6a6c16c3164f430945c458d30259b6cd04ab1f5716b4"
+          assert d["instagram"]["handle"]=="liniya__sporta"
+          assert d["vk"]=={"groupId":48198173,"publishWall":True}
+          assert d["collaboratorsRequested"]==["katia_shap","sir_ena06","_alie_13_","pisareva.jump.simf"]
+          assert 50<len(d["caption"])<=2200
+          print("STAGE_PREFLIGHT_PASS_NO_SOCIAL_API_SUBMISSION")
+          PY
+      - name: Install image validator; verify ffprobe
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check 'Pillow>=10,<13'
+          command -v ffprobe
+      - name: Download exact approved media from existing Adobe handoff
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/ls-new-fitness-20261118 media results/verification
+          curl --fail --silent --show-error --location --retry 2 --connect-timeout 25 --max-time 600 \
+            'https://at.adobe.com/JYaeP1ZbMOQPrhfP' -o /tmp/ls-new-fitness-20261118/video.mp4
+          curl --fail --silent --show-error --location --retry 2 --connect-timeout 25 --max-time 300 \
+            'https://at.adobe.com/r7M5qehbatFNUCI5' -o /tmp/ls-new-fitness-20261118/cover4k.png
+          printf '%s  %s\n' '5321de6d1f92bd548f5912bce9fdd1971f5e9ead32213daee3282e582606b868' '/tmp/ls-new-fitness-20261118/video.mp4' | sha256sum --check
+          printf '%s  %s\n' '058eb6d440a4c712336a6a6c16c3164f430945c458d30259b6cd04ab1f5716b4' '/tmp/ls-new-fitness-20261118/cover4k.png' | sha256sum --check
+      - name: Preserve verified H264/AAC video packets; derive lossless original and JPEG cover
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import hashlib,json,subprocess,shutil
+          from pathlib import Path
+          from PIL import Image
+          JOB="new-fitness-20261118-1830"
+          src=Path("/tmp/ls-new-fitness-20261118/video.mp4")
+          cov=Path("/tmp/ls-new-fitness-20261118/cover4k.png")
+          video=Path(f"media/{JOB}-reel-1080x1920.mp4")
+          cover_png=Path(f"media/{JOB}-cover-original-2160x3840.png")
+          cover_jpg=Path(f"media/{JOB}-cover-meta.jpg")
+          qa=Path(f"results/verification/{JOB}.json")
+          for p in (video,cover_png,cover_jpg,qa):
+              if p.exists():raise RuntimeError("STAGE_ALREADY_EXISTS_NEVER_OVERWRITE")
+          if src.stat().st_size!=35095341:raise RuntimeError("VIDEO_FILE_SIZE_MISMATCH")
+          with Image.open(cov) as im:
+              assert im.size==(2160,3840) and im.format=="PNG"
+              im.convert("RGB").resize((1080,1920),Image.Resampling.LANCZOS).save(
+                  cover_jpg,"JPEG",quality=98,subsampling=0,optimize=True)
+          shutil.copyfile(cov,cover_png)
+          shutil.copyfile(src,video)
+          def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
+          s=json.loads(subprocess.check_output(["ffprobe","-v","error",
+              "-show_entries","format=duration,size:stream=codec_type,codec_name,width,height,avg_frame_rate",
+              "-of","json",str(video)],text=True))
+          v=next(x for x in s["streams"] if x["codec_type"]=="video")
+          a=next(x for x in s["streams"] if x["codec_type"]=="audio")
+          assert (v["codec_name"],v["width"],v["height"],v["avg_frame_rate"])==("h264",1080,1920,"25/1")
+          assert a["codec_name"]=="aac" and abs(float(s["format"]["duration"])-43.326)<0.12
+          assert sha(video)=="5321de6d1f92bd548f5912bce9fdd1971f5e9ead32213daee3282e582606b868"
+          assert sha(cover_png)=="058eb6d440a4c712336a6a6c16c3164f430945c458d30259b6cd04ab1f5716b4"
+          report={"id":JOB,"ok":True,"stagingOnly":True,"published":False,
+            "videoPath":str(video),"videoSha256":sha(video),"videoBytes":video.stat().st_size,
+            "videoResolution":"1080x1920","videoFps":25,"videoCodec":"h264","audioCodec":"aac",
+            "videoStreamUnchanged":True,"sourceSha256":sha(src),"coverOriginalPath":str(cover_png),
+            "coverOriginalSha256":sha(cover_png),"coverOriginalResolution":"2160x3840",
+            "coverMetaPath":str(cover_jpg),"coverMetaSha256":sha(cover_jpg),
+            "publishAt":"2026-11-18T18:30:00+03:00","noExternalPublishing":True}
+          qa.write_text(json.dumps(report,ensure_ascii=False,indent=2)+"\n",encoding="utf-8")
+          print("NEW_FITNESS_MEDIA_VALIDATED",json.dumps(report,ensure_ascii=False))
+          PY
+      - name: Stage media in already approved GitHub source, no publishing
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'ls-fitness-media-stage'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -- 'media/new-fitness-20261118-1830-reel-1080x1920.mp4' \
+            'media/new-fitness-20261118-1830-cover-original-2160x3840.png' \
+            'media/new-fitness-20261118-1830-cover-meta.jpg' \
+            'results/verification/new-fitness-20261118-1830.json'
+          git commit -m 'Stage approved new fitness Reels media only [skip ci]'
+          for i in 1 2 3 4 5; do
+            if git pull --rebase origin main && git push origin HEAD:main; then break; fi
+            if [ "$i" = 5 ]; then exit 1; fi
+            sleep 5
+          done
