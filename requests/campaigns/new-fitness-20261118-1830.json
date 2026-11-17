@@ -1,0 +1,32 @@
+{
+  "id": "new-fitness-20261118-1830",
+  "approved": true,
+  "publicContent": true,
+  "authorizedByUser": true,
+  "publishNow": false,
+  "publishAt": "2026-11-18T18:30:00+03:00",
+  "authorization": "User explicitly requests 18 Nov 2026 18:30 MSK Meta Instagram Reels and VK clip plus wall with user-supplied caption, original mp4, approved 4K cover, four requested Instagram coauthor names.",
+  "sourceFileName": "новый зал.mp4",
+  "processedVideoFileName": "Liniya_Sporta_Novy_Fitness_Zal_Reels_Publish_1080x1920.mp4",
+  "sourceSHA256": "5321de6d1f92bd548f5912bce9fdd1971f5e9ead32213daee3282e582606b868",
+  "coverOriginalFileName": "Liniya_Sporta_Novy_Fitness_Zal_Reels_2160x3840.png",
+  "coverSHA256": "058eb6d440a4c712336a6a6c16c3164f430945c458d30259b6cd04ab1f5716b4",
+  "videoSizeBytes": 35095341,
+  "instagram": {
+    "handle": "liniya__sporta",
+    "shareToFeed": true
+  },
+  "vk": {
+    "groupId": 48198173,
+    "publishWall": true
+  },
+  "collaboratorsRequested": [
+    "katia_shap",
+    "sir_ena06",
+    "_alie_13_",
+    "pisareva.jump.simf"
+  ],
+  "collaboratorLimitation": "Meta Graph API supports at most 3 collaborators; four usernames are preserved in manifest and should not be silently dropped.",
+  "caption": "Друзья, важные новости! 🔥\n\n23 ноября в «Линии спорта»\n📍Героев Сталинграда, 6д\n\nОткрываем групповые направления, которые помогут вам стать сильнее, гибче и увереннее в своём теле:\n\n• Стретчинг 🧘‍♀️ — для гибкости и лёгкости\n• Здоровая спина 💪 — снятие напряжения и правильная осанка\n• Пилатес ✨ — глубокая работа с мышцами и контроль\n• Женское здоровье 🌸 — забота о себе и своём теле\n• Функциональный тренинг 🔥 — сила, выносливость и энергия\n• Йога 🌿 — баланс тела и разума\n• Barre 🩰 — тонус, грация и красивая осанка\n\nХотите почувствовать результат уже с первых занятий? 💫\n\nЗаписывайтесь прямо сейчас через мобильное приложение или у администратора клуба!\n\nЖдём вас в «Линии спорта»❤️",
+  "publicationStatus": "AUTHORIZED_FOR_DATE_NOT_YET_SCHEDULED"
+}
