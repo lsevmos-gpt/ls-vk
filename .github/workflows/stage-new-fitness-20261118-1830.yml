@@ -4,6 +4,7 @@ on:
     branches: [main]
     paths:
       - 'requests/campaigns/new-fitness-20261118-1830.json'
+      - '.github/workflows/stage-new-fitness-20261118-1830.yml'
 permissions:
   contents: write
 concurrency:
@@ -47,6 +48,9 @@ jobs:
         run: |
           set -euo pipefail
           python -m pip install --disable-pip-version-check 'Pillow>=10,<13'
+          if ! command -v ffprobe >/dev/null || ! command -v ffmpeg >/dev/null; then
+            sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg
+          fi
           command -v ffprobe
       - name: Download exact approved media from existing Adobe handoff
         shell: bash
