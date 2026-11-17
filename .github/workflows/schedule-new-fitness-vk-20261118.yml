@@ -4,6 +4,7 @@ on:
     branches: [main]
     paths:
       - 'requests/campaigns/new-fitness-20261118-1830-vk-release.json'
+      - '.github/workflows/schedule-new-fitness-vk-20261118.yml'
 permissions:
   contents: write
 concurrency:
@@ -17,10 +18,10 @@ jobs:
     env:
       VK_GROUP_ID: '48198173'
       VK_GROUP_SCREEN_NAME: liniya__sporta
-      VK_GROUP_TOKEN: \${{ secrets.VK_GROUP_TOKEN }}
-      VK_REFRESH_TOKEN: \${{ secrets.VK_REFRESH_TOKEN }}
-      VK_DEVICE_ID: \${{ secrets.VK_DEVICE_ID }}
-      VK_SECRETS_WRITE_PAT: \${{ secrets.VK_SECRETS_WRITE_PAT }}
+      VK_GROUP_TOKEN: ${{ secrets.VK_GROUP_TOKEN }}
+      VK_REFRESH_TOKEN: ${{ secrets.VK_REFRESH_TOKEN }}
+      VK_DEVICE_ID: ${{ secrets.VK_DEVICE_ID }}
+      VK_SECRETS_WRITE_PAT: ${{ secrets.VK_SECRETS_WRITE_PAT }}
       VK_API_VERSION: '5.199'
     steps:
       - uses: actions/checkout@v4
