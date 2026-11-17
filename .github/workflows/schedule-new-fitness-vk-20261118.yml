@@ -1,0 +1,57 @@
+name: Schedule approved New Fitness VK video and wall 18 Nov 2026 18:30 MSK (DIRECT VK)
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'requests/campaigns/new-fitness-20261118-1830-vk-release.json'
+permissions:
+  contents: write
+concurrency:
+  group: new-fitness-20261118-vk-once
+  cancel-in-progress: false
+jobs:
+  schedule_vk_once:
+    if: github.repository == 'lsevmos-gpt/ls-vk' && github.ref == 'refs/heads/main' && github.event_name == 'push' && github.actor == 'lsevmos-gpt'
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    env:
+      VK_GROUP_ID: '48198173'
+      VK_GROUP_SCREEN_NAME: liniya__sporta
+      VK_GROUP_TOKEN: \${{ secrets.VK_GROUP_TOKEN }}
+      VK_REFRESH_TOKEN: \${{ secrets.VK_REFRESH_TOKEN }}
+      VK_DEVICE_ID: \${{ secrets.VK_DEVICE_ID }}
+      VK_SECRETS_WRITE_PAT: \${{ secrets.VK_SECRETS_WRITE_PAT }}
+      VK_API_VERSION: '5.199'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Confirm one-time exact release authorization and staged media
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --check scripts/publish_new_fitness_20261118_vk.mjs
+          node --check scripts/vk-refresh-lib.mjs
+          python3 - <<'PY'
+          from pathlib import Path
+          import json,datetime
+          r=json.loads(Path("requests/campaigns/new-fitness-20261118-1830-vk-release.json").read_text("utf-8"))
+          m=json.loads(Path("requests/campaigns/new-fitness-20261118-1830.json").read_text("utf-8"))
+          q=json.loads(Path("results/verification/new-fitness-20261118-1830.json").read_text("utf-8"))
+          assert r["id"]=="new-fitness-20261118-1830"
+          assert r["releaseVk"] is True and r["authorizedByUser"] is True and r["publishAt"]=="2026-11-18T18:30:00+03:00"
+          assert m["approved"] is True and m["authorizedByUser"] is True and m["publishNow"] is False
+          assert q["ok"] is True and q["stagingOnly"] is True and not q["published"]
+          assert datetime.datetime.now(datetime.timezone.utc)<datetime.datetime.fromisoformat(r["publishAt"])
+          assert not Path("results/campaigns/new-fitness-20261118-1830-vk.json").exists()
+          assert Path("media/new-fitness-20261118-1830-reel-1080x1920.mp4").is_file()
+          assert Path("media/new-fitness-20261118-1830-cover-meta.jpg").is_file()
+          print("NEW_FITNESS_VK_SCHEDULE_PREFLIGHT_OK")
+          PY
+          npm install --omit=dev --ignore-scripts --no-package-lock --no-audit --no-fund
+      - name: DIRECT VK API upload with original 4K-derived cover, schedule wall post for 18:30 MSK
+        run: node scripts/publish_new_fitness_20261118_vk.mjs
