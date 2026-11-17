@@ -1,0 +1,16 @@
+{
+  "id": "new-fitness-20261118-1830",
+  "authorizedByUser": true,
+  "releaseVk": true,
+  "publishAt": "2026-11-18T18:30:00+03:00",
+  "destination": {
+    "groupId": 48198173,
+    "screenName": "liniya__sporta"
+  },
+  "originalUserInstruction": "Schedule original supplied video with approved 4K cover and supplied text as VK Clip/video and wall post on 18 November 2026 at 18:30 Moscow time, via existing direct VK API GitHub Actions route.",
+  "sourceManifest": "requests/campaigns/new-fitness-20261118-1830.json",
+  "stagingVerification": "results/verification/new-fitness-20261118-1830.json",
+  "noOtherProviders": true,
+  "doNotPublishNow": true,
+  "preventDuplicates": true
+}
