@@ -1,3 +1,5 @@
+> **Архивная инструкция.** С 19.11.2026 плановая публикация Instagram перенесена на Cloudflare Worker `ls-instagram-publisher` + D1 `ls-instagram-calendar`. GitHub Actions больше не запускает Instagram-публикации, а добавление JSON в этот репозиторий НЕ ставит пост в очередь. Актуальный порядок: [`calendar/instagram/README.md`](calendar/instagram/README.md).
+
 # Календарь Instagram «Линии спорта» — только Meta API
 
 ## Что это
