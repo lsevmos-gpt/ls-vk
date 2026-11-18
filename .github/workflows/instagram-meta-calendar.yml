@@ -1,4 +1,4 @@
-name: Instagram Meta monthly calendar (no Buffer)
+name: Instagram Meta calendar LEGACY validation only (Cloudflare publishes)
 on:
   push:
     branches: [main]
@@ -13,23 +13,17 @@ on:
       - 'scripts/instagram_meta_calendar.py'
       - 'tests/test_instagram_meta_calendar.py'
       - '.github/workflows/instagram-meta-calendar.yml'
-  schedule:
-    - cron: '3/5 * * * *'
   workflow_dispatch:
     inputs:
       operation:
         type: choice
-        description: 'preview only or publish approved due posts (manual immediate check)'
+        description: 'Read-only preview; Cloudflare now performs publishing'
         required: true
         options:
           - preview
-          - process
         default: preview
 permissions:
-  contents: write
-concurrency:
-  group: ls-social-single-approved-provider-submission
-  cancel-in-progress: false
+  contents: read
 jobs:
   validate:
     if: github.repository == 'lsevmos-gpt/ls-vk'
@@ -49,26 +43,3 @@ jobs:
       - name: Show pending calendar items (no publish)
         if: github.event_name == 'workflow_dispatch' && inputs.operation == 'preview'
         run: python -m scripts.instagram_meta_calendar preview
-  publish:
-    needs: validate
-    if: >-
-      github.repository == 'lsevmos-gpt/ls-vk' &&
-      github.ref == 'refs/heads/main' &&
-      (github.event_name == 'schedule' ||
-       (github.event_name == 'workflow_dispatch' && inputs.operation == 'process' && github.actor == 'lsevmos-gpt'))
-    runs-on: ubuntu-latest
-    timeout-minutes: 22
-    env:
-      META_IG_ACCESS_TOKEN: ${{ secrets.META_IG_ACCESS_TOKEN }}
-      META_IG_USER_ID: ${{ secrets.META_IG_USER_ID }}
-      META_GRAPH_VERSION: v26.0
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          ref: main
-          fetch-depth: 0
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-      - name: Autonomous one-shot Instagram publish at scheduled time
-        run: python -m scripts.instagram_meta_calendar run
