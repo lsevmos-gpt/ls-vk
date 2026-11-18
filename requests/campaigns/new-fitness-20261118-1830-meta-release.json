@@ -1,0 +1,22 @@
+{
+  "id": "new-fitness-20261118-1830",
+  "approved": true,
+  "authorizedByUser": true,
+  "userConfirmedMissingFromInstagram": true,
+  "publishNow": true,
+  "route": "DIRECT_META_GRAPH_API_GITHUB_ACTIONS",
+  "instagram": "liniya__sporta",
+  "captionSource": "requests/campaigns/new-fitness-20261118-1830.json",
+  "videoPath": "media/new-fitness-20261118-1830-reel-1080x1920.mp4",
+  "coverPath": "media/new-fitness-20261118-1830-cover-meta.jpg",
+  "collaborators": [
+    "katia_shap",
+    "sir_ena06",
+    "_alie_13_"
+  ],
+  "requestedFourthCollaborator": "pisareva.jump.simf",
+  "fourthCollaboratorLimitation": "Meta Graph API three invite maximum; do not claim fourth invited.",
+  "reason": "18 Nov 2026 18:30 MSK approved Meta calendar did not publish. User has explicitly confirmed no Reel on Instagram and ordered immediate publication. Use established direct Meta Graph API via this repo and existing token only.",
+  "singleAttemptNoDuplicates": true,
+  "doNotRepostToVK": true
+}
