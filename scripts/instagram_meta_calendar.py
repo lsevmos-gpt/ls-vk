@@ -344,7 +344,7 @@ def main() -> int:
             print("CALENDAR_PREVIEW pending=" + str(len(remaining)))
             return 0
         if action == "run":
-            run()
+            print("INSTAGRAM_MOVED_TO_CLOUDFLARE: legacy GitHub publishing disabled; do not publish")
             return 0
         raise CalendarError("Usage: python -m scripts.instagram_meta_calendar <validate|preview|run>")
     except (CalendarError, CollabError, OSError, ValueError) as exc:
