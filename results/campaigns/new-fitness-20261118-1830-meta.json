@@ -1,0 +1,29 @@
+{
+  "id": "new-fitness-20261118-1830",
+  "provider": "instagram_meta_graph_api",
+  "account": "liniya__sporta",
+  "videoSha256": "5321de6d1f92bd548f5912bce9fdd1971f5e9ead32213daee3282e582606b868",
+  "coverMetaSha256": "6d3c5b22fde6821840c2534bafbf41ce07d19985f06759c730e62f4229f2e1c4",
+  "videoResolution": "1080x1920",
+  "runId": "44360464285",
+  "requestedReleaseAt": "2026-11-18T18:30:00+03:00",
+  "recoveryRequestedAfterMissedSchedule": true,
+  "collaboratorsRequested": [
+    "katia_shap",
+    "sir_ena06",
+    "_alie_13_",
+    "pisareva.jump.simf"
+  ],
+  "collaboratorsSubmitted": [
+    "katia_shap",
+    "sir_ena06",
+    "_alie_13_"
+  ],
+  "fourthCollaboratorNotSubmitted": "pisareva.jump.simf",
+  "status": "submission_reserved_before_meta_api",
+  "creationId": null,
+  "publishedMediaId": null,
+  "noRetries": true,
+  "createdAtUTC": "2026-11-18T17:36:27.770210+00:00",
+  "updatedAtUTC": "2026-11-18T17:36:27.770230+00:00"
+}
