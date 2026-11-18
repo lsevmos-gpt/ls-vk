@@ -20,10 +20,11 @@
     "_alie_13_"
   ],
   "fourthCollaboratorNotSubmitted": "pisareva.jump.simf",
-  "status": "meta_publish_call_started",
+  "status": "meta_api_published_readback_pending",
   "creationId": "18024635105949669",
-  "publishedMediaId": null,
+  "publishedMediaId": "17946507618371509",
   "noRetries": true,
   "createdAtUTC": "2026-11-18T17:36:27.770210+00:00",
-  "updatedAtUTC": "2026-11-18T17:38:12.932729+00:00"
+  "updatedAtUTC": "2026-11-18T17:38:30.240465+00:00",
+  "collaboratorInvites": "requested_acceptance_unverified"
 }
