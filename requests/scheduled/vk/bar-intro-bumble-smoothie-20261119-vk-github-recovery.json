@@ -1,0 +1,24 @@
+{
+  "id": "bar-intro-bumble-smoothie-20261119-vk-github-recovery",
+  "type": "story-batch",
+  "approved": true,
+  "publicContent": true,
+  "publishAt": "2026-11-19T11:52:00+03:00",
+  "stories": [
+    {
+      "storyType": "video",
+      "media": "media/bar-20261113-intro-vk.mp4",
+      "addToNews": true
+    },
+    {
+      "storyType": "video",
+      "media": "media/bar-20261026-bumble-vk.mp4",
+      "addToNews": true
+    },
+    {
+      "storyType": "video",
+      "media": "media/bar-20261027-smoothie-vk.mp4",
+      "addToNews": true
+    }
+  ]
+}
