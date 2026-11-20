@@ -1,6 +1,6 @@
 {
   "id": "yulia-20261120-vk",
-  "status": "upload_started",
+  "status": "manual_reconciliation_required",
   "createdAtUTC": "2026-11-20T17:13:30.801Z",
   "groupId": 48198173,
   "videoSHA256": "d081759644182aab2c8e67e153296a30aef5911f18fab4b217d05d2c920f2fcd",
@@ -8,5 +8,6 @@
   "videoId": null,
   "wallPostId": null,
   "noRetries": true,
-  "updatedAtUTC": "2026-11-20T17:13:33.362Z"
+  "updatedAtUTC": "2026-11-20T17:13:35.855Z",
+  "error": "VK API video.save: User authorization failed"
 }
