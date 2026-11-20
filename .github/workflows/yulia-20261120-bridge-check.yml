@@ -1,0 +1,28 @@
+name: Read-only preflight Yulia Cloudflare media links
+on:
+  push:
+    branches: [main]
+    paths: ['requests/staging/yulia-20261120-bridge-check.json']
+permissions:
+  contents: read
+jobs:
+  verify:
+    if: github.repository == 'lsevmos-gpt/ls-vk' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check trusted Cloudflare URLs return exact approved MP4 and JPEG bytes
+        shell: bash
+        run: |
+          set -euo pipefail
+          test ! -e results/campaigns/yulia-20261120-vk.json || { echo 'Existing VK receipt; no duplicate'; exit 1; }
+          mkdir -p /tmp/yulia20261120
+          curl -fLSs --retry 2 --connect-timeout 25 --max-time 420 'https://ls-social-media-bridge.ls-evmos.workers.dev/yulia-20261120/reel-2k.mp4' -o /tmp/yulia20261120/yulia.mp4
+          curl -fLSs --retry 2 --connect-timeout 25 --max-time 90 'https://ls-social-media-bridge.ls-evmos.workers.dev/yulia-20261120/cover-2k.jpg' -o /tmp/yulia20261120/cover.jpg
+          test "$(stat -c%s /tmp/yulia20261120/yulia.mp4)" -eq 68849298
+          test "$(stat -c%s /tmp/yulia20261120/cover.jpg)" -eq 2136802
+          printf '%s  %s\n' 'd081759644182aab2c8e67e153296a30aef5911f18fab4b217d05d2c920f2fcd' '/tmp/yulia20261120/yulia.mp4' | sha256sum --check
+          printf '%s  %s\n' '4b97c883d7a7042113bdd7be8594a913dc163c9a6f827db20565b2e085f54cb2' '/tmp/yulia20261120/cover.jpg' | sha256sum --check
+          ffprobe -v error -show_entries format=duration,size:stream=codec_type,codec_name,width,height,avg_frame_rate -of json /tmp/yulia20261120/yulia.mp4
+          echo 'YULIA_META_CLOUDFLARE_AND_VK_SOURCE_BYTES_VERIFIED_NO_PUBLICATION'
