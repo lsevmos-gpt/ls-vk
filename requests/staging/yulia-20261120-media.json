@@ -1,0 +1,20 @@
+{
+  "id": "yulia-20261120-media",
+  "approved": true,
+  "stagingOnly": true,
+  "description": "Only stage exact transcoded Meta-compatible 2K video and 2K cover for the user-approved Yulia Instagram + VK release. No social publication by this job.",
+  "assets": [
+    {
+      "driveFileId": "1gnhWQ4nvDcNiFstJtIYnEXTTFm_f33wZ",
+      "path": "media/yulia-20261120-2k-meta-vk.mp4",
+      "bytes": 68849298,
+      "sha256": "d081759644182aab2c8e67e153296a30aef5911f18fab4b217d05d2c920f2fcd"
+    },
+    {
+      "driveFileId": "177WNdTjBOd_-vI-1JWANFj8dLE-YE2AD",
+      "path": "media/yulia-20261120-2k-meta-cover.jpg",
+      "bytes": 2136802,
+      "sha256": "4b97c883d7a7042113bdd7be8594a913dc163c9a6f827db20565b2e085f54cb2"
+    }
+  ]
+}
