@@ -50,7 +50,7 @@ async function refreshOnRunner() {
     deviceId:required('VK_DEVICE_ID'),refreshToken:required('VK_REFRESH_TOKEN'),state});
   let res,payload;
   try { res=await fetch(req.url,req.options); payload=await res.json().catch(()=>null); }
-  catch { throw Error('VK_REFRESH_NETWORK_FAILED'); }
+  catch(error) { const kind=String(error?.cause?.code||error?.code||error?.name||'network').replace(/[^A-Za-z0-9_-]/g,'').slice(0,60); throw Error('VK_REFRESH_NETWORK_FAILED_'+kind); }
   if(!res.ok)throw Error('VK_REFRESH_HTTP_'+res.status);
   const tokens=parseVkRefreshResponse(payload,state);
   // Refresh tokens rotate: persist the new one BEFORE attempting provider upload.
