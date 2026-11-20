@@ -1,0 +1,48 @@
+name: Publish user-approved Yulia 2K VK video and wall post once
+on:
+  push:
+    branches: [main]
+    paths: ['requests/campaigns/yulia-20261120-vk.json']
+permissions:
+  contents: write
+concurrency:
+  group: yulia-vk-20261120-publication-once
+  cancel-in-progress: false
+jobs:
+  vk:
+    if: github.repository == 'lsevmos-gpt/ls-vk' && github.ref == 'refs/heads/main' && github.event_name == 'push' && github.actor == 'lsevmos-gpt'
+    runs-on: ubuntu-latest
+    timeout-minutes: 55
+    env:
+      VK_GROUP_ID: '48198173'
+      VK_GROUP_SCREEN_NAME: 'liniya__sporta'
+      VK_GROUP_TOKEN: ${{ secrets.VK_GROUP_TOKEN }}
+      VK_USER_TOKEN: ${{ secrets.VK_USER_TOKEN }}
+      VK_API_VERSION: '5.199'
+      SOCIAL_PLATFORM: vk
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Download exact 2K source and original cover via Cloudflare, verify SHA256
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$VK_GROUP_TOKEN" && test -n "$VK_USER_TOKEN" || { echo '::error::Missing VK provider authentication'; exit 1; }
+          test ! -e results/campaigns/yulia-20261120-vk.json || { echo '::error::Existing receipt, no replay'; exit 1; }
+          node --check scripts/publish_yulia_20261120_vk.mjs
+          curl -fLSs --retry 2 --connect-timeout 25 --max-time 420 'https://ls-social-media-bridge.ls-evmos.workers.dev/yulia-20261120/reel-2k.mp4' -o /tmp/yulia-20261120-2k.mp4
+          curl -fLSs --retry 2 --connect-timeout 25 --max-time 90 'https://ls-social-media-bridge.ls-evmos.workers.dev/yulia-20261120/cover-2k.jpg' -o /tmp/yulia-20261120-cover.jpg
+          test "$(stat -c%s /tmp/yulia-20261120-2k.mp4)" -eq 68849298
+          test "$(stat -c%s /tmp/yulia-20261120-cover.jpg)" -eq 2136802
+          printf '%s  %s\n' d081759644182aab2c8e67e153296a30aef5911f18fab4b217d05d2c920f2fcd /tmp/yulia-20261120-2k.mp4 | sha256sum --check
+          printf '%s  %s\n' 4b97c883d7a7042113bdd7be8594a913dc163c9a6f827db20565b2e085f54cb2 /tmp/yulia-20261120-cover.jpg | sha256sum --check
+          echo 'YULIA_2K_CLOUDFLARE_SOURCE_EXACT_MATCH_AND_VK_TOKEN_PRESENT'
+      - name: Install established VK provider dependencies
+        run: npm install --omit=dev --ignore-scripts --no-package-lock --no-audit --no-fund
+      - name: Submit Yulia 2K VK video and wall post one time, read back receipt
+        run: node scripts/publish_yulia_20261120_vk.mjs
