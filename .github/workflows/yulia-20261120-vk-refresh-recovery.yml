@@ -1,0 +1,72 @@
+name: Yulia 2K VK Clip recovery using proven VK ID refresh, exactly once
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'requests/vk/yulia-20261120-recovery.json'
+permissions:
+  contents: write
+concurrency:
+  group: yulia-vk-20261120-recovery-one-provider-post
+  cancel-in-progress: false
+jobs:
+  publish:
+    if: github.repository == 'lsevmos-gpt/ls-vk' && github.ref == 'refs/heads/main' && github.event_name == 'push' && github.actor == 'lsevmos-gpt'
+    runs-on: ubuntu-latest
+    timeout-minutes: 65
+    env:
+      VK_GROUP_ID: '48198173'
+      VK_GROUP_SCREEN_NAME: 'liniya__sporta'
+      VK_GROUP_TOKEN: ${{ secrets.VK_GROUP_TOKEN }}
+      VK_REFRESH_TOKEN: ${{ secrets.VK_REFRESH_TOKEN }}
+      VK_DEVICE_ID: ${{ secrets.VK_DEVICE_ID }}
+      VK_SECRETS_WRITE_PAT: ${{ secrets.VK_SECRETS_WRITE_PAT }}
+      VK_API_VERSION: '5.199'
+      SOCIAL_PLATFORM: vk
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Verify recovery guard and approved 2K source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$VK_GROUP_TOKEN" && test -n "$VK_REFRESH_TOKEN" && test -n "$VK_DEVICE_ID" && test -n "$VK_SECRETS_WRITE_PAT"
+          node --check scripts/publish_yulia_20261120_vk_refresh_recovery.mjs
+          node --check scripts/vk-refresh-lib.mjs
+          test ! -e results/campaigns/yulia-20261120-vk-refresh-recovery.json
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          o=json.loads(Path('results/campaigns/yulia-20261120-vk.json').read_text())
+          r=json.loads(Path('requests/vk/yulia-20261120-recovery.json').read_text())
+          a=json.loads(Path('requests/campaigns/yulia-20261120-vk.json').read_text())
+          assert o['status']=='manual_reconciliation_required' and o['videoId'] is None and o['wallPostId'] is None
+          assert 'video.save: User authorization failed' in o['error']
+          assert r['approved'] is True and r['authorizedByUser'] is True and r['noCollaborator'] is True
+          assert r['videoSHA256']=='d081759644182aab2c8e67e153296a30aef5911f18fab4b217d05d2c920f2fcd'
+          assert a['approved'] is True and a['groupId']==48198173 and r['text']==a['description']
+          print('YULIA_VK_RECOVERY_APPROVAL_AND_FAILED_PREVIOUS_ATTEMPT_VERIFIED')
+          PY
+      - name: Download exactly approved Cloudflare-hosted MP4 and cover, verify byte hashes (no transcoding)
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -fLSs --retry 2 --connect-timeout 25 --max-time 420 \
+            'https://ls-social-media-bridge.ls-evmos.workers.dev/yulia-20261120/reel-2k.mp4' \
+            -o /tmp/yulia-20261120-2k.mp4
+          curl -fLSs --retry 2 --connect-timeout 25 --max-time 90 \
+            'https://ls-social-media-bridge.ls-evmos.workers.dev/yulia-20261120/cover-2k.jpg' \
+            -o /tmp/yulia-20261120-cover.jpg
+          test "$(stat -c%s /tmp/yulia-20261120-2k.mp4)" -eq 68849298
+          test "$(stat -c%s /tmp/yulia-20261120-cover.jpg)" -eq 2136802
+          echo 'd081759644182aab2c8e67e153296a30aef5911f18fab4b217d05d2c920f2fcd  /tmp/yulia-20261120-2k.mp4' | sha256sum --check
+          echo '4b97c883d7a7042113bdd7be8594a913dc163c9a6f827db20565b2e085f54cb2  /tmp/yulia-20261120-cover.jpg' | sha256sum --check
+      - name: Install authorized existing VK media publishing dependencies
+        run: npm install --omit=dev --ignore-scripts --no-package-lock --no-audit --no-fund
+      - name: Refresh VK ID token on same runner, publish approved video and wall post once, confirm readback
+        run: node scripts/publish_yulia_20261120_vk_refresh_recovery.mjs
