@@ -97,11 +97,11 @@ async function main() {
   // This import MUST be after token refresh because src/config.js snapshots process.env.
   const {getGroupId,vkCall,uploadWallVideo,publishWallPost}=await import('../src/vk.js');
   if(Number(await getGroupId())!==GROUP)throw Error('WRONG_VK_GROUP_ID');
-  const target=await vkCall('groups.getById',{group_id:GROUP},process.env.VK_GROUP_TOKEN);
+  const target=await vkCall('groups.getById',{group_id:GROUP},token);
   const group=Array.isArray(target?.groups)?target.groups[0]:Array.isArray(target)?target[0]:target;
   if(Number(group?.id)!==GROUP||group?.screen_name!=='liniya__sporta')throw Error('WRONG_VK_GROUP_IDENTITY');
   // Read-only public feed check to avoid a second post if a separate publisher succeeded.
-  const wall=await vkCall('wall.get',{owner_id:-GROUP,count:60,filter:'owner'},process.env.VK_GROUP_TOKEN);
+  const wall=await vkCall('wall.get',{owner_id:-GROUP,count:60,filter:'owner'},token);
   const duplicate=(wall?.items||[]).find(p=>String(p?.text||'').includes('Знакомьтесь, Юлия — тренер тренажёрного зала') &&
     String(p?.text||'').includes('ЛИНИЯ СПОРТА — ГНИ СВОЮ ЛИНИЮ!'));
   if(duplicate) { console.log('YULIA_ALREADY_ON_VK_WALL_NO_DUPLICATE_POST_ID='+duplicate.id);return; }
@@ -156,7 +156,7 @@ async function main() {
 }
 main().catch(error=>{
   const s=String(error?.message||error);
-  const safe=/^(YULIA_|VK_|GIT_|MISSING_|WRONG_|REFRESH_|UNAUTHORIZED_|GITHUB_)/.test(s)?s.slice(0,245):String(error?.name||'UnexpectedError');
+  const safe=error?.name==='VkApiError' ? ('VK_API_'+String(error.method||'unknown')+'_CODE_'+String(error.code||'unknown')) : /^(YULIA_|VK_|GIT_|MISSING_|WRONG_|REFRESH_|UNAUTHORIZED_|GITHUB_)/.test(s)?s.slice(0,245):String(error?.name||'UnexpectedError');
   console.error('::error::YULIA_VK_RECOVERY '+safe);
   process.exitCode=1;
 });
