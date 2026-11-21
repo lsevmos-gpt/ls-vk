@@ -1,0 +1,27 @@
+{
+  "version": 1,
+  "publish_enabled": false,
+  "club_ids": [
+    "heroes6d",
+    "konnaya25",
+    "kuib60"
+  ],
+  "assets": {
+    "heroes6d": {
+      "on": "heroes6d-on",
+      "off": "heroes6d-off"
+    },
+    "konnaya25": {
+      "on": "konnaya25-on",
+      "off": "konnaya25-off"
+    },
+    "kuib60": {
+      "on": "kuib60-on",
+      "off": "kuib60-off"
+    },
+    "all": {
+      "on": "all-on",
+      "off": "all-off"
+    }
+  }
+}
