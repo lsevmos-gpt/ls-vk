@@ -1,0 +1,54 @@
+name: Stage exact approved Evgeniya birthday PNG for VK, 24 Nov 2026
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/evgeniya-20261124-media-stage.yml'
+permissions:
+  contents: write
+concurrency:
+  group: evgeniya-20261124-media-stage-once
+  cancel-in-progress: false
+jobs:
+  stage:
+    if: github.repository == 'lsevmos-gpt/ls-vk' && github.ref == 'refs/heads/main' && github.actor == 'lsevmos-gpt'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - name: Assemble exact photo image only; never publish
+        shell: bash
+        run: |
+          set -euo pipefail
+          out='media/evgeniya-20261124-vk-original-1080x1920.png'
+          expected='b889a8cd519c59cb50e9d1b8668e7972f80370fc8b6a637090588d4d37b13612'
+          if test -f "$out"; then
+            printf '%s  %s\n' "$expected" "$out" | sha256sum -c
+            echo 'EXACT_PNG_ALREADY_STAGED'; exit 0
+          fi
+          cat media/_staging/evgeniya-20261124-png-base64-{01..07}.part | base64 -d > "$out"
+          printf '%s  %s\n' "$expected" "$out" | sha256sum -c
+          test "$(stat -c%s "$out")" -eq 3724985
+          python3 - <<'PY'
+          import struct
+          p='media/evgeniya-20261124-vk-original-1080x1920.png'
+          with open(p,'rb') as f: h=f.read(24)
+          assert h[:8]==b'\x89PNG\r\n\x1a\n' and h[12:16]==b'IHDR'
+          assert struct.unpack('>II',h[16:24])==(1080,1920)
+          print('APPROVED_EVGENIYA_PNG_EXACT_BYTES_1080X1920_VERIFIED_NO_PUBLICATION')
+          PY
+      - name: Commit photo media only, preserving exact bytes
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name ls-approved-media-stager
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -- media/evgeniya-20261124-vk-original-1080x1920.png
+          if git diff --cached --quiet; then echo 'MEDIA_ALREADY_COMMITTED'; exit 0; fi
+          git commit -m 'Stage exact approved Evgeniya birthday VK PNG [skip ci]'
+          git pull --rebase origin main
+          git push origin HEAD:main
+          echo 'EVGENIYA_IMAGE_STAGED_FOR_VK_NO_SOCIAL_PUBLICATION'
