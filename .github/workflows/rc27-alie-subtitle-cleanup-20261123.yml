@@ -1,0 +1,41 @@
+name: Refine existing Aliye RC2.7 cover subtitle only (no social posts)
+on:
+  push:
+    branches: [main]
+    paths:
+      - scripts/rc27_fix_alie_subtitles_20261123.py
+      - .github/workflows/rc27-alie-subtitle-cleanup-20261123.yml
+permissions: {contents: write}
+concurrency:
+  group: alie-rc27-fix-subtitle-native-cover-20261123
+  cancel-in-progress: false
+jobs:
+  clean:
+    if: github.repository == 'lsevmos-gpt/ls-vk' && github.ref == 'refs/heads/main' && github.actor == 'lsevmos-gpt'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with: {ref: main, fetch-depth: 0}
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
+      - name: Use exact original fonts and genuine saved video still
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq && sudo apt-get install -y -qq fonts-roboto-unhinted
+          python -m pip install --disable-pip-version-check 'Pillow>=10,<13' 'numpy>=1.26,<3' 'opencv-python-headless>=4.8,<5'
+          python -m py_compile scripts/rc27_fix_alie_subtitles_20261123.py
+          test -f media/reels-rc27-20261123/final/alie/alie_raw_video_frame_native.png
+      - name: Remove original subtitle glyphs without touching identity, rebuild layers and QA previews
+        run: python -m scripts.rc27_fix_alie_subtitles_20261123
+      - name: Save refined source, cover, preview and full editable package
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'ls-rc27-fidelity-cleanup'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -- media/reels-rc27-20261123/final/alie
+          git commit -m 'Refine Alie authentic native frame caption cleanup [skip ci]'
+          git pull --rebase origin main
+          git push origin HEAD:main
