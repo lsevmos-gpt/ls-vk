@@ -1,0 +1,26 @@
+{
+  "id": "rc27-zhenya-alie-20261123-render",
+  "approved": true,
+  "authorizedByUser": true,
+  "mediaOnly": true,
+  "publish": false,
+  "framework": "RC2.7-JSON",
+  "sourceUrls": {
+    "zhenya": "https://at.adobe.com/eKHYWiuRbo4VvCQL",
+    "alie": "https://at.adobe.com/DYmRSlVepEBdoNFb",
+    "policy": "https://at.adobe.com/8f5x2ovRkH7id0It"
+  },
+  "selectedFrames": {
+    "zhenya": {
+      "seconds": 2.199,
+      "reason": "expressive natural clean video portrait, no subtitle"
+    },
+    "alie": {
+      "seconds": 0.725,
+      "reason": "face naturally photogenic, subtitle needs local masked cleanup"
+    }
+  },
+  "branch": "fitness",
+  "logo": "лого фитнес_черный.png",
+  "note": "Only prepare RC2.7 authentic 1080x1920 PNG + SVG + QA; no social publishing"
+}
