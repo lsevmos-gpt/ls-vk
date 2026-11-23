@@ -30,7 +30,7 @@ def cleanup(im):
  with Image.open(mpath) as m:
   mask=np.asarray(m.convert('L')).copy()
  if mask.shape!=(h,w):raise RuntimeError('glyph_mask_dimensions_bad')
- mask=cv2.dilate(mask,cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(5,5)),iterations=1)
+ mask=cv2.dilate(mask,cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(19,17)),iterations=1)
  restricted=np.zeros_like(mask)
  y0=int(h*.765);y1=int(h*.843)
  restricted[y0:y1,:]=mask[y0:y1,:]
