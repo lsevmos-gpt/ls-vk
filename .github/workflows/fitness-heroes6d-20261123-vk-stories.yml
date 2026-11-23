@@ -1,0 +1,51 @@
+name: Publish three approved Heroes 6D fitness photo Stories VK on 23 Nov
+on:
+  push:
+    branches: [main]
+    paths:
+      - requests/campaigns/fitness-heroes6d-20261123-vk-stories.json
+permissions:
+  contents: write
+concurrency:
+  group: fitness-heroes6d-20261123-vk-three-stories-once
+  cancel-in-progress: false
+jobs:
+  publish:
+    if: github.repository == 'lsevmos-gpt/ls-vk' && github.ref == 'refs/heads/main' && github.event_name == 'push' && github.actor == 'lsevmos-gpt'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      VK_GROUP_ID: '48198173'
+      VK_GROUP_SCREEN_NAME: liniya__sporta
+      VK_GROUP_TOKEN: ${{ secrets.VK_GROUP_TOKEN }}
+      VK_API_VERSION: '5.199'
+      SOCIAL_PLATFORM: vk
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Validate explicit user approval and exact source-only job
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$VK_GROUP_TOKEN"
+          test ! -e results/campaigns/fitness-heroes6d-20261123-vk-stories.json
+          node --check scripts/publish_fitness_heroes6d_stories_vk_20261123.mjs
+      - name: Fetch JPEG originals through existing Cloudflare media bridge
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -fLSs --retry 2 --connect-timeout 25 --max-time 60 'https://ls-social-media-bridge.ls-evmos.workers.dev/fitness-20261123/01-directions.jpg' -o /tmp/fitness-story-01.jpg
+          curl -fLSs --retry 2 --connect-timeout 25 --max-time 60 'https://ls-social-media-bridge.ls-evmos.workers.dev/fitness-20261123/02-groups.jpg' -o /tmp/fitness-story-02.jpg
+          curl -fLSs --retry 2 --connect-timeout 25 --max-time 60 'https://ls-social-media-bridge.ls-evmos.workers.dev/fitness-20261123/03-personal.jpg' -o /tmp/fitness-story-03.jpg
+          echo 'f7e974e12f8520a1cc7d35054d07473157526a95bfab7c6e1d285453fcbbfb3a  /tmp/fitness-story-01.jpg' | sha256sum -c -
+          echo '92e07e0972b653a49d3bd2399fdc9386e647352f7e04313a1f3b36f787c1ae9d  /tmp/fitness-story-02.jpg' | sha256sum -c -
+          echo 'f70febe5cb5a6c59853783e9858a59bf50f8ccca19c0443b9c076a3a0fdb247a  /tmp/fitness-story-03.jpg' | sha256sum -c -
+      - name: Install VK provider dependencies
+        run: npm install --omit=dev --ignore-scripts --no-package-lock --no-audit --no-fund
+      - name: Publish three separate image Stories in approved order
+        run: node scripts/publish_fitness_heroes6d_stories_vk_20261123.mjs
