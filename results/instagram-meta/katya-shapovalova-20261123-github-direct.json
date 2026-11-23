@@ -1,6 +1,6 @@
 {
   "id": "katya-shapovalova-20261123-github-direct",
-  "status": "meta_api_publish_accepted",
+  "status": "published_readback_confirmed",
   "route": "GITHUB_ACTIONS_DIRECT_META_GRAPH_RUPLOAD",
   "account": "liniya__sporta",
   "collaborator": "katia_shap",
@@ -13,5 +13,7 @@
   "runId": "45208664438",
   "createdAtUTC": "2026-11-23T15:46:49.986079+00:00",
   "noAutomaticRetries": true,
-  "updatedAtUTC": "2026-11-23T15:47:43.171455+00:00"
+  "updatedAtUTC": "2026-11-23T15:47:45.267605+00:00",
+  "permalink": "https://www.instagram.com/reel/DgFvF3hEZXn/",
+  "mediaType": "VIDEO"
 }
