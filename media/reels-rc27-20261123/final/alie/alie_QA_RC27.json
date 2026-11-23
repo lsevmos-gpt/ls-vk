@@ -70,7 +70,7 @@
   ],
   "accent": "#A96663",
   "subtitle_cleanup": "localized OpenCV inpaint glyph mask",
-  "subtitle_mask_changed_pixels": 2493,
+  "subtitle_mask_changed_pixels": 35531,
   "generative_reconstruction": false,
   "photo_finish": "natural slight warmth reduction, contrast x1.055, saturation x0.975, brightness x1.027, unsharp radius1.15/65%; feathered tone adjustment behind text",
   "C09_full_bleed": "PASS_PROGRAMMATIC",
@@ -86,5 +86,6 @@
     "profile_3x4": "profile_3x4",
     "feed_4x5": "feed_4x5",
     "square_1x1": "square_1x1"
-  }
+  },
+  "revision": "second refined text-mask pass; original real frame preserved"
 }
