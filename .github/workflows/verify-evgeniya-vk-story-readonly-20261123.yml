@@ -30,7 +30,7 @@ jobs:
           import {getGroupId,vkCall} from './src/vk.js';
           const group=await getGroupId();
           if(group!==48198173)throw Error('Unexpected group');
-          const token=process.env.VK_USER_TOKEN||process.env.VK_GROUP_TOKEN;
+          const token=process.env.VK_GROUP_TOKEN;
           const res=await vkCall('stories.get',{owner_id:-group},token);
           const base=Array.isArray(res?.items)?res.items:Array.isArray(res)?res:[];
           const flat=base.flatMap(x=>Array.isArray(x?.stories)?x.stories:Array.isArray(x)?x:[x]);
