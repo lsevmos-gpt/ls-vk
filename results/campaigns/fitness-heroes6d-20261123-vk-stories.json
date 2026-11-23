@@ -1,12 +1,19 @@
 {
   "id": "fitness-heroes6d-20261123-1815-vk",
   "provider": "vk",
-  "status": "reserved",
+  "status": "upload_in_progress",
   "createdAtUTC": "2026-11-23T15:19:13.143Z",
   "groupId": 48198173,
   "requestedAt": "2026-11-23T18:15:00+03:00",
   "approved": true,
-  "stories": [],
+  "stories": [
+    {
+      "position": 1,
+      "label": "directions",
+      "status": "upload_started",
+      "sourceSha256": "f7e974e12f8520a1cc7d35054d07473157526a95bfab7c6e1d285453fcbbfb3a"
+    }
+  ],
   "noRetry": true,
-  "updatedAtUTC": "2026-11-23T15:19:13.143Z"
+  "updatedAtUTC": "2026-11-23T15:19:16.146Z"
 }
