@@ -1,0 +1,14 @@
+[
+  {
+    "trainer": "zhenya",
+    "sha256": "1fcd7188f3b462edf2fd9ce71943e3d60762329a65da915c5dddd70d9cac003a",
+    "original_photo_unchanged_except_local_face_tone": true,
+    "logoSha256": "e145980feff7d744c5c718aa7f0f59a47fc992fdad7f2260906b98c81e2ecb39"
+  },
+  {
+    "trainer": "alie",
+    "sha256": "1999e182ffaddd3cbada1fcbb83bb2a177cfda87b1eb050763ac3a7a11af4e2c",
+    "original_photo_unchanged_except_local_face_tone": true,
+    "logoSha256": "e145980feff7d744c5c718aa7f0f59a47fc992fdad7f2260906b98c81e2ecb39"
+  }
+]

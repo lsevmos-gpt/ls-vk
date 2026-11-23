@@ -1,0 +1,46 @@
+{
+  "status": "DRAFT_PENDING_HUMAN_VISUAL_REVIEW",
+  "original_logo_exact_sha256": "e145980feff7d744c5c718aa7f0f59a47fc992fdad7f2260906b98c81e2ecb39",
+  "logo_verified": true,
+  "logo_changed": false,
+  "original_cover_sha256": "04cc43585e3d3c2d160d966361de03a1e65e1cd15f6d2156a446271cf21f854e",
+  "original_svg_git_blob": "ae7e936aee45196027b2f73bb3ca4c8e70d615ab",
+  "original_video_frame_timecode_seconds": 0.725,
+  "source": "exact original RC2.7 layered SVG and its embedded real video photograph",
+  "trainer": "АЛИЕ",
+  "branch": "fitness",
+  "accent_hex": "#9A2635",
+  "accent_position": "horizontal under name",
+  "logo_position": [
+    308,
+    286
+  ],
+  "heading_positions": [
+    [
+      112,
+      1253,
+      137
+    ],
+    [
+      111,
+      1451,
+      224
+    ]
+  ],
+  "face_adjustment": "subtle feathered luminance +4.7%, local contrast +1.8%, color -1.3%, feather 72px; 5.5% radius0.6px softness ONLY in face ellipse",
+  "face_anatomy_changed": false,
+  "artificial_faces_generated": false,
+  "photo_full_bleed": true,
+  "size": [
+    1080,
+    1920
+  ],
+  "color_profile": "sRGB",
+  "C09": "PASS",
+  "C10": "SAME_REAL_FRAME_AS_RC27",
+  "C11": "PENDING_HUMAN_180x240",
+  "C12": "ACTUAL_PROCESSED_STILL_SAVED",
+  "C13": "PENDING_HUMAN_CLEANUP_CHECK",
+  "C08": "PENDING_NOT_PUBLISHED",
+  "result_sha256": "1999e182ffaddd3cbada1fcbb83bb2a177cfda87b1eb050763ac3a7a11af4e2c"
+}
