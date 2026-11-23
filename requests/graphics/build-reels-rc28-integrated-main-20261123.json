@@ -1,0 +1,16 @@
+{
+  "id": "reels-rc28-integrated-main-20261123",
+  "approvedByUser": true,
+  "authorizedByUser": true,
+  "publish": false,
+  "inputFile": "Liniya_Sporta_Reels_RC2_7_2026-11-17(5).json",
+  "outputFile": "docs/Liniya_Sporta_Reels_RC2_8_2026-11-23_FULL.json",
+  "preserveAllEmbeddedMasterLogoBytes": true,
+  "integratedNotAnAddendum": true,
+  "userRequestedChanges": [
+    "logo-color accents",
+    "non-template layout variation",
+    "minimal edits to existing covers"
+  ],
+  "scope": "one updated full user-uploaded JSON with 12 original embedded logos; no separate patch required; no content publication"
+}
