@@ -1,0 +1,75 @@
+name: RC2.7 create two authentic Reels covers — Zhenya and Alie (no publication)
+on:
+  push:
+    branches: [main]
+    paths:
+      - requests/campaigns/rc27-zhenya-alie-20261123-render.json
+permissions:
+  contents: write
+concurrency:
+  group: rc27-20261123-zhenya-alie-final-covers
+  cancel-in-progress: false
+jobs:
+  render:
+    if: github.repository == 'lsevmos-gpt/ls-vk' && github.ref == 'refs/heads/main' && github.actor == 'lsevmos-gpt'
+    runs-on: ubuntu-latest
+    timeout-minutes: 65
+    steps:
+      - uses: actions/checkout@v4
+        with: {ref: main, fetch-depth: 0}
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
+      - name: Install native OpenCV, Pillow and the ACTUAL Roboto Condensed Bold font
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq ffmpeg fontconfig fonts-roboto-unhinted
+          python -m pip install --disable-pip-version-check 'Pillow>=10,<13' 'numpy>=1.26,<3' 'opencv-python-headless>=4.8,<5'
+          python -m py_compile scripts/rc27_render_zhenya_alie_20261123.py
+          fc-list | grep -i -E 'Roboto.?Condensed' | head -6 || true
+      - name: Download provided source videos and JSON logo masters
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json,subprocess,os
+          from pathlib import Path
+          r=json.loads(Path('requests/campaigns/rc27-zhenya-alie-20261123-render.json').read_text('utf8'))
+          assert r['id']=='rc27-zhenya-alie-20261123-render'
+          assert r['approved'] is True and r['authorizedByUser'] is True and r['mediaOnly'] is True and r['publish'] is False
+          for key,target in [('zhenya','/tmp/rc27-zhenya.mp4'),('alie','/tmp/rc27-alie.mp4'),('policy','/tmp/rc27-policy.json')]:
+            url=r['sourceUrls'][key]
+            assert url.startswith('https://at.adobe.com/'),key
+            proc=subprocess.run(['curl','-fLSs','--retry','3','--connect-timeout','20','--max-time','660',url,'-o',target],capture_output=True,text=True,timeout=710)
+            if proc.returncode:raise RuntimeError('SOURCE_'+key+'_NOT_AVAILABLE '+proc.stderr[-200:])
+            if Path(target).stat().st_size<(100000 if key=='policy' else 1000000):
+              raise RuntimeError('SOURCE_'+key+'_TOO_SMALL')
+          PY
+          python - <<'PY'
+          import json,subprocess
+          for key,expected_w,expected_h,expected_d in [('zhenya',1920,3414,43.989),('alie',1920,3114,43.477)]:
+            x=json.loads(subprocess.check_output(['ffprobe','-v','error','-show_format','-show_streams','-of','json','/tmp/rc27-'+key+'.mp4']))
+            v=next(y for y in x['streams'] if y['codec_type']=='video')
+            assert (v['width'],v['height'])==(expected_w,expected_h)
+            assert abs(float(x['format']['duration'])-expected_d)<0.5
+          obj=json.load(open('/tmp/rc27-policy.json'))
+          assert obj['document_revision']=='RC2.7-JSON'
+          assert 'лого фитнес_черный.png' in obj['embedded_assets']['logos']
+          print('RC27_ORIGINALS_AND_EMBEDDED_LOGOS_VERIFIED')
+          PY
+      - name: Process original native stills and render two exact 1080x1920 layered covers
+        run: python scripts/rc27_render_zhenya_alie_20261123.py
+      - name: Save design deliverables to GitHub without uploading video or font binaries
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f media/reels-rc27-20261123/final/zhenya/zhenya_Reels_RC27_1080x1920.png
+          test -f media/reels-rc27-20261123/final/alie/alie_Reels_RC27_1080x1920.png
+          git config user.name 'ls-reels-rc27-art-director'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -- media/reels-rc27-20261123/final
+          git commit -m 'Deliver real Zhenya and Alie RC2.7 layered Reels covers [skip ci]'
+          git pull --rebase origin main
+          git push origin HEAD:main
+          echo RC27_TWO_REAL_COVERS_SAVED_NO_SOCIAL_POSTS
