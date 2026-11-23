@@ -1,0 +1,64 @@
+name: RC27 inspect Alie first-second frames FAST (no apt, no social posting)
+on:
+  push:
+    branches: [main]
+    paths: [requests/campaigns/rc27-alie-early-fast-20261123.json]
+permissions: {contents: write}
+concurrency:
+  group: rc27-alie-early-fast-no-apt-20261123
+  cancel-in-progress: false
+jobs:
+  inspect:
+    if: github.repository == 'lsevmos-gpt/ls-vk' && github.ref == 'refs/heads/main' && github.actor == 'lsevmos-gpt'
+    runs-on: ubuntu-latest
+    timeout-minutes: 22
+    steps:
+      - uses: actions/checkout@v4
+        with: {ref: main, fetch-depth: 0}
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
+      - name: Install FFmpeg from pip, without Ubuntu apt latency
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check 'imageio-ffmpeg>=0.5' 'Pillow>=10,<13'
+      - name: Download original Alie MP4 and sample early frames
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json,subprocess
+          from pathlib import Path
+          from PIL import Image,ImageDraw,ImageFont
+          import imageio_ffmpeg
+          req=json.loads(Path('requests/campaigns/rc27-alie-early-fast-20261123.json').read_text('utf8'))
+          assert req['approved'] is True and req['publish'] is False
+          u=req['url']
+          assert u.startswith('https://at.adobe.com/')
+          cp=subprocess.run(['curl','-fLSs','--retry','2','--connect-timeout','20','--max-time','500',u,'-o','/tmp/alie.mp4'],timeout=550)
+          if cp.returncode:raise RuntimeError('ALIE_ORIGINAL_DOWNLOAD_FAILED')
+          exe=imageio_ffmpeg.get_ffmpeg_exe()
+          folder=Path('media/reels-rc27-20261123/alie-early-fast');folder.mkdir(parents=True,exist_ok=True)
+          ts=[0.02,0.06,0.11,0.17,0.23,0.30,0.38,0.49,0.62]
+          font=ImageFont.truetype('/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf',26)
+          canvas=Image.new('RGB',(1350,2340),'#151617')
+          for i,t in enumerate(ts):
+            target=folder/f'alie_{i}_{round(t*1000)}ms.jpg'
+            p=subprocess.run([exe,'-hide_banner','-loglevel','error','-nostdin','-y','-ss',str(t),'-i','/tmp/alie.mp4','-frames:v','1','-q:v','2','-update','1',str(target)],capture_output=True,text=True,timeout=75)
+            if p.returncode:raise RuntimeError('FAILED_FRAME_'+str(i)+' '+p.stderr[-100:])
+            frame=Image.open(target).convert('RGB');frame.thumbnail((430,725))
+            tile=Image.new('RGB',(450,780),'#151617')
+            tile.paste(frame,((450-frame.width)//2,30+(720-frame.height)//2))
+            ImageDraw.Draw(tile).text((14,3),f'{i} | {t:.2f}s',font=font,fill='white')
+            canvas.paste(tile,((i%3)*450,(i//3)*780))
+          canvas.save(folder/'alie_early_contact.jpg',quality=95,subsampling=0)
+          print('ALIE_EARLY_9_REAL_FRAMES',ts)
+          PY
+      - name: Save images for final art direction
+        run: |
+          set -euo pipefail
+          git config user.name 'ls-alie-early-frames-fast'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -- media/reels-rc27-20261123/alie-early-fast
+          git commit -m 'Record Alie first-second genuine frames for spotless Reels cover [skip ci]'
+          git pull --rebase origin main
+          git push origin HEAD:main
