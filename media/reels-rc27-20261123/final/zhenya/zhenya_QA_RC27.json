@@ -1,0 +1,90 @@
+{
+  "schema_version": "RC2.7-JSON",
+  "trainer": "ЖЕНЯ",
+  "video": "/tmp/rc27-zhenya.mp4",
+  "original_frame_seconds": 2.199,
+  "reviewed_timecodes": [
+    0.733,
+    2.199,
+    3.666,
+    5.132,
+    6.598,
+    8.065,
+    9.531,
+    10.997,
+    12.464,
+    13.93,
+    15.396,
+    16.863,
+    18.329,
+    19.795,
+    21.262,
+    22.728,
+    24.194,
+    25.66,
+    27.127,
+    28.593,
+    30.059,
+    31.526,
+    32.992,
+    34.458,
+    35.925,
+    37.391,
+    38.857,
+    40.324,
+    41.79,
+    43.256
+  ],
+  "source_dimensions": [
+    1920,
+    3414
+  ],
+  "crop_rectangle_xywh": [
+    0,
+    0,
+    1920,
+    3413
+  ],
+  "native_processed_dimensions": [
+    1920,
+    3413
+  ],
+  "master_png": "zhenya_Reels_RC27_1080x1920.png",
+  "size": [
+    1080,
+    1920
+  ],
+  "mode": "RGB",
+  "format": "PNG",
+  "ICC_profile": "sRGB",
+  "branch": "fitness",
+  "branch_basis": "В видео представлено групповое фитнес-направление с упражнениями в студии",
+  "logo": "лого фитнес_черный.png",
+  "logo_SHA256": "e145980feff7d744c5c718aa7f0f59a47fc992fdad7f2260906b98c81e2ecb39",
+  "logo_original_verified": true,
+  "font": "Roboto Condensed Bold 700",
+  "font_used": "RobotoCondensed-Bold.ttf",
+  "headline": [
+    "ТРЕНЕР",
+    "ЖЕНЯ"
+  ],
+  "accent": "#A96663",
+  "subtitle_cleanup": "no overlaid subtitle at selected timecode",
+  "subtitle_mask_changed_pixels": 0,
+  "generative_reconstruction": false,
+  "photo_finish": "natural slight warmth reduction, contrast x1.055, saturation x0.975, brightness x1.027, unsharp radius1.15/65%; feathered tone adjustment behind text",
+  "C09_full_bleed": "PASS_PROGRAMMATIC",
+  "C10_frame_selection": "REVIEWED_30_REAL_TIMECODES",
+  "C11_thumbnail": "PENDING_HUMAN_VISUAL_REVIEW",
+  "C12_native_finished": "PASS_PROGRAMMATIC",
+  "C13_cleanup": "PASS_NO_SUBTITLES",
+  "C08_post_publication": "PENDING_NOT_PUBLISHED",
+  "overall_status": "DRAFT_QA_PENDING",
+  "edited_source": "zhenya_editable_layers.svg",
+  "previews": {
+    "reels_full_9x16": "reels_full_9x16",
+    "profile_3x4": "profile_3x4",
+    "feed_4x5": "feed_4x5",
+    "square_1x1": "square_1x1"
+  }
+}

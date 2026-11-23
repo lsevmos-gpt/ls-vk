@@ -1,0 +1,22 @@
+{
+  "id": "RC27_ZHENYA_ALIE_20261123",
+  "pubStatus": "NOT_PUBLISHED",
+  "branch": "fitness",
+  "covers": [
+    {
+      "trainer": "ЖЕНЯ",
+      "png": "zhenya_Reels_RC27_1080x1920.png",
+      "time": 2.199,
+      "logoSHA": "e145980feff7d744c5c718aa7f0f59a47fc992fdad7f2260906b98c81e2ecb39",
+      "status": "DRAFT_QA_PENDING"
+    },
+    {
+      "trainer": "АЛИЕ",
+      "png": "alie_Reels_RC27_1080x1920.png",
+      "time": 0.725,
+      "logoSHA": "e145980feff7d744c5c718aa7f0f59a47fc992fdad7f2260906b98c81e2ecb39",
+      "status": "DRAFT_QA_PENDING"
+    }
+  ],
+  "font": "/usr/share/fonts/truetype/roboto/unhinted/RobotoCondensed-Bold.ttf"
+}
