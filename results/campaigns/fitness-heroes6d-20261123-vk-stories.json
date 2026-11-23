@@ -1,7 +1,7 @@
 {
   "id": "fitness-heroes6d-20261123-1815-vk",
   "provider": "vk",
-  "status": "partial_or_complete_vk_api_accepted",
+  "status": "upload_in_progress",
   "createdAtUTC": "2026-11-23T15:19:13.143Z",
   "groupId": 48198173,
   "requestedAt": "2026-11-23T18:15:00+03:00",
@@ -15,8 +15,14 @@
       "storyId": "456240744",
       "providerReceipt": true,
       "confirmedAtUTC": "2026-11-23T15:19:31.446Z"
+    },
+    {
+      "position": 2,
+      "label": "groups",
+      "status": "upload_started",
+      "sourceSha256": "92e07e0972b653a49d3bd2399fdc9386e647352f7e04313a1f3b36f787c1ae9d"
     }
   ],
   "noRetry": true,
-  "updatedAtUTC": "2026-11-23T15:19:31.446Z"
+  "updatedAtUTC": "2026-11-23T15:19:33.021Z"
 }
