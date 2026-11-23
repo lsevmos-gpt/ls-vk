@@ -1,0 +1,64 @@
+name: RC2.7 inspect first-second real Alie portrait before captions (no posting)
+on:
+  push:
+    branches: [main]
+    paths:
+      - requests/campaigns/rc27-alie-first-second-20261123.json
+permissions: {contents: write}
+concurrency:
+  group: rc27-alie-first-second-frames-once
+  cancel-in-progress: false
+jobs:
+  inspect:
+    if: github.repository == 'lsevmos-gpt/ls-vk' && github.ref == 'refs/heads/main' && github.actor == 'lsevmos-gpt'
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+        with: {ref: main, fetch-depth: 0}
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
+      - name: Install image/video utilities
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg
+          python -m pip install --disable-pip-version-check 'Pillow>=10,<13'
+      - name: Fetch original MP4 and extract 0.02-0.62 seconds frames in actual native pixels
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json,subprocess
+          from pathlib import Path
+          from PIL import Image,ImageDraw,ImageFont
+          r=json.loads(Path('requests/campaigns/rc27-alie-first-second-20261123.json').read_text())
+          assert r['approved'] is True and r['publish'] is False
+          url=r['sourceUrl']
+          assert url.startswith('https://at.adobe.com/')
+          subprocess.run(['curl','-fLSs','--connect-timeout','25','--max-time','620',url,'-o','/tmp/alie.mp4'],check=True,timeout=700)
+          root=Path('media/reels-rc27-20261123/alie-early');root.mkdir(parents=True,exist_ok=True)
+          ts=[0.02,0.06,0.11,0.17,0.23,0.30,0.38,0.49,0.62]
+          im=[]
+          font=ImageFont.truetype('/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf',26)
+          for i,t in enumerate(ts):
+            path=root/('alie_'+str(i)+'_'+str(round(t*1000))+'ms.jpg')
+            subprocess.run(['ffmpeg','-v','error','-nostdin','-y','-ss',str(t),'-i','/tmp/alie.mp4','-frames:v','1','-q:v','2','-update','1',str(path)],check=True,timeout=90)
+            p=Image.open(path).convert('RGB');p.thumbnail((430,725))
+            slot=Image.new('RGB',(450,780),'#151617')
+            slot.paste(p,((450-p.width)//2,30+(720-p.height)//2))
+            ImageDraw.Draw(slot).text((14,3),str(i)+' | '+str(t)+'s',font=font,fill='white')
+            im.append(slot)
+          contact=Image.new('RGB',(1350,2340),'#151617')
+          for i,tile in enumerate(im):contact.paste(tile,((i%3)*450,(i//3)*780))
+          contact.save(root/'alie_first_second_contact.jpg',quality=93,subsampling=0)
+          print('RC27_ALIE_EARLY_FRAMES_CREATED',ts)
+          PY
+      - name: Save actual images for frame review without publishing
+        run: |
+          set -euo pipefail
+          git config user.name 'ls-rc27-real-frame-inspection'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -- media/reels-rc27-20261123/alie-early
+          git commit -m 'Inspect genuine Alie early portrait before baked-in subtitles [skip ci]'
+          git pull --rebase origin main
+          git push origin HEAD:main
