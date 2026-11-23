@@ -18,7 +18,7 @@ SETTINGS = {
    "src_sha": "3a2bff31a516ef0a4777587b3fcb30f3d1c9885c",
    "face_box": (437, 575, 775, 987),
    "logo_pos": (92, 286),  # leave the original logo in its original position
-   "head": [(545, 1246, 132), (545, 1456, 218)],
+   "head": [(537, 1246, 126), (528, 1456, 183)],
    "line": {"x": 514, "y": 1153, "width": 12, "height": 341, "side": "vertical beside the heading"},
  },
  "alie": {
