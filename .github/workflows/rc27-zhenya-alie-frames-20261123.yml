@@ -4,6 +4,7 @@ on:
     branches: [main]
     paths:
       - requests/campaigns/rc27-zhenya-alie-20261123-frame-review.json
+      - .github/workflows/rc27-zhenya-alie-frames-20261123.yml
 permissions:
   contents: write
 concurrency:
@@ -23,6 +24,9 @@ jobs:
         run: |
           set -euo pipefail
           python -m pip install --disable-pip-version-check 'Pillow>=10,<13'
+          if ! command -v ffmpeg >/dev/null || ! command -v ffprobe >/dev/null; then
+            sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg
+          fi
           command -v ffmpeg
           command -v ffprobe
           python -m py_compile scripts/rc27_review_zhenya_alie_20261123.py
