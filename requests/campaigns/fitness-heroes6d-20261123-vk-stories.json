@@ -1,0 +1,19 @@
+{
+  "id": "fitness-heroes6d-20261123-1815-vk",
+  "groupId": 48198173,
+  "approved": true,
+  "authorizedByUser": true,
+  "approvalOrigin": "direct user instruction to publish three separate fitness stories 18:15 MSK",
+  "publishAt": "2026-11-23T18:15:00+03:00",
+  "positionOrder": [
+    "directions",
+    "groups",
+    "personal"
+  ],
+  "sourceUrls": [
+    "https://ls-social-media-bridge.ls-evmos.workers.dev/fitness-20261123/01-directions.jpg",
+    "https://ls-social-media-bridge.ls-evmos.workers.dev/fitness-20261123/02-groups.jpg",
+    "https://ls-social-media-bridge.ls-evmos.workers.dev/fitness-20261123/03-personal.jpg"
+  ],
+  "quality": "1080x1920 high-quality JPEG sRGB"
+}
