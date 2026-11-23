@@ -1,0 +1,37 @@
+name: Verify live VK Story Evgeniya 23 Nov 2026 READ-ONLY
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/verify-evgeniya-vk-story-readonly-20261123.yml'
+permissions:
+  contents: read
+jobs:
+  verify:
+    if: github.repository == 'lsevmos-gpt/ls-vk' && github.ref == 'refs/heads/main' && github.actor == 'lsevmos-gpt'
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    env:
+      VK_GROUP_TOKEN: ${{ secrets.VK_GROUP_TOKEN }}
+      VK_USER_TOKEN: ${{ secrets.VK_USER_TOKEN }}
+      VK_GROUP_ID: '48198173'
+      VK_GROUP_SCREEN_NAME: 'liniya__sporta'
+      VK_API_VERSION: '5.199'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Read only stories.get for VK community; NEVER publish
+        run: |
+          node --input-type=module <<'JS'
+          import {getGroupId,vkCall} from './src/vk.js';
+          const group=await getGroupId();
+          if(group!==48198173)throw Error('Unexpected group');
+          const token=process.env.VK_USER_TOKEN||process.env.VK_GROUP_TOKEN;
+          const res=await vkCall('stories.get',{owner_id:-group},token);
+          const base=Array.isArray(res?.items)?res.items:Array.isArray(res)?res:[];
+          const flat=base.flatMap(x=>Array.isArray(x?.stories)?x.stories:Array.isArray(x)?x:[x]);
+          const candidates=flat.filter(x=>Number(x?.date||0)>=Date.parse('2026-11-23T07:30:45Z')/1000&&Number(x?.date||0)<=Date.parse('2026-11-23T08:00:00Z')/1000);
+          console.log('READ_ONLY_VK_STORY_CHECK='+JSON.stringify({group,allCount:flat.length,recent:candidates.map(x=>({id:x.id,owner_id:x.owner_id,date:x.date,type:x.type,photoUrl:x.photo?.sizes?.at(-1)?.url||null,can_delete:x.can_delete||false}))}));
+          JS
