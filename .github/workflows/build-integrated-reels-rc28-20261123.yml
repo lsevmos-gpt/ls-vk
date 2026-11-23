@@ -1,0 +1,77 @@
+name: Create unified Reels RC2.8 JSON from original uploaded RC2.7 (with all 12 logos)
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'requests/graphics/build-reels-rc28-integrated-main-20261123.json'
+permissions:
+  contents: write
+concurrency:
+  group: build-reels-rc28-integrated-main-20261123
+  cancel-in-progress: false
+jobs:
+  build:
+    if: github.repository == 'lsevmos-gpt/ls-vk' && github.ref == 'refs/heads/main' && github.event_name == 'push' && github.actor == 'lsevmos-gpt'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Confirm authorized non-public file edit only
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m py_compile scripts/build_integrated_rc28_reels_json_from_original_20261123.py
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          d=json.loads(Path('requests/graphics/build-reels-rc28-integrated-main-20261123.json').read_text('utf-8'))
+          assert d['approvedByUser'] is True
+          assert d['publish'] is False
+          assert d['inputFile']=='Liniya_Sporta_Reels_RC2_7_2026-11-17(5).json'
+          assert d['outputFile']=='docs/Liniya_Sporta_Reels_RC2_8_2026-11-23_FULL.json'
+          assert d['preserveAllEmbeddedMasterLogoBytes'] is True
+          assert d['integratedNotAnAddendum'] is True
+          assert d['userRequestedChanges']==['logo-color accents','non-template layout variation','minimal edits to existing covers']
+          print('EXACT_MAIN_JSON_REVISION_ONLY_APPROVED')
+          PY
+          test ! -f docs/Liniya_Sporta_Reels_RC2_8_2026-11-23_FULL.json
+      - name: Retrieve exact user-uploaded original standalone JSON (4,341,298 bytes)
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p temp
+          curl --retry 2 --retry-delay 2 -fLsS --connect-timeout 25 --max-time 120 \
+            'https://at.adobe.com/wz1AUgsRsY7oo5hF' \
+            -o temp/RC2_7_original_user_uploaded_20261123.json
+          test "$(stat -c%s temp/RC2_7_original_user_uploaded_20261123.json)" -eq 4341298
+          python3 - <<'PY'
+          import json, pathlib
+          p=pathlib.Path('temp/RC2_7_original_user_uploaded_20261123.json')
+          d=json.loads(p.read_text('utf-8'))
+          assert d['schema_id']=='liniya_sporta_reels_cover_ai_instruction'
+          assert d['document_revision']=='RC2.7-JSON'
+          assert len(d['embedded_assets']['logos'])==12
+          print('EXACT_ORIGINAL_4341298_BYTES_JSON_WITH_12_LOGOS')
+          PY
+      - name: Patch original top-level file and normative sections in one integrated RC2.8 JSON
+        shell: bash
+        run: |
+          set -euo pipefail
+          python scripts/build_integrated_rc28_reels_json_from_original_20261123.py
+      - name: Push complete integrated JSON and independent validation receipt
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'ls-reels-regulation-rc28'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -- docs/Liniya_Sporta_Reels_RC2_8_2026-11-23_FULL.json docs/Liniya_Sporta_Reels_RC2_8_2026-11-23_validation.json
+          git commit -m 'Publish single integrated Reels RC2.8 JSON preserving all 12 original logos [skip ci]'
+          git pull --rebase origin main
+          git push origin HEAD:main
+          echo 'COMPLETE_INTEGRATED_REELS_RC28_JSON_WITH_12_ORIGINAL_LOGOS_AVAILABLE'
