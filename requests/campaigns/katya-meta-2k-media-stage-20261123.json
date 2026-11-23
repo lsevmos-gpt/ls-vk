@@ -1,0 +1,13 @@
+{
+  "id": "katya-meta-2k-media-stage-20261123",
+  "approved": true,
+  "authorizedByUser": true,
+  "mediaOnly": true,
+  "source": "https://ls-social-media-bridge.ls-evmos.workers.dev/katya-20261123/reel-recovery-2k.mp4",
+  "destination": "media/katya-shapovalova-reel-meta-2k-20261123.mp4",
+  "sha256": "2fea1288daf7cc3c37ca7dd0468138303760885163622038367e18dda6dd008d",
+  "bytes": 47593685,
+  "codec": "H.264 High yuv420p limited BT709 + AAC 48000 stereo",
+  "resolution": "1440x2560",
+  "note": "Only stage media; Instagram publishing strictly through Cloudflare Meta bridge, no GitHub Meta posting."
+}
