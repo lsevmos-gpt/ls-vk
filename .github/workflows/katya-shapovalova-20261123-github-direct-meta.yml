@@ -1,0 +1,94 @@
+name: Katya Shapovalova Reel via legacy GitHub Meta direct uploader once
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'requests/instagram-meta/katya-shapovalova-20261123-github-direct.json'
+permissions:
+  contents: write
+concurrency:
+  group: katya-shapovalova-20261123-github-direct-instagram-single-attempt
+  cancel-in-progress: false
+jobs:
+  publish:
+    if: github.repository == 'lsevmos-gpt/ls-vk' && github.ref == 'refs/heads/main' && github.event_name == 'push' && github.actor == 'lsevmos-gpt'
+    runs-on: ubuntu-latest
+    timeout-minutes: 55
+    env:
+      META_IG_ACCESS_TOKEN: ${{ secrets.META_IG_ACCESS_TOKEN }}
+      META_IG_USER_ID: ${{ secrets.META_IG_USER_ID }}
+      META_GRAPH_VERSION: v26.0
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Validate prior failed Cloudflare containers, exact source and direct GitHub route
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$META_IG_ACCESS_TOKEN" && test -n "$META_IG_USER_ID"
+          test ! -e results/instagram-meta/katya-shapovalova-20261123-github-direct.json
+          python -m py_compile scripts/publish_katya_20261123_github_direct_meta.py
+          python -m py_compile scripts/instagram_collab.py
+          test "$(stat -c%s media/katya-shapovalova-reel-meta-2k-20261123.mp4)" -eq 47593685
+          echo '2fea1288daf7cc3c37ca7dd0468138303760885163622038367e18dda6dd008d  media/katya-shapovalova-reel-meta-2k-20261123.mp4' | sha256sum -c -
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path('requests/instagram-meta/katya-shapovalova-20261123-github-direct.json')
+          j=json.loads(p.read_text('utf8'))
+          assert j['approved'] is True and j['publicContent'] is True and j['publishNow'] is True
+          assert j['route']=='GITHUB_ACTIONS_DIRECT_META_GRAPH_RUPLOAD'
+          assert j['collaborators']==['katia_shap']
+          assert j['coverSHA256']=='05a82e0d76a414a480fb0d2b795522f963792d96631705650866bca1572dccd3'
+          assert j['sourceVideoSHA256']=='2fea1288daf7cc3c37ca7dd0468138303760885163622038367e18dda6dd008d'
+          assert j['shouldShareToFeed'] is True
+          assert 300<len(j['text'])<2200
+          print('KATYA_GITHUB_DIRECT_EXPLICIT_APPROVAL_PRECHECK_OK')
+          PY
+      - name: Stage approved exact 2K JPEG cover to GitHub raw (not Cloudflare)
+        shell: bash
+        run: |
+          set -euo pipefail
+          if ! test -f media/katya-shapovalova-cover-meta-2k-20261123.jpg; then
+            curl -fLSs --retry 2 --connect-timeout 25 --max-time 120 \
+              'https://at.adobe.com/9uZbhbzDNc9Oj10x' \
+              -o media/katya-shapovalova-cover-meta-2k-20261123.jpg
+            test "$(stat -c%s media/katya-shapovalova-cover-meta-2k-20261123.jpg)" -eq 949002
+            echo '05a82e0d76a414a480fb0d2b795522f963792d96631705650866bca1572dccd3  media/katya-shapovalova-cover-meta-2k-20261123.jpg' | sha256sum -c -
+            git config user.name 'ls-katya-ig-publisher'
+            git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+            git add -- media/katya-shapovalova-cover-meta-2k-20261123.jpg
+            git commit -m 'Stage immutable Katya 2K Instagram cover JPEG [skip ci]'
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
+          test "$(stat -c%s media/katya-shapovalova-cover-meta-2k-20261123.jpg)" -eq 949002
+          echo '05a82e0d76a414a480fb0d2b795522f963792d96631705650866bca1572dccd3  media/katya-shapovalova-cover-meta-2k-20261123.jpg' | sha256sum -c -
+      - name: Verify approved original cover is accessible on raw.githubusercontent.com
+        shell: bash
+        run: |
+          set -euo pipefail
+          for i in 1 2 3 4 5 6; do
+            if curl -fLSs --connect-timeout 15 --max-time 45 \
+              'https://raw.githubusercontent.com/lsevmos-gpt/ls-vk/main/media/katya-shapovalova-cover-meta-2k-20261123.jpg' \
+              -o /tmp/katya-meta-cover-from-github.jpg; then
+              if echo '05a82e0d76a414a480fb0d2b795522f963792d96631705650866bca1572dccd3  /tmp/katya-meta-cover-from-github.jpg' | sha256sum -c -; then break; fi
+            fi
+            if test "$i" -eq 6; then echo '::error::GitHub cover not public with exact hash'; exit 1; fi
+            sleep 5
+          done
+          echo 'GITHUB_RAW_2K_COVER_PUBLIC_SHA256_VERIFIED'
+      - name: Install ffmpeg if not available for audio compliance (preserve original 2K video stream)
+        shell: bash
+        run: |
+          if ! command -v ffmpeg >/dev/null || ! command -v ffprobe >/dev/null; then
+            sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg
+          fi
+      - name: Direct native GitHub Meta API Reels upload, coauthor invitation, publish once and readback
+        shell: bash
+        run: python -m scripts.publish_katya_20261123_github_direct_meta
