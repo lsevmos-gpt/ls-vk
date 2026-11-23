@@ -1,0 +1,21 @@
+{
+  "generated_filename": "Liniya_Sporta_Reels_RC2_8_2026-11-23_FULL.json",
+  "based_on_original_filename": "Liniya_Sporta_Reels_RC2_7_2026-11-17(5).json",
+  "original_size_bytes": 4341298,
+  "original_sha256": "53e374088b11476629323d4bf4595a8370e65d63023ef699442f3945fbeb2673",
+  "generated_size_bytes": 4353516,
+  "generated_sha256": "5060eee751cc44a744fe6917b1bbb55abef302e7b045d20394df85af0953d7d2",
+  "revision": "RC2.8-JSON",
+  "embedded_logos_count": 12,
+  "embedded_logos_sha256_verified": true,
+  "all_embedded_assets_identical_to_source": true,
+  "all_original_logo_registry_entries_identical_to_source": true,
+  "source_pointer_and_canvas_unchanged": true,
+  "colors": {
+    "fitness": "#9A2635",
+    "club_horizontal": "#288436",
+    "club_vertical": "#008D44"
+  },
+  "qc": "PASS_FILE_AND_LOGOS; visual QA for future covers must be done per cover",
+  "source_approval_state_preserved": true
+}
