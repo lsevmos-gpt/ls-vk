@@ -1,7 +1,7 @@
 {
   "id": "fitness-heroes6d-20261123-1815-vk",
   "provider": "vk",
-  "status": "partial_or_complete_vk_api_accepted",
+  "status": "all_three_vk_story_api_accepted",
   "createdAtUTC": "2026-11-23T15:19:13.143Z",
   "groupId": 48198173,
   "requestedAt": "2026-11-23T18:15:00+03:00",
@@ -36,5 +36,5 @@
     }
   ],
   "noRetry": true,
-  "updatedAtUTC": "2026-11-23T15:20:57.497Z"
+  "updatedAtUTC": "2026-11-23T15:20:59.608Z"
 }
