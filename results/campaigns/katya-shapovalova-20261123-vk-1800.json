@@ -1,6 +1,6 @@
 {
   "id": "katya-shapovalova-20261123-vk-1800",
-  "status": "upload_started",
+  "status": "video_api_accepted",
   "createdAtUTC": "2026-11-23T09:30:00.630Z",
   "groupId": 48198173,
   "videoSHA256": "0f3c99ed1bff7efbe4c14c4c9367764f63b481f7ce8329243e26297c5d1c2e75",
@@ -8,9 +8,11 @@
   "videoResolution": "1440x2560",
   "publishAt": "2026-11-23T18:00:00+03:00",
   "runId": "45147290308",
-  "videoId": null,
+  "videoId": 456240868,
   "wallPostId": null,
   "coverStatus": "not_attempted",
   "noRetries": true,
-  "updatedAtUTC": "2026-11-23T09:30:03.495Z"
+  "updatedAtUTC": "2026-11-23T09:30:11.628Z",
+  "videoOwnerId": -48198173,
+  "videoURL": "https://vk.com/video-48198173_456240868"
 }
