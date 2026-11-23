@@ -1,0 +1,24 @@
+{
+  "id": "katya-shapovalova-20261123-github-direct",
+  "type": "instagram-reel",
+  "handle": "liniya__sporta",
+  "postType": "reel",
+  "approved": true,
+  "publicContent": true,
+  "publishNow": true,
+  "route": "GITHUB_ACTIONS_DIRECT_META_GRAPH_RUPLOAD",
+  "text": "Знакомьтесь — Екатерина Шаповалова! ✨\n\nНовый тренер в «Линии спорта» 💪\n\nУ Екатерины высшее хореографическое образование, 10 лет профессионального танцевального опыта и более 6 лет работы тренером групповых программ !\n\nНа её занятиях вас ждут:\n\n• Barre 🩰\n\n• Pilates 🧘‍♀️\n\n• Классическая растяжка ✨\n\n• Здоровая спина 🧡\n\n• Функционал 🔥\n\nХотите стать гибче, сильнее, улучшить осанку и почувствовать лёгкость в теле? Тогда вам точно к Екатерине!💫\n\n📍 Ждём вас в «Линии спорта» по адресу: Героев Сталинграда, 6Д",
+  "media": [
+    {
+      "type": "video",
+      "url": "https://raw.githubusercontent.com/lsevmos-gpt/ls-vk/main/media/katya-shapovalova-reel-meta-2k-20261123.mp4"
+    }
+  ],
+  "coverUrl": "https://raw.githubusercontent.com/lsevmos-gpt/ls-vk/main/media/katya-shapovalova-cover-meta-2k-20261123.jpg",
+  "collaborators": [
+    "katia_shap"
+  ],
+  "shouldShareToFeed": true,
+  "sourceVideoSHA256": "2fea1288daf7cc3c37ca7dd0468138303760885163622038367e18dda6dd008d",
+  "coverSHA256": "05a82e0d76a414a480fb0d2b795522f963792d96631705650866bca1572dccd3"
+}
