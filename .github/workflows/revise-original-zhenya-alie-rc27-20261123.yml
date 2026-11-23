@@ -1,0 +1,79 @@
+name: Targeted edit of ORIGINAL RC2.7 trainer Reels covers (no AI people)
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'requests/graphics/revise-original-zhenya-alie-rc27-20261123.json'
+permissions:
+  contents: write
+concurrency:
+  group: edit-original-trainer-covers-rc27-nopublish-20261123
+  cancel-in-progress: false
+jobs:
+  generate:
+    if: github.repository == 'lsevmos-gpt/ls-vk' && github.ref == 'refs/heads/main' && github.event_name == 'push' && github.actor == 'lsevmos-gpt'
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 1
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Strict approval / exact originals / no publication
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m py_compile scripts/revise_original_rc27_zhenya_alie_20261123.py
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path('requests/graphics/revise-original-zhenya-alie-rc27-20261123.json')
+          d=json.loads(p.read_text('utf8'))
+          assert d['approvedByUser'] is True and d['graphicsOnly'] is True and d['publish'] is False
+          assert d['trainers']==['zhenya','alie']
+          assert d['originalBranch']=='fitness' and d['accent']=='#9A2635'
+          assert d['sourceDir']=='media/reels-rc27-20261123/final'
+          assert d['outputDir']=='media/reels-rc27-20261123/revised/20261123'
+          for n in d['trainers']:
+              assert Path(d['sourceDir'],n,n+'_editable_layers.svg').is_file()
+          assert not Path(d['outputDir']).exists()
+          print('TARGETED_EDIT_TWO_REAL_ORIGINALS_ONLY_APPROVED_NO_PUBLICATION')
+          PY
+      - name: Install deterministic image rendering and exact Roboto Condensed Bold font
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check 'Pillow>=10,<13' 'CairoSVG>=2.7,<3'
+          sudo mkdir -p /usr/local/share/fonts/rc27
+          curl -fLsS --retry 2 --connect-timeout 15 --max-time 45 \
+            'https://raw.githubusercontent.com/hrbrmstr/hrbrthemes/master/inst/fonts/roboto-condensed/RobotoCondensed-Bold.ttf' \
+            -o /usr/local/share/fonts/rc27/RobotoCondensed-Bold.ttf
+          test "$(stat -c%s /usr/local/share/fonts/rc27/RobotoCondensed-Bold.ttf)" -gt 35000
+          sudo fc-cache -f /usr/local/share/fonts/rc27
+          fc-match 'Roboto Condensed:style=Bold'
+          python - <<'PY'
+          from PIL import ImageFont
+          p='/usr/local/share/fonts/rc27/RobotoCondensed-Bold.ttf'
+          font=ImageFont.truetype(p,90)
+          assert font.getbbox('ТРЕНЕР ЖЕНЯ АЛИЕ')[2] > 450
+          print('TRUE_ROBOTO_CONDENSED_BOLD_CYRILLIC_READY')
+          PY
+      - name: Alter only original photo tone and original SVG layers; export true sRGB
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m scripts.revise_original_rc27_zhenya_alie_20261123
+      - name: Commit two revised posters, editable masters, QA and thumbnails; never publish
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'ls-trainer-cover-corrections'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -- media/reels-rc27-20261123/revised/20261123
+          git commit -m 'Create two restrained edits of genuine RC2.7 trainer covers [skip ci]'
+          git pull --rebase origin main
+          git push origin HEAD:main
+          echo 'ORIGINAL_TRAINER_COVERS_REVISED_STAGED_ONLY_NO_SOCIAL_POSTING'
