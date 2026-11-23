@@ -1,0 +1,60 @@
+name: RC2.7 stage original frame reviews Zhenya and Alie (NO POSTING)
+on:
+  push:
+    branches: [main]
+    paths:
+      - requests/campaigns/rc27-zhenya-alie-20261123-frame-review.json
+permissions:
+  contents: write
+concurrency:
+  group: rc27-20261123-zhenya-alie-frame-review
+  cancel-in-progress: false
+jobs:
+  review:
+    if: github.repository == 'lsevmos-gpt/ls-vk' && github.ref == 'refs/heads/main' && github.actor == 'lsevmos-gpt'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with: {ref: main, fetch-depth: 0}
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
+      - name: Install frame inspection dependencies
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check 'Pillow>=10,<13'
+          command -v ffmpeg
+          command -v ffprobe
+          python -m py_compile scripts/rc27_review_zhenya_alie_20261123.py
+      - name: Download EXACT original videos from uploader transport, never transcode for analysis
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json,subprocess,os
+          from pathlib import Path
+          j=json.loads(Path('requests/campaigns/rc27-zhenya-alie-20261123-frame-review.json').read_text())
+          assert j['authorizedByUser'] and j['mediaOnly'] and not j['publish']
+          for key, target in [('zhenya','/tmp/rc27-zhenya.mp4'),('alie','/tmp/rc27-alie.mp4')]:
+              u=j['sourceUrls'][key]
+              assert u.startswith('https://at.adobe.com/')
+              p=subprocess.run(['curl','-fLSs','--retry','2','--connect-timeout','25','--max-time','600',u,'-o',target],capture_output=True,text=True,timeout=750)
+              if p.returncode:
+                  raise RuntimeError(key+'_DOWNLOAD_FAILED_'+p.stderr[-150:])
+              if Path(target).stat().st_size < 1000000:
+                  raise RuntimeError(key+'_BAD_SOURCE_SIZE')
+              print(key,Path(target).stat().st_size,flush=True)
+          PY
+      - name: Full-length source review with 30 real frames per video and contact sheets
+        run: python scripts/rc27_review_zhenya_alie_20261123.py
+      - name: Keep review frames, sheets and truthful metadata for art direction
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'ls-reels-rc27-frame-review'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -- media/reels-rc27-20261123
+          git commit -m 'Save real Zhenya and Alie frame comparisons (no publishing) [skip ci]'
+          git pull --rebase origin main
+          git push origin HEAD:main
+          echo 'RC27_SOURCE_FRAME_REVIEWS_SAVED_NO_PUBLICATION'
