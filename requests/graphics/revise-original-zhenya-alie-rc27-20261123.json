@@ -1,0 +1,24 @@
+{
+  "id": "revise-original-zhenya-alie-rc27-20261123",
+  "approvedByUser": true,
+  "graphicsOnly": true,
+  "publish": false,
+  "trainers": [
+    "zhenya",
+    "alie"
+  ],
+  "originalBranch": "fitness",
+  "accent": "#9A2635",
+  "sourceDir": "media/reels-rc27-20261123/final",
+  "outputDir": "media/reels-rc27-20261123/revised/20261123",
+  "originalLogoSHA256": "e145980feff7d744c5c718aa7f0f59a47fc992fdad7f2260906b98c81e2ecb39",
+  "rulesUpdate": "docs/Liniya_Sporta_Reels_RC2_8_accent_and_layout_update_20261123.json",
+  "constraints": [
+    "Must edit the authentic original trainers and their existing layered sources",
+    "Do not invent, generate, or replace faces, bodies, logos, gym location, equipment",
+    "Only subtle feathered real face tone adjustment plus SVG exact original logo, line/text placement",
+    "Jenya logo original location; accent line vertical beside headline; text moved right",
+    "Aliye logo shifted right; accent line horizontal below text; lower-left headline",
+    "No publication or API calls to social platforms"
+  ]
+}
