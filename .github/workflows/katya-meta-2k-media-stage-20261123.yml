@@ -1,0 +1,52 @@
+name: Stage exact corrected Katya Reels MP4 for Cloudflare Meta publisher
+on:
+  push:
+    branches: [main]
+    paths:
+      - requests/campaigns/katya-meta-2k-media-stage-20261123.json
+permissions:
+  contents: write
+concurrency:
+  group: katya-20261123-meta-corrected-media-stage-once
+  cancel-in-progress: false
+jobs:
+  stage:
+    if: github.repository == 'lsevmos-gpt/ls-vk' && github.ref == 'refs/heads/main' && github.event_name == 'push' && github.actor == 'lsevmos-gpt'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - name: Verify immutable user-approved media recovery request
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          req=json.loads(Path('requests/campaigns/katya-meta-2k-media-stage-20261123.json').read_text())
+          assert req['approved'] is True and req['mediaOnly'] is True
+          assert req['sha256']=='2fea1288daf7cc3c37ca7dd0468138303760885163622038367e18dda6dd008d'
+          assert req['bytes']==47593685
+          assert req['destination']=='media/katya-shapovalova-reel-meta-2k-20261123.mp4'
+          print('APPROVED_META_MEDIA_STAGE_ONLY')
+          PY
+      - name: Fetch corrected MP4 via approved Cloudflare bridge, hash check, stage to public raw media
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -fLSs --retry 3 --connect-timeout 25 --max-time 420 'https://ls-social-media-bridge.ls-evmos.workers.dev/katya-20261123/reel-recovery-2k.mp4' -o /tmp/katya-meta-2k-final.mp4
+          test "$(stat -c%s /tmp/katya-meta-2k-final.mp4)" -eq 47593685
+          echo '2fea1288daf7cc3c37ca7dd0468138303760885163622038367e18dda6dd008d  /tmp/katya-meta-2k-final.mp4' | sha256sum -c -
+          mkdir -p media
+          test ! -f media/katya-shapovalova-reel-meta-2k-20261123.mp4
+          cp /tmp/katya-meta-2k-final.mp4 media/katya-shapovalova-reel-meta-2k-20261123.mp4
+          git config user.name 'ls-media-stager'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -- media/katya-shapovalova-reel-meta-2k-20261123.mp4
+          git commit -m 'Stage corrected Katya 2K MP4 for Cloudflare Meta [skip ci]'
+          git pull --rebase origin main
+          git push origin HEAD:main
+          echo 'KATYA_2K_SHA256_VERIFIED_STAGED_PUBLIC_ASSET_ONLY'
