@@ -1,0 +1,67 @@
+name: Schedule approved Katya Shapovalova 2K VK clip and wall 23 Nov 2026 18:00 MSK
+on:
+  push:
+    branches: [main]
+    paths:
+      - requests/campaigns/katya-shapovalova-20261123-vk.json
+permissions:
+  contents: write
+concurrency:
+  group: katya-shapovalova-20261123-vk-one-provider-schedule
+  cancel-in-progress: false
+jobs:
+  schedule:
+    if: github.repository == 'lsevmos-gpt/ls-vk' && github.ref == 'refs/heads/main' && github.event_name == 'push' && github.actor == 'lsevmos-gpt'
+    runs-on: ubuntu-latest
+    timeout-minutes: 80
+    env:
+      VK_GROUP_ID: '48198173'
+      VK_GROUP_SCREEN_NAME: 'liniya__sporta'
+      VK_GROUP_TOKEN: ${{ secrets.VK_GROUP_TOKEN }}
+      VK_REFRESH_TOKEN: ${{ secrets.VK_REFRESH_TOKEN }}
+      VK_DEVICE_ID: ${{ secrets.VK_DEVICE_ID }}
+      VK_SECRETS_WRITE_PAT: ${{ secrets.VK_SECRETS_WRITE_PAT }}
+      VK_API_VERSION: '5.199'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Validate one-time approval, date and publisher syntax
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$VK_GROUP_TOKEN" && test -n "$VK_REFRESH_TOKEN" && test -n "$VK_DEVICE_ID" && test -n "$VK_SECRETS_WRITE_PAT"
+          test ! -e results/campaigns/katya-shapovalova-20261123-vk-1800.json
+          node --check scripts/publish_katya_shapovalova_20261123_vk.mjs
+          node --check scripts/vk-refresh-lib.mjs
+          python3 - <<'PY'
+          import json,datetime
+          from pathlib import Path
+          r=json.loads(Path('requests/campaigns/katya-shapovalova-20261123-vk.json').read_text())
+          assert r['id']=='katya-shapovalova-20261123-vk-1800'
+          assert r['approved'] is True and r['authorizedByUser'] is True
+          assert r['publishAt']=='2026-11-23T18:00:00+03:00'
+          assert r['videoSHA256']=='0f3c99ed1bff7efbe4c14c4c9367764f63b481f7ce8329243e26297c5d1c2e75'
+          assert r['coverSHA256']=='05a82e0d76a414a480fb0d2b795522f963792d96631705650866bca1572dccd3'
+          assert datetime.datetime.now(datetime.timezone.utc)<datetime.datetime.fromisoformat(r['publishAt'])-datetime.timedelta(minutes=10)
+          print('KATYA_EXPLICIT_APPROVAL_EXACT_SOURCES_FUTURE_SCHEDULE_CONFIRMED')
+          PY
+      - name: Fetch exact 2K MP4 and cover from established Cloudflare media bridge
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -fLSs --retry 2 --connect-timeout 25 --max-time 420             'https://ls-social-media-bridge.ls-evmos.workers.dev/katya-20261123/reel-2k.mp4'             -o /tmp/katya-shapovalova-20261123-reel-2k.mp4
+          curl -fLSs --retry 2 --connect-timeout 25 --max-time 120             'https://ls-social-media-bridge.ls-evmos.workers.dev/katya-20261123/cover-2k.jpg'             -o /tmp/katya-shapovalova-20261123-cover-2k.jpg
+          test "$(stat -c%s /tmp/katya-shapovalova-20261123-reel-2k.mp4)" -eq 74285852
+          test "$(stat -c%s /tmp/katya-shapovalova-20261123-cover-2k.jpg)" -eq 949002
+          echo '0f3c99ed1bff7efbe4c14c4c9367764f63b481f7ce8329243e26297c5d1c2e75  /tmp/katya-shapovalova-20261123-reel-2k.mp4' | sha256sum --check
+          echo '05a82e0d76a414a480fb0d2b795522f963792d96631705650866bca1572dccd3  /tmp/katya-shapovalova-20261123-cover-2k.jpg' | sha256sum --check
+          echo 'KATYA_MP4_AND_2K_COVER_CLOUDFLARE_BYTE_EXACT_CHECK_PASSED'
+      - name: Install proven direct VK media publisher dependencies
+        run: npm install --omit=dev --ignore-scripts --no-package-lock --no-audit --no-fund
+      - name: Refresh VK ID on same runner, attach custom cover and schedule wall post once
+        run: node scripts/publish_katya_shapovalova_20261123_vk.mjs
