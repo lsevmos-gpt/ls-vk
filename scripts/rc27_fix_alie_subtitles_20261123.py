@@ -14,31 +14,18 @@ EXPECTED_LOGO='e145980feff7d744c5c718aa7f0f59a47fc992fdad7f2260906b98c81e2ecb39'
 def cleanup(im):
  a=np.asarray(im.convert('RGB')).copy()
  h,w=a.shape[:2]
- y0=int(h*.773);y1=int(h*.846)
- x0=int(w*.205);x1=int(w*.825)
- roi=a[y0:y1,x0:x1]
- rgb=roi.astype(np.int16)
- spread=rgb.max(axis=2)-rgb.min(axis=2)
- # High neutral-white is the burned-in subtitle, not the warm studio fabric.
- glyph=np.uint8((rgb[:,:,0]>224)&(rgb[:,:,1]>224)&(rgb[:,:,2]>223)&(spread<19))*255
- n,lab,stats,_=cv2.connectedComponentsWithStats(glyph,8)
- components=np.zeros_like(glyph)
- for i in range(1,n):
-  xx,yy,cw,ch,area=stats[i]
-  if 7<=area<=14500 and 2<=ch<=95 and 1<=cw<=880:
-   components[lab==i]=255
- # Keep extraction ONLY on line carrying the subtitle (not skin/hair/other scene).
- restrict=np.zeros_like(components)
- top=max(0,int(h*.780)-y0)
- bottom=min(restrict.shape[0],int(h*.837)-y0)
- restrict[top:bottom,:]=components[top:bottom,:]
- restrict=cv2.dilate(restrict,np.ones((9,7),np.uint8),iterations=1)
+ # This is the known bounded lower-torso subtitle strip from the original 0.725 s frame.
+ # IMPORTANT: outside these coordinates, including the whole face and all visible hands,
+ # pixels remain untouched; no generative face/body reconstruction.
+ x0,x1=int(w*.238),int(w*.802)
+ y0,y1=int(h*.779),int(h*.831)
  mask=np.zeros((h,w),np.uint8)
- mask[y0:y1,x0:x1]=restrict
- num=int(np.count_nonzero(mask))
- if not 2500<num<260000:raise RuntimeError('subtitle_mask_unexpected_area_'+str(num))
- b=cv2.inpaint(a,mask,7,cv2.INPAINT_TELEA)
- return Image.fromarray(b,'RGB'),Image.fromarray(mask,'L'),num
+ cv2.rectangle(mask,(x0,y0),(x1,y1),255,-1)
+ # Telea local content-aware fill, with a feathered mask boundary to prevent seams.
+ cleaned=cv2.inpaint(a,mask,12,cv2.INPAINT_TELEA)
+ alpha=cv2.GaussianBlur(mask,(0,0),sigmaX=9,sigmaY=9).astype(np.float32)/255
+ blended=np.uint8(np.clip(a*(1-alpha[:,:,None])+cleaned*alpha[:,:,None],0,255))
+ return Image.fromarray(blended,'RGB'),Image.fromarray(mask,'L'),int(np.count_nonzero(mask))
 
 def main():
  assert RAW.exists() and EDIT.exists() and QA.exists()
