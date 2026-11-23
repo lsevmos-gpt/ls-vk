@@ -4,6 +4,7 @@ on:
     branches: [main]
     paths:
       - 'requests/instagram-meta/katya-shapovalova-20261123-github-direct.json'
+      - '.github/workflows/katya-shapovalova-20261123-github-direct-meta.yml'
 permissions:
   contents: write
 concurrency:
@@ -56,7 +57,7 @@ jobs:
           set -euo pipefail
           if ! test -f media/katya-shapovalova-cover-meta-2k-20261123.jpg; then
             curl -fLSs --retry 2 --connect-timeout 25 --max-time 120 \
-              'https://at.adobe.com/9uZbhbzDNc9Oj10x' \
+              'https://ls-social-media-bridge.ls-evmos.workers.dev/katya-20261123/cover-2k.jpg' \
               -o media/katya-shapovalova-cover-meta-2k-20261123.jpg
             test "$(stat -c%s media/katya-shapovalova-cover-meta-2k-20261123.jpg)" -eq 949002
             echo '05a82e0d76a414a480fb0d2b795522f963792d96631705650866bca1572dccd3  media/katya-shapovalova-cover-meta-2k-20261123.jpg' | sha256sum -c -
