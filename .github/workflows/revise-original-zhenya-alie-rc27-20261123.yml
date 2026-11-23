@@ -4,6 +4,7 @@ on:
     branches: [main]
     paths:
       - 'requests/graphics/revise-original-zhenya-alie-rc27-20261123.json'
+      - '.github/workflows/revise-original-zhenya-alie-rc27-20261123.yml'
 permissions:
   contents: write
 concurrency:
@@ -50,7 +51,8 @@ jobs:
           sudo mkdir -p /usr/local/share/fonts/rc27
           curl -fLsS --retry 2 --connect-timeout 15 --max-time 45 \
             'https://raw.githubusercontent.com/hrbrmstr/hrbrthemes/master/inst/fonts/roboto-condensed/RobotoCondensed-Bold.ttf' \
-            -o /usr/local/share/fonts/rc27/RobotoCondensed-Bold.ttf
+            -o /tmp/RobotoCondensed-Bold.ttf
+          sudo cp /tmp/RobotoCondensed-Bold.ttf /usr/local/share/fonts/rc27/RobotoCondensed-Bold.ttf
           test "$(stat -c%s /usr/local/share/fonts/rc27/RobotoCondensed-Bold.ttf)" -gt 35000
           sudo fc-cache -f /usr/local/share/fonts/rc27
           fc-match 'Roboto Condensed:style=Bold'
