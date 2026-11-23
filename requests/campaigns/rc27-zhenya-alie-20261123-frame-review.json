@@ -1,0 +1,16 @@
+{
+  "id": "rc27-zhenya-alie-20261123-frame-review",
+  "approved": true,
+  "authorizedByUser": true,
+  "mediaOnly": true,
+  "publish": false,
+  "policy": "Liniya_Sporta_Reels_RC2_7_2026-11-17(5).json",
+  "sourceUrls": {
+    "zhenya": "https://at.adobe.com/62PxdOYGeFTyrwaJ",
+    "alie": "https://at.adobe.com/qedZIkJM3QirlhQx"
+  },
+  "assetIds": {
+    "zhenya": "urn:aaid:sc:AP:ffbfbd27-ccfe-4091-aa63-c736bcc0ff38",
+    "alie": "urn:aaid:sc:AP:aeb7c6c6-78ed-40ad-9a42-30e002d6b887"
+  }
+}
