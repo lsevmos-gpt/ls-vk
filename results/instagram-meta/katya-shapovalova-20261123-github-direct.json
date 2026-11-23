@@ -1,0 +1,17 @@
+{
+  "id": "katya-shapovalova-20261123-github-direct",
+  "status": "reserved_before_meta_container",
+  "route": "GITHUB_ACTIONS_DIRECT_META_GRAPH_RUPLOAD",
+  "account": "liniya__sporta",
+  "collaborator": "katia_shap",
+  "collaboratorAcceptance": "pending",
+  "videoSourceSHA256": "2fea1288daf7cc3c37ca7dd0468138303760885163622038367e18dda6dd008d",
+  "videoUploadSHA256": "424614c26667924b51d9e1477a98439fa0e64eb3e41f956156235c39bfbd14b7",
+  "coverSHA256": "05a82e0d76a414a480fb0d2b795522f963792d96631705650866bca1572dccd3",
+  "mediaCreatedId": null,
+  "publishedMediaId": null,
+  "runId": "45208664438",
+  "createdAtUTC": "2026-11-23T15:46:49.986079+00:00",
+  "noAutomaticRetries": true,
+  "updatedAtUTC": "2026-11-23T15:46:49.986108+00:00"
+}
