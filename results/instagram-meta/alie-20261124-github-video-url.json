@@ -1,6 +1,6 @@
 {
   "id": "alie-20261124-github-video-url",
-  "status": "container_created",
+  "status": "ready_to_publish",
   "route": "GITHUB_ACTIONS_META_VIDEO_URL",
   "account": "liniya__sporta",
   "collaborator": "_alie_13_",
@@ -23,5 +23,5 @@
   "runId": "45450858058",
   "noAutomaticRetries": true,
   "createdAtUTC": "2026-11-24T17:42:09.125139+00:00",
-  "updatedAtUTC": "2026-11-24T17:42:12.255299+00:00"
+  "updatedAtUTC": "2026-11-24T17:42:54.375479+00:00"
 }
