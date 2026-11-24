@@ -45,42 +45,20 @@ jobs:
           assert r['id']=='alie-20261124-vk'
           assert r['approved'] is True and r['authorizedByUser'] is True and r['publishNow'] is True
           assert r['groupId']==48198173
-          assert r['videoSHA256']=='080cac472f015cb4ae6594a0b4392d242766841d6413e2a2f684b9059686d3b7'
-          assert r['coverSHA256']=='37d27fed034ce50115201ebe4e63b77201e6d896ea5c4a5de3f534385fd4a596'
+          assert r['videoSHA256']=='fd6801bdac28abf8f6223c3b72a64d0db8eb373f1d758563916be1c53e2b6999'
+          assert r['coverSHA256']=='c75a3ac911db2ad4c675350bef8bf459ee7e9f9917c91fd4240d44a375e9b7e2'
           PY
-      - name: Download verified native MP4 in bounded ranges and original cover JPEG
+      - name: Download and verify original MP4 and PNG through approved media bridge
         shell: bash
         run: |
           set -euo pipefail
-          python3 - <<'PY'
-          import urllib.request, time, hashlib
-          base='https://ls-social-media-bridge.ls-evmos.workers.dev/alie-20261124/'
-          n=126864862
-          def get(url, start=None, end=None):
-              for i in range(8):
-                  try:
-                      h={'Accept-Encoding':'identity'}
-                      if start is not None: h['Range']=f'bytes={start}-{end}'
-                      with urllib.request.urlopen(urllib.request.Request(url,headers=h), timeout=120) as r:
-                          b=r.read()
-                          if start is not None:
-                              assert r.status==206 and r.headers.get('Content-Range')==f'bytes {start}-{end}/{n}'
-                              assert len(b)==end-start+1
-                          else: assert r.status==200
-                          return b
-                  except Exception:
-                      if i==7: raise
-                      time.sleep(min(30, 2**i))
-          with open('/tmp/alie-20261124-native.mp4','wb') as f:
-              for a in range(0,n,1048576):
-                  f.write(get(base+'reel-native.mp4',a,min(a+1048575,n-1)))
-          with open('/tmp/alie-20261124-cover.jpg','wb') as f:
-              f.write(get(base+'cover-native.jpg'))
-          PY
-          test "$(stat -c%s /tmp/alie-20261124-native.mp4)" -eq 126864862
-          test "$(stat -c%s /tmp/alie-20261124-cover.jpg)" -eq 213518
-          echo '080cac472f015cb4ae6594a0b4392d242766841d6413e2a2f684b9059686d3b7  /tmp/alie-20261124-native.mp4' | sha256sum --check
-          echo '37d27fed034ce50115201ebe4e63b77201e6d896ea5c4a5de3f534385fd4a596  /tmp/alie-20261124-cover.jpg' | sha256sum --check
+          curl -fLSs --retry 3 --connect-timeout 25 --max-time 480 'https://ls-social-media-bridge.ls-evmos.workers.dev/alie-20261124/vk-original.mp4' -o /tmp/alie-20261124-native.mp4
+          curl -fLSs --retry 3 --connect-timeout 25 --max-time 120 'https://ls-social-media-bridge.ls-evmos.workers.dev/alie-20261124/vk-original.png' -o /tmp/alie-20261124-cover.png
+          echo 'fd6801bdac28abf8f6223c3b72a64d0db8eb373f1d758563916be1c53e2b6999  /tmp/alie-20261124-native.mp4' | sha256sum --check
+          echo 'c75a3ac911db2ad4c675350bef8bf459ee7e9f9917c91fd4240d44a375e9b7e2  /tmp/alie-20261124-cover.png' | sha256sum --check
+          if ! command -v ffmpeg >/dev/null; then sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg; fi
+          ffmpeg -hide_banner -loglevel error -nostdin -y -i /tmp/alie-20261124-cover.png -frames:v 1 -q:v 1 -update 1 /tmp/alie-20261124-cover.jpg
+          ffprobe -v error -select_streams v:0 -show_entries stream=width,height,avg_frame_rate,nb_frames -of json /tmp/alie-20261124-native.mp4
       - name: Install existing direct VK dependencies
         run: npm install --omit=dev --ignore-scripts --no-package-lock --no-audit --no-fund
       - name: Publish exact video and cover once, verify video and wall
