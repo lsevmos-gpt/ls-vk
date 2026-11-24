@@ -10,9 +10,9 @@ const REPO='lsevmos-gpt/ls-vk',GROUP=48198173,ID='alie-20261124-vk';
 const REQUEST='requests/campaigns/alie-20261124-vk.json';
 const RECEIPT='results/campaigns/alie-20261124-vk.json';
 const VIDEO='/tmp/alie-20261124-native.mp4';
-const COVER='/tmp/alie-20261124-cover.jpg';
-const V_SHA='080cac472f015cb4ae6594a0b4392d242766841d6413e2a2f684b9059686d3b7';
-const C_SHA='37d27fed034ce50115201ebe4e63b77201e6d896ea5c4a5de3f534385fd4a596';
+const COVER='/tmp/alie-20261124-cover.jpg', ORIGINAL_COVER='/tmp/alie-20261124-cover.png';
+const V_SHA='fd6801bdac28abf8f6223c3b72a64d0db8eb373f1d758563916be1c53e2b6999';
+const C_SHA='c75a3ac911db2ad4c675350bef8bf459ee7e9f9917c91fd4240d44a375e9b7e2';
 const now=()=>new Date().toISOString();
 const pause=ms=>new Promise(r=>setTimeout(r,ms));
 const sha=p=>createHash('sha256').update(fs.readFileSync(p)).digest('hex');
@@ -65,11 +65,10 @@ async function main(){
  const req=JSON.parse(fs.readFileSync(REQUEST,'utf8'));
  if(req.id!==ID||req.approved!==true||req.authorizedByUser!==true||req.publishNow!==true||req.groupId!==GROUP||
     req.videoSHA256!==V_SHA||req.coverSHA256!==C_SHA||
-    req.videoURL!=='https://ls-social-media-bridge.ls-evmos.workers.dev/alie-20261124/reel-native.mp4'||
-    req.coverURL!=='https://ls-social-media-bridge.ls-evmos.workers.dev/alie-20261124/cover-native.jpg'||
+    req.videoURL!=='https://ls-social-media-bridge.ls-evmos.workers.dev/alie-20261124/vk-original.mp4'||
+    req.coverURL!=='https://ls-social-media-bridge.ls-evmos.workers.dev/alie-20261124/vk-original.png'||
     typeof req.caption!=='string'||!req.caption.includes('Боджек Алие')||
-    !fs.existsSync(VIDEO)||!fs.existsSync(COVER)||fs.statSync(VIDEO).size!==126864862||
-    fs.statSync(COVER).size!==213518||sha(VIDEO)!==V_SHA||sha(COVER)!==C_SHA)throw Error('ALIE_MEDIA_REQUEST_MISMATCH');
+    !fs.existsSync(VIDEO)||!fs.existsSync(COVER)||fs.statSync(VIDEO).size<1000000||!fs.existsSync(ORIGINAL_COVER)||fs.statSync(COVER).size<10000||sha(VIDEO)!==V_SHA||sha(ORIGINAL_COVER)!==C_SHA)throw Error('ALIE_MEDIA_REQUEST_MISMATCH');
  
  required('VK_GROUP_TOKEN');required('VK_DEVICE_ID');required('VK_REFRESH_TOKEN');required('VK_SECRETS_WRITE_PAT');
  const userToken=await refresh();process.env.VK_USER_TOKEN=userToken;
@@ -86,7 +85,7 @@ async function main(){
  git('config','user.name','ls-alie-vk-once');
  git('config','user.email','41898282+github-actions[bot]@users.noreply.github.com');
  const receipt={id:ID,status:'reserved_before_provider_upload',createdAtUTC:now(),groupId:GROUP,
-  videoSHA256:V_SHA,coverSHA256:C_SHA,videoResolution:'1920x3114',
+  videoSHA256:V_SHA,originalCoverSHA256:C_SHA,coverSHA256:sha(COVER),videoResolution:'1920x3114',
   runId:process.env.GITHUB_RUN_ID,videoId:null,wallPostId:null,coverStatus:'not_attempted',noRetries:true};
  await checkpoint(receipt,true);
  try{
