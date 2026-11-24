@@ -1,0 +1,87 @@
+name: Publish approved Alie video and wall on VK only
+on:
+  push:
+    branches: [main]
+    paths:
+      - requests/campaigns/alie-20261124-vk.json
+permissions:
+  contents: write
+concurrency:
+  group: alie-20261124-vk-one-provider
+  cancel-in-progress: false
+jobs:
+  publish:
+    if: github.repository == 'lsevmos-gpt/ls-vk' && github.ref == 'refs/heads/main' && github.event_name == 'push' && github.actor == 'lsevmos-gpt'
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      VK_GROUP_ID: '48198173'
+      VK_GROUP_SCREEN_NAME: 'liniya__sporta'
+      VK_GROUP_TOKEN: ${{ secrets.VK_GROUP_TOKEN }}
+      VK_REFRESH_TOKEN: ${{ secrets.VK_REFRESH_TOKEN }}
+      VK_DEVICE_ID: ${{ secrets.VK_DEVICE_ID }}
+      VK_SECRETS_WRITE_PAT: ${{ secrets.VK_SECRETS_WRITE_PAT }}
+      VK_API_VERSION: '5.199'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Validate exact one-time approval and source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$VK_GROUP_TOKEN" && test -n "$VK_REFRESH_TOKEN" && test -n "$VK_DEVICE_ID" && test -n "$VK_SECRETS_WRITE_PAT"
+          test ! -e results/campaigns/alie-20261124-vk.json
+          node --check scripts/publish_alie_20261124_vk.mjs
+          node --check scripts/vk-refresh-lib.mjs
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          r=json.loads(Path('requests/campaigns/alie-20261124-vk.json').read_text())
+          assert r['id']=='alie-20261124-vk'
+          assert r['approved'] is True and r['authorizedByUser'] is True and r['publishNow'] is True
+          assert r['groupId']==48198173
+          assert r['videoSHA256']=='080cac472f015cb4ae6594a0b4392d242766841d6413e2a2f684b9059686d3b7'
+          assert r['coverSHA256']=='37d27fed034ce50115201ebe4e63b77201e6d896ea5c4a5de3f534385fd4a596'
+          PY
+      - name: Download verified native MP4 in bounded ranges and original cover JPEG
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import urllib.request, time, hashlib
+          base='https://ls-social-media-bridge.ls-evmos.workers.dev/alie-20261124/'
+          n=126864862
+          def get(url, start=None, end=None):
+              for i in range(8):
+                  try:
+                      h={'Accept-Encoding':'identity'}
+                      if start is not None: h['Range']=f'bytes={start}-{end}'
+                      with urllib.request.urlopen(urllib.request.Request(url,headers=h), timeout=120) as r:
+                          b=r.read()
+                          if start is not None:
+                              assert r.status==206 and r.headers.get('Content-Range')==f'bytes {start}-{end}/{n}'
+                              assert len(b)==end-start+1
+                          else: assert r.status==200
+                          return b
+                  except Exception:
+                      if i==7: raise
+                      time.sleep(min(30, 2**i))
+          with open('/tmp/alie-20261124-native.mp4','wb') as f:
+              for a in range(0,n,1048576):
+                  f.write(get(base+'reel-native.mp4',a,min(a+1048575,n-1)))
+          with open('/tmp/alie-20261124-cover.jpg','wb') as f:
+              f.write(get(base+'cover-native.jpg'))
+          PY
+          test "$(stat -c%s /tmp/alie-20261124-native.mp4)" -eq 126864862
+          test "$(stat -c%s /tmp/alie-20261124-cover.jpg)" -eq 213518
+          echo '080cac472f015cb4ae6594a0b4392d242766841d6413e2a2f684b9059686d3b7  /tmp/alie-20261124-native.mp4' | sha256sum --check
+          echo '37d27fed034ce50115201ebe4e63b77201e6d896ea5c4a5de3f534385fd4a596  /tmp/alie-20261124-cover.jpg' | sha256sum --check
+      - name: Install existing direct VK dependencies
+        run: npm install --omit=dev --ignore-scripts --no-package-lock --no-audit --no-fund
+      - name: Publish exact video and cover once, verify video and wall
+        run: node scripts/publish_alie_20261124_vk.mjs
