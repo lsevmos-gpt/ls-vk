@@ -1,6 +1,6 @@
 {
   "id": "alie-20261124-github-video-url",
-  "status": "meta_api_publish_accepted",
+  "status": "published_readback_confirmed",
   "route": "GITHUB_ACTIONS_META_VIDEO_URL",
   "account": "liniya__sporta",
   "collaborator": "_alie_13_",
@@ -23,5 +23,9 @@
   "runId": "45450858058",
   "noAutomaticRetries": true,
   "createdAtUTC": "2026-11-24T17:42:09.125139+00:00",
-  "updatedAtUTC": "2026-11-24T17:43:09.499587+00:00"
+  "updatedAtUTC": "2026-11-24T17:43:10.990056+00:00",
+  "permalink": "https://www.instagram.com/reel/DgIhFW2Eqhl/",
+  "mediaType": "VIDEO",
+  "mediaProductType": "REELS",
+  "captionConfirmed": false
 }
