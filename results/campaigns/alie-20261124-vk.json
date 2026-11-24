@@ -1,0 +1,16 @@
+{
+  "id": "alie-20261124-vk",
+  "status": "reserved_before_provider_upload",
+  "createdAtUTC": "2026-11-24T17:25:36.948Z",
+  "groupId": 48198173,
+  "videoSHA256": "fd6801bdac28abf8f6223c3b72a64d0db8eb373f1d758563916be1c53e2b6999",
+  "originalCoverSHA256": "c75a3ac911db2ad4c675350bef8bf459ee7e9f9917c91fd4240d44a375e9b7e2",
+  "coverSHA256": "dbecb6b6ca2ec64b5d08ff92f33e05423bba04b849ff5c33e08b18316dcd1909",
+  "videoResolution": "1920x3114",
+  "runId": "45448200958",
+  "videoId": null,
+  "wallPostId": null,
+  "coverStatus": "not_attempted",
+  "noRetries": true,
+  "updatedAtUTC": "2026-11-24T17:25:36.949Z"
+}
