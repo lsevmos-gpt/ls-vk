@@ -1,0 +1,71 @@
+name: Alie native Instagram Reel via proven GitHub video_url once
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'requests/instagram-meta/alie-20261124-github-video-url.json'
+permissions:
+  contents: write
+concurrency:
+  group: ls-social-single-approved-provider-submission
+  cancel-in-progress: false
+jobs:
+  publish:
+    if: github.repository == 'lsevmos-gpt/ls-vk' && github.ref == 'refs/heads/main' && github.event_name == 'push' && github.actor == 'lsevmos-gpt'
+    runs-on: ubuntu-latest
+    timeout-minutes: 55
+    env:
+      META_IG_ACCESS_TOKEN: ${{ secrets.META_IG_ACCESS_TOKEN }}
+      META_IG_USER_ID: ${{ secrets.META_IG_USER_ID }}
+      META_GRAPH_VERSION: v26.0
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Verify one-time owner approval, exact caption and native collaboration
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$META_IG_ACCESS_TOKEN" && test -n "$META_IG_USER_ID"
+          test ! -e results/instagram-meta/alie-20261124-github-video-url.json
+          python -m py_compile scripts/publish_alie_20261124_meta_video_url.py scripts/instagram_collab.py
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          j=json.loads(Path('requests/instagram-meta/alie-20261124-github-video-url.json').read_text())
+          v=json.loads(Path('requests/campaigns/alie-20261124-vk.json').read_text())
+          assert j['approved'] is True and j['publicContent'] is True and j['publishNow'] is True
+          assert j['route']=='GITHUB_ACTIONS_META_VIDEO_URL' and j['collaborators']==['_alie_13_']
+          assert j['handle']=='liniya__sporta' and j['shouldShareToFeed'] is True
+          assert j['text']==v['caption']
+          assert j['sourceVideoSHA256']=='fd6801bdac28abf8f6223c3b72a64d0db8eb373f1d758563916be1c53e2b6999'
+          assert j['sourceCoverSHA256']=='c75a3ac911db2ad4c675350bef8bf459ee7e9f9917c91fd4240d44a375e9b7e2'
+          print('APPROVAL_AND_NATIVE_COLLABORATOR_VERIFIED')
+          PY
+          python -m scripts.instagram_collab check -
+      - name: Download exact original assets used successfully for VK and verify SHA256
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -fLSs --retry 3 --connect-timeout 25 --max-time 480 'https://ls-social-media-bridge.ls-evmos.workers.dev/alie-20261124/vk-original.mp4' -o /tmp/alie-ig-source.mp4
+          curl -fLSs --retry 3 --connect-timeout 25 --max-time 120 'https://ls-social-media-bridge.ls-evmos.workers.dev/alie-20261124/vk-original.png' -o /tmp/alie-ig-source.png
+          echo 'fd6801bdac28abf8f6223c3b72a64d0db8eb373f1d758563916be1c53e2b6999  /tmp/alie-ig-source.mp4' | sha256sum -c -
+          echo 'c75a3ac911db2ad4c675350bef8bf459ee7e9f9917c91fd4240d44a375e9b7e2  /tmp/alie-ig-source.png' | sha256sum -c -
+      - name: Prepare high-quality native-resolution Meta-compatible file within GitHub size limit
+        shell: bash
+        run: |
+          set -euo pipefail
+          if ! command -v ffmpeg >/dev/null || ! command -v ffprobe >/dev/null; then sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg; fi
+          mkdir -p media
+          ffmpeg -hide_banner -loglevel error -nostdin -y -i /tmp/alie-ig-source.mp4 -map 0:v:0 -map 0:a:0 -vf 'scale=iw:ih:in_range=auto:out_range=tv,setsar=1' -c:v libx264 -preset fast -pix_fmt yuv420p -profile:v high -b:v 16000k -maxrate 18000k -bufsize 30000k -g 50 -color_range tv -colorspace bt709 -color_trc bt709 -color_primaries bt709 -c:a aac -b:a 128k -ar 48000 -ac 2 -movflags +faststart -map_metadata -1 -map_chapters -1 media/alie-20261124-meta-reel.mp4
+          if test "$(stat -c%s media/alie-20261124-meta-reel.mp4)" -ge 95000000; then
+            ffmpeg -hide_banner -loglevel error -nostdin -y -i /tmp/alie-ig-source.mp4 -map 0:v:0 -map 0:a:0 -vf 'scale=iw:ih:in_range=auto:out_range=tv,setsar=1' -c:v libx264 -preset fast -pix_fmt yuv420p -profile:v high -b:v 14500k -maxrate 16000k -bufsize 28000k -g 50 -color_range tv -colorspace bt709 -color_trc bt709 -color_primaries bt709 -c:a aac -b:a 128k -ar 48000 -ac 2 -movflags +faststart -map_metadata -1 -map_chapters -1 media/alie-20261124-meta-reel.mp4
+          fi
+          ffmpeg -hide_banner -loglevel error -nostdin -y -i /tmp/alie-ig-source.png -frames:v 1 -q:v 1 -update 1 media/alie-20261124-meta-cover.jpg
+          test "$(stat -c%s media/alie-20261124-meta-reel.mp4)" -lt 95000000
+      - name: Verify complete GitHub raw downloads, create Meta video_url container, invite coauthor, publish and readback
+        run: python -m scripts.publish_alie_20261124_meta_video_url
