@@ -1,6 +1,6 @@
 {
   "id": "alie-20261124-vk",
-  "status": "video_api_accepted",
+  "status": "cover_api_accepted",
   "createdAtUTC": "2026-11-24T17:25:36.948Z",
   "groupId": 48198173,
   "videoSHA256": "fd6801bdac28abf8f6223c3b72a64d0db8eb373f1d758563916be1c53e2b6999",
@@ -10,9 +10,9 @@
   "runId": "45448200958",
   "videoId": 456240877,
   "wallPostId": null,
-  "coverStatus": "not_attempted",
+  "coverStatus": "api_accepted",
   "noRetries": true,
-  "updatedAtUTC": "2026-11-24T17:26:03.527Z",
+  "updatedAtUTC": "2026-11-24T17:26:06.962Z",
   "videoOwnerId": -48198173,
   "videoURL": "https://vk.com/video-48198173_456240877"
 }
