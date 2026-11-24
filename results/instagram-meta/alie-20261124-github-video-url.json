@@ -1,10 +1,10 @@
 {
   "id": "alie-20261124-github-video-url",
-  "status": "publish_call_started",
+  "status": "meta_api_publish_accepted",
   "route": "GITHUB_ACTIONS_META_VIDEO_URL",
   "account": "liniya__sporta",
   "collaborator": "_alie_13_",
-  "collaboratorAcceptance": "not_confirmed",
+  "collaboratorAcceptance": "invitation_requested_not_accepted",
   "videoSourceSHA256": "fd6801bdac28abf8f6223c3b72a64d0db8eb373f1d758563916be1c53e2b6999",
   "originalCoverSHA256": "c75a3ac911db2ad4c675350bef8bf459ee7e9f9917c91fd4240d44a375e9b7e2",
   "videoSHA256": "fb563cb65ce5fc09a4be3812ed016c3abe77af434bbb1c66edf2b84a1ede4efb",
@@ -19,9 +19,9 @@
     "18025371152949669": "IN_PROGRESS"
   },
   "creationId": "18025372745949669",
-  "publishedMediaId": null,
+  "publishedMediaId": "18102865451092288",
   "runId": "45450858058",
   "noAutomaticRetries": true,
   "createdAtUTC": "2026-11-24T17:42:09.125139+00:00",
-  "updatedAtUTC": "2026-11-24T17:42:56.165174+00:00"
+  "updatedAtUTC": "2026-11-24T17:43:09.499587+00:00"
 }
