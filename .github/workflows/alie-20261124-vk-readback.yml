@@ -1,0 +1,41 @@
+name: Read back Alie VK provider IDs only
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/alie-20261124-vk-readback.yml
+permissions:
+  contents: read
+jobs:
+  readback:
+    if: github.repository == 'lsevmos-gpt/ls-vk' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    env:
+      VK_GROUP_TOKEN: ${{ secrets.VK_GROUP_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Read-only verification of existing wall and video IDs
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import os, json, urllib.request, urllib.parse
+          receipt=json.load(open('results/campaigns/alie-20261124-vk.json'))
+          assert receipt['id']=='alie-20261124-vk' and receipt['wallPostId']==5390 and receipt['videoId']==456240877 and receipt['videoOwnerId']==-48198173
+          token=os.environ['VK_GROUP_TOKEN']
+          assert token
+          def api(method,params):
+              try:
+                  data=urllib.parse.urlencode(dict(params, access_token=token,v='5.199')).encode()
+                  with urllib.request.urlopen(urllib.request.Request('https://api.vk.com/method/'+method,data=data),timeout=25) as r: p=json.load(r)
+                  if 'error' in p: return {'error_code':p['error'].get('error_code'),'error_msg':str(p['error'].get('error_msg','')).replace(token,'[redacted]')[:150]}
+                  v=p.get('response')
+                  items=v if isinstance(v,list) else v.get('items',v.get('posts',[])) if isinstance(v,dict) else []
+                  is_video=method=='video.get'
+                  expected=456240877 if is_video else 5390
+                  match=next((x for x in items if isinstance(x,dict) and str(x.get('id'))==str(expected) and str(x.get('owner_id'))=='-48198173'),None)
+                  return {'confirmed':bool(match),'id':match.get('id') if match else None,'owner_id':match.get('owner_id') if match else None,'video_attached':any(a.get('type')=='video' and a.get('video',{}).get('id')==456240877 for a in match.get('attachments',[])) if match and not is_video else None,'response_keys':list(v.keys()) if isinstance(v,dict) else None}
+              except Exception as e: return {'transport_error':type(e).__name__}
+          result={'wallById':api('wall.getById',{'posts':'-48198173_5390'}),'wallList':api('wall.get',{'owner_id':-48198173,'count':30,'filter':'owner'}),'video':api('video.get',{'videos':'-48198173_456240877'})}
+          print('ALIE_VK_READBACK '+json.dumps(result,ensure_ascii=False))
+          PY
