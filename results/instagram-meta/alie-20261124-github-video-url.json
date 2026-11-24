@@ -1,6 +1,6 @@
 {
   "id": "alie-20261124-github-video-url",
-  "status": "container_create_call_started",
+  "status": "container_created",
   "route": "GITHUB_ACTIONS_META_VIDEO_URL",
   "account": "liniya__sporta",
   "collaborator": "_alie_13_",
@@ -18,10 +18,10 @@
     "18025365167949669": "IN_PROGRESS",
     "18025371152949669": "IN_PROGRESS"
   },
-  "creationId": null,
+  "creationId": "18025372745949669",
   "publishedMediaId": null,
   "runId": "45450858058",
   "noAutomaticRetries": true,
   "createdAtUTC": "2026-11-24T17:42:09.125139+00:00",
-  "updatedAtUTC": "2026-11-24T17:42:10.380641+00:00"
+  "updatedAtUTC": "2026-11-24T17:42:12.255299+00:00"
 }
