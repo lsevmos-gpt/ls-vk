@@ -1,0 +1,18 @@
+{
+  "id": "bf-20261125-feed-photo-vk",
+  "approved": true,
+  "authorizedByUser": true,
+  "publishNow": true,
+  "publicContent": true,
+  "target": "VK feed wall photo only. Instagram published separately via Cloudflare; never touch Instagram in this workflow.",
+  "groupId": 48198173,
+  "imageURL": "https://ls-social-media-bridge.ls-evmos.workers.dev/bf-20261125/feed-4x5-1080x1350.jpg",
+  "imageSHA256": "12a510b27a9d8599b37e762b15690a3d5ecb564113f67016039a1c71abc5bd51",
+  "imageBytes": 872247,
+  "imageWidth": 1080,
+  "imageHeight": 1350,
+  "caption": "🖤💚 ЧЁРНАЯ ПЯТНИЦА В «ЛИНИИ СПОРТА»!\n\n🔥 27 и 28 ноября — скидка 30%!\n\nВсего два дня, чтобы начать тренироваться или продолжить занятия на выгодных условиях!\n\n💚 Скидка действует на:\n✅ Все клубные карты для тренажёрного зала\n✅ Абонементы на самостоятельные занятия в зале\n✅ Абонементы групповых занятий\n\nАкция доступна новым и действующим клиентам!\n\n📌 Важные условия:\n• Одна клубная карта или один абонемент со скидкой на человека.\n• Активация сразу при покупке.\n• Покупка на ресепшене или в мобильном приложении.\n• Скидки не суммируются.\n\n❗ Исключения: «Торнадо», персональные тренировки, тренерские абонементы и мини-группы с тренером.\n\n⏳ Только 27 и 28 ноября!\n\nУспей забрать свои −30%! 💚\n\n📄 Полные правила:\nhttps://docs.liniyasporta.ru/black-friday-2026/",
+  "noHashtagsAdded": true,
+  "noRetries": true,
+  "createdFor": "Direct user instruction of 2026-11-25, immediate Instagram and VK feed posts"
+}
