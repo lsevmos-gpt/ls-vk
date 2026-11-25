@@ -1,0 +1,40 @@
+name: Read-only VK legacy user token wall-photo preflight for BF
+on:
+  push:
+    branches: [main]
+    paths:
+      - requests/diagnostics/bf-vk-photo-user-token-20261125.json
+permissions:
+  contents: read
+jobs:
+  photo_token:
+    if: github.repository == 'lsevmos-gpt/ls-vk' && github.actor == 'lsevmos-gpt'
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    env:
+      VK_USER_TOKEN: ${{ secrets.VK_USER_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Check photo upload eligibility of existing user token (NO POST/UPLOAD)
+        shell: bash
+        run: |
+          node --input-type=module <<'JS'
+          const t=process.env.VK_USER_TOKEN;
+          if(!t){console.log('BF_VK_STATIC_USER_TOKEN=MISSING');process.exit(0);}
+          try {
+            const r=await fetch('https://api.vk.ru/method/photos.getWallUploadServer',{
+              method:'POST',
+              headers:{'Content-Type':'application/x-www-form-urlencoded'},
+              body:new URLSearchParams({group_id:'48198173',access_token:t,v:'5.199'}),
+              signal:AbortSignal.timeout(15000)
+            });
+            const x=await r.json().catch(()=>null);
+            const ok=Boolean(x?.response?.upload_url);
+            console.log('BF_VK_STATIC_USER_PHOTO_ELIGIBILITY='+JSON.stringify({
+              allowed:ok,http:r.status,error_code:x?.error?.error_code??null,
+              error_message:String(x?.error?.error_msg||'').slice(0,100)}));
+          } catch(e){console.log('BF_VK_STATIC_USER_PHOTO_ELIGIBILITY=REQUEST_FAILED '+String(e?.name||'error').slice(0,25));}
+          JS
