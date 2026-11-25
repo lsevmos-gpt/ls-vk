@@ -1,0 +1,12 @@
+{
+  "id": "bf-20261125-feed-photo-vk",
+  "status": "reserved_before_provider_upload",
+  "createdAtUTC": "2026-11-25T12:52:27.026Z",
+  "imageSHA256": "12a510b27a9d8599b37e762b15690a3d5ecb564113f67016039a1c71abc5bd51",
+  "groupId": 48198173,
+  "sourceURL": "https://ls-social-media-bridge.ls-evmos.workers.dev/bf-20261125/feed-4x5-1080x1350.jpg",
+  "wallPostId": null,
+  "runId": "45617579675",
+  "noAutoRetry": true,
+  "updatedAtUTC": "2026-11-25T12:52:27.027Z"
+}
