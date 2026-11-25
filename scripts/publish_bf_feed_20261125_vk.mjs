@@ -61,7 +61,7 @@ async function main(){
  const g=await vkCall('groups.getById',{group_id:GROUP},required('VK_GROUP_TOKEN'));
  const actual=Array.isArray(g?.groups)?g.groups[0]:Array.isArray(g)?g[0]:g;
  if(Number(actual?.id)!==GROUP||actual.screen_name!=='liniya__sporta')throw Error('WRONG_VK_GROUP_NAME');
- const wall=await vkCall('wall.get',{owner_id:-GROUP,count:70,filter:'owner'},required('VK_GROUP_TOKEN'));
+ const wall=await vkCall('wall.get',{owner_id:-GROUP,count:70,filter:'owner'},process.env.VK_USER_TOKEN);
  const duplicates=(wall?.items||[]).filter(x=>typeof x.text==='string'&&
   x.text.includes('ЧЁРНАЯ ПЯТНИЦА В «ЛИНИИ СПОРТА»!')&&x.text.includes('27 и 28 ноября'));
  if(duplicates.length){console.log('BF_VK_ALREADY_ON_WALL_NO_DUPLICATE',duplicates.map(x=>x.id));return}
@@ -84,7 +84,7 @@ async function main(){
   let verified=false;
   for(let k=0;k<9;k++){
    try{
-    const r=await vkCall('wall.getById',{posts:'-'+GROUP+'_'+postId},required('VK_GROUP_TOKEN'));
+    const r=await vkCall('wall.getById',{posts:'-'+GROUP+'_'+postId},process.env.VK_USER_TOKEN);
     const items=Array.isArray(r?.items)?r.items:Array.isArray(r)?r:[];
     verified=items.some(x=>Number(x.id)===postId&&Number(x.owner_id)===-GROUP);
     if(verified)break;
