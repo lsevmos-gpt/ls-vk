@@ -1,6 +1,6 @@
 {
   "id": "bf-20261125-feed-photo-vk",
-  "status": "manual_reconciliation_required",
+  "status": "blocked_vk_photo_scope",
   "createdAtUTC": "2026-11-25T12:52:27.026Z",
   "imageSHA256": "12a510b27a9d8599b37e762b15690a3d5ecb564113f67016039a1c71abc5bd51",
   "groupId": 48198173,
@@ -8,6 +8,17 @@
   "wallPostId": null,
   "runId": "45617579675",
   "noAutoRetry": true,
-  "updatedAtUTC": "2026-11-25T12:52:29.384Z",
-  "error": "VK API photos.getWallUploadServer: Access denied: no access to call this method. It cannot be called with current scopes."
+  "updatedAtUTC": "2026-11-25T12:55:00Z",
+  "error": "VK API photos.getWallUploadServer: Access denied: no access to call this method. It cannot be called with current scopes.",
+  "wallPostAttempted": false,
+  "photoUploadAttempted": false,
+  "photoUploadServerAttempted": true,
+  "legacyUserTokenPreflight": {
+    "accessDeniedCode": 5,
+    "reason": "Old VK_USER_TOKEN bound to another IP"
+  },
+  "currentRefreshedTokenPreflight": {
+    "reason": "photos.getWallUploadServer rejected due missing required scopes"
+  },
+  "nextAction": "Renew VK ID user authorization with photos permission before re-attempt; verify no post exists first"
 }
