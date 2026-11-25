@@ -1,6 +1,6 @@
 {
   "id": "bf-20261125-feed-photo-vk",
-  "status": "reserved_before_provider_upload",
+  "status": "manual_reconciliation_required",
   "createdAtUTC": "2026-11-25T12:52:27.026Z",
   "imageSHA256": "12a510b27a9d8599b37e762b15690a3d5ecb564113f67016039a1c71abc5bd51",
   "groupId": 48198173,
@@ -8,5 +8,6 @@
   "wallPostId": null,
   "runId": "45617579675",
   "noAutoRetry": true,
-  "updatedAtUTC": "2026-11-25T12:52:27.027Z"
+  "updatedAtUTC": "2026-11-25T12:52:29.384Z",
+  "error": "VK API photos.getWallUploadServer: Access denied: no access to call this method. It cannot be called with current scopes."
 }
