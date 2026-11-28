@@ -11,7 +11,7 @@ const REQUEST='requests/campaigns/ls-vk-20261128-1800.json';
 const RECEIPT='results/campaigns/ls-vk-20261128-1800.json';
 const VIDEO='/tmp/ls-vk-20261128-1800.mp4';
 const COVER='/tmp/ls-vk-20261128-1800-cover.jpg';
-const V_SHA='0643baa73f3df1fa6cfbef68ab702e3abf0565cfd4b89f5153c6fd08cbcb5d45';
+const V_SHA='9c682119416b447df5b432015b65c14d26f2497af0b7d61b1878dcc0ad6b0d00';
 const C_SHA='73482eeb4c8cc5bacacd25637345da00275cc43c1e3e8ad94d6749179c0b17d6';
 const now=()=>new Date().toISOString();
 const pause=ms=>new Promise(r=>setTimeout(r,ms));
@@ -63,7 +63,7 @@ async function main(){
  git('pull','--ff-only','origin','main');if(fs.existsSync(RECEIPT))return;
  const req=JSON.parse(fs.readFileSync(REQUEST,'utf8')),due=Date.parse('2026-11-28T18:00:00+03:00');
  const approvedURL=(value,ext)=>{const u=new URL(value);return u.protocol==='https:'&&u.hostname==='ls-social-media-bridge.ls-evmos.workers.dev'&&!u.username&&!u.password&&!u.search&&!u.hash&&u.pathname.endsWith(ext)};
- if(req.id!==ID||req.approved!==true||req.authorizedByUser!==true||req.publishAt!=='2026-11-28T18:00:00+03:00'||req.groupId!==GROUP||req.aspect!=='9:16'||req.videoSHA256!==V_SHA||req.coverSHA256!==C_SHA||!approvedURL(req.videoURL,'.mp4')||!approvedURL(req.coverURL,'.jpg')||typeof req.caption!=='string'||req.caption.length<30||typeof req.title!=='string'||!req.title||!fs.existsSync(VIDEO)||!fs.existsSync(COVER)||fs.statSync(VIDEO).size!==85618791||fs.statSync(COVER).size!==219701||sha(VIDEO)!==V_SHA||sha(COVER)!==C_SHA)throw Error('APPROVED_MEDIA_REQUEST_MISMATCH');
+ if(req.id!==ID||req.approved!==true||req.authorizedByUser!==true||req.publishAt!=='2026-11-28T18:00:00+03:00'||req.groupId!==GROUP||req.aspect!=='9:16'||req.videoSHA256!==V_SHA||req.coverSHA256!==C_SHA||!approvedURL(req.videoURL,'.mp4')||!approvedURL(req.coverURL,'.jpg')||typeof req.caption!=='string'||req.caption.length<30||typeof req.title!=='string'||!req.title||!fs.existsSync(VIDEO)||!fs.existsSync(COVER)||fs.statSync(VIDEO).size!==85615293||fs.statSync(COVER).size!==219701||sha(VIDEO)!==V_SHA||sha(COVER)!==C_SHA)throw Error('APPROVED_MEDIA_REQUEST_MISMATCH');
  if(Date.now()<due||Date.now()>due+1800000)throw Error('OUTSIDE_APPROVED_PUBLISH_WINDOW');
  const probe=JSON.parse(execFileSync('ffprobe',['-v','error','-select_streams','v:0','-show_entries','stream=width,height,codec_name,nb_frames','-of','json',VIDEO],{encoding:'utf8'}));
  const stream=probe.streams?.[0];if(stream?.width!==1440||stream.height!==2560||stream.codec_name!=='h264'||stream.nb_frames!=='1098')throw Error('INVALID_VERTICAL_9X16_MEDIA');
