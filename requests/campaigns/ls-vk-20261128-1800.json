@@ -12,5 +12,7 @@
   "coverSHA256": "73482eeb4c8cc5bacacd25637345da00275cc43c1e3e8ad94d6749179c0b17d6",
   "title": "Евгения Горобец — тренер «Линии спорта»",
   "caption": "Евгения Горобец!\n\nТеперь она ждёт вас во втором филиале групповых направлений 💫\n\n📍 Героев Сталинграда, 6Д\n\nЕвгения имеет высшее образование в сфере реабилитации и глубоко специализируется в физиологии человека и психофизиологии.\n\nЕё подход — это грамотная работа с телом, основанная на знаниях о восстановлении и гармонии систем организма🌿\n\nОсновные направления:\n\n• Женское здоровье 🌸\n• Классическая растяжка ✨\n• Здоровая спина 🧡\n• Йога 🌓\n• Pilates 🧘‍♀️\n• Функциональный тренинг 🔥\n\nНа занятиях вас ждёт безопасное пространство, где каждое достижение станет личной победой! 🙌\n\nАвтор: https://www.instagram.com/sir_ena06/",
-  "recovery": "previous run stopped before media API; validate existing user authorization without refreshing"
+  "recovery": "Owner confirmed renewed VK authorization and requested immediate retry; retain original publication time, media, cover, caption, and duplicate protection.",
+  "retryAt": "2026-11-28T18:47:00+03:00",
+  "retryDeadline": "2026-11-28T19:17:00+03:00"
 }

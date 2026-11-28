@@ -61,9 +61,9 @@ async function uploadThumb(uploadURL){
 async function main(){
  if(process.env.GITHUB_REPOSITORY!==REPO||process.env.GITHUB_REF!=='refs/heads/main'||process.env.GITHUB_EVENT_NAME!=='push'||process.env.GITHUB_ACTOR!=='lsevmos-gpt')throw Error('UNAUTHORIZED_CONTEXT');
  git('pull','--ff-only','origin','main');if(fs.existsSync(RECEIPT))return;
- const req=JSON.parse(fs.readFileSync(REQUEST,'utf8')),due=Date.parse('2026-11-28T18:00:00+03:00');
+ const req=JSON.parse(fs.readFileSync(REQUEST,'utf8')),due=Date.parse('2026-11-28T18:47:00+03:00');
  const approvedURL=(value,ext)=>{const u=new URL(value);return u.protocol==='https:'&&u.hostname==='ls-social-media-bridge.ls-evmos.workers.dev'&&!u.username&&!u.password&&!u.search&&!u.hash&&u.pathname.endsWith(ext)};
- if(req.id!==ID||req.approved!==true||req.authorizedByUser!==true||req.publishAt!=='2026-11-28T18:00:00+03:00'||req.groupId!==GROUP||req.aspect!=='9:16'||req.videoSHA256!==V_SHA||req.coverSHA256!==C_SHA||!approvedURL(req.videoURL,'.mp4')||!approvedURL(req.coverURL,'.jpg')||typeof req.caption!=='string'||req.caption.length<30||typeof req.title!=='string'||!req.title||!fs.existsSync(VIDEO)||!fs.existsSync(COVER)||fs.statSync(VIDEO).size!==85615293||fs.statSync(COVER).size!==219701||sha(VIDEO)!==V_SHA||sha(COVER)!==C_SHA)throw Error('APPROVED_MEDIA_REQUEST_MISMATCH');
+ if(req.id!==ID||req.approved!==true||req.authorizedByUser!==true||req.publishAt!=='2026-11-28T18:00:00+03:00'||req.retryAt!=='2026-11-28T18:47:00+03:00'||req.retryDeadline!=='2026-11-28T19:17:00+03:00'||req.groupId!==GROUP||req.aspect!=='9:16'||req.videoSHA256!==V_SHA||req.coverSHA256!==C_SHA||!approvedURL(req.videoURL,'.mp4')||!approvedURL(req.coverURL,'.jpg')||typeof req.caption!=='string'||req.caption.length<30||typeof req.title!=='string'||!req.title||!fs.existsSync(VIDEO)||!fs.existsSync(COVER)||fs.statSync(VIDEO).size!==85615293||fs.statSync(COVER).size!==219701||sha(VIDEO)!==V_SHA||sha(COVER)!==C_SHA)throw Error('APPROVED_MEDIA_REQUEST_MISMATCH');
  if(Date.now()<due||Date.now()>due+1800000)throw Error('OUTSIDE_APPROVED_PUBLISH_WINDOW');
  const probe=JSON.parse(execFileSync('ffprobe',['-v','error','-select_streams','v:0','-show_entries','stream=width,height,codec_name,nb_frames','-of','json',VIDEO],{encoding:'utf8'}));
  const stream=probe.streams?.[0];if(stream?.width!==1440||stream.height!==2560||stream.codec_name!=='h264'||stream.nb_frames!=='1098')throw Error('INVALID_VERTICAL_9X16_MEDIA');
@@ -84,7 +84,7 @@ async function main(){
  if((videos?.items||[]).some(v=>String(v.title||'')===req.title&&String(v.description||'')===req.caption))throw Error('DUPLICATE_VIDEO_FOUND');
  git('pull','--ff-only','origin','main');if(fs.existsSync(RECEIPT))return;
  git('config','user.name','ls-vk-approved-once');git('config','user.email','41898282+github-actions[bot]@users.noreply.github.com');
- const receipt={id:ID,status:'reserved_before_provider_upload',createdAtUTC:now(),groupId:GROUP,videoSHA256:V_SHA,coverSHA256:C_SHA,videoResolution:'1440x2560',publishAt:req.publishAt,runId:process.env.GITHUB_RUN_ID,videoId:null,wallPostId:null,coverStatus:'not_attempted',noBlindRetries:true};
+ const receipt={id:ID,status:'reserved_before_provider_upload',createdAtUTC:now(),groupId:GROUP,videoSHA256:V_SHA,coverSHA256:C_SHA,videoResolution:'1440x2560',publishAt:req.publishAt,retryAt:req.retryAt,retryDeadline:req.retryDeadline,runId:process.env.GITHUB_RUN_ID,videoId:null,wallPostId:null,coverStatus:'not_attempted',noBlindRetries:true};
  await checkpoint(receipt,true);
  try{
   receipt.status='upload_started';await checkpoint(receipt);

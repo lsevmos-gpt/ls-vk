@@ -43,10 +43,10 @@ jobs:
           from pathlib import Path
           from urllib.parse import urlparse
           r=json.loads(Path('requests/campaigns/ls-vk-20261128-1800.json').read_text())
-          due=datetime.datetime.fromisoformat('2026-11-28T18:00:00+03:00')
+          due=datetime.datetime.fromisoformat('2026-11-28T18:47:00+03:00')
           now=datetime.datetime.now(datetime.timezone.utc)
           assert due<=now<due+datetime.timedelta(minutes=30)
-          assert r['id']=='ls-vk-20261128-1800' and r['approved'] is True and r['authorizedByUser'] is True and r['groupId']==48198173 and r['publishAt']=='2026-11-28T18:00:00+03:00' and r['aspect']=='9:16'
+          assert r['id']=='ls-vk-20261128-1800' and r['approved'] is True and r['authorizedByUser'] is True and r['groupId']==48198173 and r['publishAt']=='2026-11-28T18:00:00+03:00' and r['aspect']=='9:16' and r['retryAt']=='2026-11-28T18:47:00+03:00' and r['retryDeadline']=='2026-11-28T19:17:00+03:00'
           assert r['videoSHA256']=='9c682119416b447df5b432015b65c14d26f2497af0b7d61b1878dcc0ad6b0d00' and r['coverSHA256']=='73482eeb4c8cc5bacacd25637345da00275cc43c1e3e8ad94d6749179c0b17d6'
           for url, path, digest, size, ext in [(r['videoURL'],'/tmp/ls-vk-20261128-1800.mp4',r['videoSHA256'],85615293,'.mp4'),(r['coverURL'],'/tmp/ls-vk-20261128-1800-cover.jpg',r['coverSHA256'],219701,'.jpg')]:
               u=urlparse(url)
