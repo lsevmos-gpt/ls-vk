@@ -1,0 +1,61 @@
+name: Publish one approved VK-only video at 18:00 MSK
+on:
+  push:
+    branches: [main]
+    paths:
+      - requests/campaigns/ls-vk-20261128-1800.json
+permissions:
+  contents: write
+concurrency:
+  group: ls-vk-20261128-1800-one-provider
+  cancel-in-progress: false
+jobs:
+  publish:
+    if: github.repository == 'lsevmos-gpt/ls-vk' && github.ref == 'refs/heads/main' && github.event_name == 'push' && github.actor == 'lsevmos-gpt'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      VK_GROUP_ID: '48198173'
+      VK_GROUP_SCREEN_NAME: 'liniya__sporta'
+      VK_GROUP_TOKEN: ${{ secrets.VK_GROUP_TOKEN }}
+      VK_REFRESH_TOKEN: ${{ secrets.VK_REFRESH_TOKEN }}
+      VK_DEVICE_ID: ${{ secrets.VK_DEVICE_ID }}
+      VK_SECRETS_WRITE_PAT: ${{ secrets.VK_SECRETS_WRITE_PAT }}
+      VK_API_VERSION: '5.199'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Validate authorized request and verified media for VK only
+        shell: bash
+        run: |
+          set -euo pipefail
+          test ! -e results/campaigns/ls-vk-20261128-1800.json
+          node --check scripts/publish_ls_vk_20261128_1800.mjs
+          if ! command -v ffprobe >/dev/null; then sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg; fi
+          python3 - <<'PY'
+          import json, datetime, subprocess, hashlib, os
+          from pathlib import Path
+          from urllib.parse import urlparse
+          r=json.loads(Path('requests/campaigns/ls-vk-20261128-1800.json').read_text())
+          due=datetime.datetime.fromisoformat('2026-11-28T18:00:00+03:00')
+          now=datetime.datetime.now(datetime.timezone.utc)
+          assert due<=now<due+datetime.timedelta(minutes=30)
+          assert r['id']=='ls-vk-20261128-1800' and r['approved'] is True and r['authorizedByUser'] is True and r['groupId']==48198173 and r['publishAt']=='2026-11-28T18:00:00+03:00' and r['aspect']=='9:16'
+          assert r['videoSHA256']=='0643baa73f3df1fa6cfbef68ab702e3abf0565cfd4b89f5153c6fd08cbcb5d45' and r['coverSHA256']=='73482eeb4c8cc5bacacd25637345da00275cc43c1e3e8ad94d6749179c0b17d6'
+          for url, path, digest, size, ext in [(r['videoURL'],'/tmp/ls-vk-20261128-1800.mp4',r['videoSHA256'],85618791,'.mp4'),(r['coverURL'],'/tmp/ls-vk-20261128-1800-cover.jpg',r['coverSHA256'],219701,'.jpg')]:
+              u=urlparse(url)
+              assert u.scheme=='https' and u.hostname=='ls-social-media-bridge.ls-evmos.workers.dev' and not u.username and not u.password and not u.query and not u.fragment and u.path.endswith(ext)
+              subprocess.run(['curl','-fsS','--retry','2','--connect-timeout','20','--max-time','180','-o',path,url],check=True)
+              assert os.path.getsize(path)==size
+              with open(path,'rb') as f: assert hashlib.file_digest(f,'sha256').hexdigest()==digest
+          print('APPROVED_CLOUDLFARE_MEDIA_HASH_VERIFIED')
+          PY
+      - name: Install existing direct VK publisher dependencies
+        run: npm install --omit=dev --ignore-scripts --no-package-lock --no-audit --no-fund
+      - name: Publish one approved video with cover and verify
+        run: node scripts/publish_ls_vk_20261128_1800.mjs
