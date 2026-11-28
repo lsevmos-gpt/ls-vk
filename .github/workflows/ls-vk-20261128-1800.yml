@@ -21,6 +21,7 @@ jobs:
       VK_REFRESH_TOKEN: ${{ secrets.VK_REFRESH_TOKEN }}
       VK_DEVICE_ID: ${{ secrets.VK_DEVICE_ID }}
       VK_SECRETS_WRITE_PAT: ${{ secrets.VK_SECRETS_WRITE_PAT }}
+      VK_USER_TOKEN: ${{ secrets.VK_USER_TOKEN }}
       VK_API_VERSION: '5.199'
     steps:
       - uses: actions/checkout@v4

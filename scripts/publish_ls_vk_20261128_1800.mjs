@@ -67,8 +67,12 @@ async function main(){
  if(Date.now()<due||Date.now()>due+1800000)throw Error('OUTSIDE_APPROVED_PUBLISH_WINDOW');
  const probe=JSON.parse(execFileSync('ffprobe',['-v','error','-select_streams','v:0','-show_entries','stream=width,height,codec_name,nb_frames','-of','json',VIDEO],{encoding:'utf8'}));
  const stream=probe.streams?.[0];if(stream?.width!==1440||stream.height!==2560||stream.codec_name!=='h264'||stream.nb_frames!=='1098')throw Error('INVALID_VERTICAL_9X16_MEDIA');
- required('VK_GROUP_TOKEN');required('VK_DEVICE_ID');required('VK_REFRESH_TOKEN');required('VK_SECRETS_WRITE_PAT');
- const userToken=await refresh();process.env.VK_USER_TOKEN=userToken;
+ required('VK_GROUP_TOKEN');
+ // Use only an already configured, independently validated user credential; no token refresh or secret changes after refresh persistence failed.
+ const userToken=required('VK_USER_TOKEN');
+ const check=await readOnlyVkTokenCheck(userToken,'54806879');
+ if(check.vkId!=='OK'||check.vkApiUsers!=='OK'||!check.vkApiAllowed)throw Error('VK_EXISTING_USER_AUTH_NOT_VALID_'+check.vkId+'_'+check.vkApiUsers+'_'+check.legacyVideoPermission);
+ process.env.VK_USER_TOKEN=userToken;
  const {getGroupId,vkCall,uploadWallVideo,publishWallPost}=await import('../src/vk.js');
  if(Number(await getGroupId())!==GROUP)throw Error('WRONG_VK_GROUP');
  const groups=await vkCall('groups.getById',{group_id:GROUP},required('VK_GROUP_TOKEN'));
